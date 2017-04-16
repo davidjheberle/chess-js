@@ -30,6 +30,8 @@ var game = {
         // Add entities to the entity pool.
         me.pool.register("player", game.Player);
         me.pool.register("enemy", game.Enemy);
+        me.pool.register("board", game.Board);
+        // me.pool.register("square", game.Square, 64);
 
         // Create the play screen.
         me.state.set(me.state.PLAY, new game.PlayScreen());

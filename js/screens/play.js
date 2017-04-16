@@ -7,10 +7,13 @@ game.PlayScreen = me.ScreenObject.extend({
         me.game.world.addChild(new me.ColorLayer("background", "#000000"), 0);
 
         // Add the player.
-        me.game.world.addChild(me.pool.pull("player"));
+        // me.game.world.addChild(me.pool.pull("player"));
 
         // An an enemy.
-        me.game.world.addChild(me.pool.pull("enemy", 50, 50), 2);
+        // me.game.world.addChild(me.pool.pull("enemy", 50, 50), 2);
+
+        // Create the board.
+        me.game.world.addChild(me.pool.pull("board"));
 
         // Bind input.
         me.input.bindKey(me.input.KEY.LEFT, "left");
