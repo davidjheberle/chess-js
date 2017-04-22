@@ -14,7 +14,6 @@ game.PlayScreen = me.ScreenObject.extend({
 
         // Create the board.
         me.game.world.addChild(me.pool.pull("board"));
-        me.game.world.sort(true);
 
         // Bind input.
         me.input.bindKey(me.input.KEY.LEFT, "left");
