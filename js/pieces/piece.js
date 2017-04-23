@@ -44,11 +44,14 @@ game.Piece = me.DraggableEntity.extend({
     },
 
     moveToSquare: function (square) {
+        // Check if this is a valid move.
         if (square.isOccupied() && square.piece != this) {
             return;
         }
+        // Check if valid based on piece type and color.
+
         if (this.square != null) {
-            // leave the previous sqaure for good
+            // leave the previous square for good
             this.square.piece = null;
         }
         this.pos.x = square.pos.x + ((square.width - this.width) / 2);
@@ -57,13 +60,6 @@ game.Piece = me.DraggableEntity.extend({
         this.square = square;
         this.square.piece = this;
         me.game.world.sort(true);
-    },
-
-    // pointerUp event callback
-    pointerUp: function (event) {
-        // find the pieces under this.
-        // don"t propagate the event to other objects
-       return false;
     },
 
     setPieceState: function (state) {
