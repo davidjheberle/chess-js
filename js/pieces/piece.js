@@ -1,30 +1,16 @@
-game.PieceType = {
-    PAWN : 0,
-    ROOK : 1,
-    KNIGHT : 2,
-    BISHOP : 3,
-    QUEEN : 4,
-    KING : 5
-}
-
-game.PieceColor = {
-    BLACK : 0,
-    WHITE : 1
-}
-
 game.PieceState = {
     IDLE : 0,
     HELD : 1
 }
 
 game.Piece = me.DraggableEntity.extend({
-    init: function (board, pieceType, pieceColor) {
+    init: function (player, pieceType, pieceColor) {
         this._super(me.DraggableEntity, "init", [0, 0, {
             image : "pieces",
             width : 64,
             height : 64
         }]);
-        this.board = board;
+        this.player = player;
         this.type = pieceType;
         this.color = pieceColor;
         this.offsetY = -20;
@@ -49,6 +35,9 @@ game.Piece = me.DraggableEntity.extend({
             return;
         }
         // Check if valid based on piece type and color.
+        if (!this.isMoveValid(square)) {
+            return;
+        }
 
         if (this.square != null) {
             // leave the previous square for good
@@ -62,6 +51,11 @@ game.Piece = me.DraggableEntity.extend({
         me.game.world.sort(true);
     },
 
+    isMoveValid: function (square) {
+        // switch on type and direction to determine
+        return true;
+    },
+
     setPieceState: function (state) {
         var prevState = this.state;
         this.state = state;
@@ -70,7 +64,7 @@ game.Piece = me.DraggableEntity.extend({
                 // if the pieces was held and is now idle
                 if (prevState == game.PieceState.HELD) {
                     // place it on the nearest space
-                    var closestSquare = this.board.getClosestSquare(
+                    var closestSquare = this.player.board.getClosestSquare(
                         this.pos.x - ((this.square.width - this.width) / 2),
                         this.pos.y - (((this.square.height - this.height) / 2) + this.offsetY));
 

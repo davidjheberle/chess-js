@@ -1,5 +1,6 @@
 game.Board = me.Entity.extend({
     init: function () {
+
         // 2d array of squares [row, column]
         this.squares = [];
 
@@ -35,86 +36,9 @@ game.Board = me.Entity.extend({
             squareX = 0;
         }
 
-        // Create the pieces.
-        var piece;
-
-        // black pieces
-        piece = new game.Piece(this, game.PieceType.ROOK, game.PieceColor.BLACK);
-        me.game.world.addChild(piece);
-        piece.moveToSquare(this.getSquare (0, 0));
-
-        piece = new game.Piece(this, game.PieceType.KNIGHT, game.PieceColor.BLACK);
-        me.game.world.addChild(piece);
-        piece.moveToSquare(this.getSquare (0, 1));
-
-        piece = new game.Piece(this, game.PieceType.BISHOP, game.PieceColor.BLACK);
-        me.game.world.addChild(piece);
-        piece.moveToSquare(this.getSquare (0, 2));
-
-        piece = new game.Piece(this, game.PieceType.QUEEN, game.PieceColor.BLACK);
-        me.game.world.addChild(piece);
-        piece.moveToSquare(this.getSquare (0, 3));
-
-        piece = new game.Piece(this, game.PieceType.KING, game.PieceColor.BLACK);
-        me.game.world.addChild(piece);
-        piece.moveToSquare(this.getSquare (0, 4));
-
-        piece = new game.Piece(this, game.PieceType.BISHOP, game.PieceColor.BLACK);
-        me.game.world.addChild(piece);
-        piece.moveToSquare(this.getSquare (0, 5));
-
-        piece = new game.Piece(this, game.PieceType.KNIGHT, game.PieceColor.BLACK);
-        me.game.world.addChild(piece);
-        piece.moveToSquare(this.getSquare (0, 6));
-
-        piece = new game.Piece(this, game.PieceType.ROOK, game.PieceColor.BLACK);
-        me.game.world.addChild(piece);
-        piece.moveToSquare(this.getSquare (0, 7));
-
-        for (i = 0; i < 8; i++) {
-            piece = new game.Piece(this, game.PieceType.PAWN, game.PieceColor.BLACK);
-            me.game.world.addChild(piece);
-            piece.moveToSquare(this.getSquare (1, i));
-        }
-
-        // white pieces
-        piece = new game.Piece(this, game.PieceType.ROOK, game.PieceColor.WHITE);
-        me.game.world.addChild(piece);
-        piece.moveToSquare(this.getSquare (7, 0));
-
-        piece = new game.Piece(this, game.PieceType.KNIGHT, game.PieceColor.WHITE);
-        me.game.world.addChild(piece);
-        piece.moveToSquare(this.getSquare (7, 1));
-
-        piece = new game.Piece(this, game.PieceType.BISHOP, game.PieceColor.WHITE);
-        me.game.world.addChild(piece);
-        piece.moveToSquare(this.getSquare (7, 2));
-
-        piece = new game.Piece(this, game.PieceType.QUEEN, game.PieceColor.WHITE);
-        me.game.world.addChild(piece);
-        piece.moveToSquare(this.getSquare (7, 3));
-
-        piece = new game.Piece(this, game.PieceType.KING, game.PieceColor.WHITE);
-        me.game.world.addChild(piece);
-        piece.moveToSquare(this.getSquare (7, 4));
-
-        piece = new game.Piece(this, game.PieceType.BISHOP, game.PieceColor.WHITE);
-        me.game.world.addChild(piece);
-        piece.moveToSquare(this.getSquare (7, 5));
-
-        piece = new game.Piece(this, game.PieceType.KNIGHT, game.PieceColor.WHITE);
-        me.game.world.addChild(piece);
-        piece.moveToSquare(this.getSquare (7, 6));
-
-        piece = new game.Piece(this, game.PieceType.ROOK, game.PieceColor.WHITE);
-        me.game.world.addChild(piece);
-        piece.moveToSquare(this.getSquare (7, 7));
-
-        for (i = 0; i < 8; i++) {
-            piece = new game.Piece(this, game.PieceType.PAWN, game.PieceColor.WHITE);
-            me.game.world.addChild(piece);
-            piece.moveToSquare(this.getSquare (6, i));
-        }
+        // create 2 players and have them set up their pieces
+        this.player1 = new game.Player(game.PieceColor.WHITE, game.PieceDirection.UP, this);
+        this.player2 = new game.Player(game.PieceColor.BLACK, game.PieceDirection.DOWN, this);
     },
 
     update: function (dt) {
@@ -123,15 +47,15 @@ game.Board = me.Entity.extend({
     },
 
     getSquare: function (r, c) {
-        if (this.squares.length < r) { console.log (this.squares.length); return null; }
-        if (this.squares[r].length < c) { console.log (this.squares[r].length); return null; }
+        if (this.squares.length < r) { return null; }
+        if (this.squares[r].length < c) { return null; }
         if (r < 0 || c < 0) { return null; }
         return this.squares[r][c];
     },
 
     getClosestSquare: function (x, y) {
-        var closestX = 1000;
-        var closestY = 1000;
+        var closestX = Number.POSITIVE_INFINITY;
+        var closestY = Number.POSITIVE_INFINITY;
         var closestR = -1;
         var closestC = -1;
         var workX;
@@ -149,7 +73,6 @@ game.Board = me.Entity.extend({
                 closestR = i;
             }
         }
-        console.log ("getClosestSquare: " + closestR + " | " + closestC);
         return this.getSquare(closestR, closestC);
     }
 });
