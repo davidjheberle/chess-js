@@ -52,7 +52,7 @@ game.Piece = me.DraggableEntity.extend({
     },
 
     isMoveValid: function (square) {
-        // switch on type and direction to determine
+        // override
         return true;
     },
 
