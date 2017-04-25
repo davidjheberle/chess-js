@@ -60,7 +60,7 @@ game.Player = me.Entity.extend({
         piece.moveToSquare(this.board.getSquare (nobleRow, 7));
 
         for (i = 0; i < 8; i++) {
-            piece = new game.Piece(this, game.PieceType.PAWN, this.color);
+            piece = new game.Pawn(this, this.color);
             me.game.world.addChild(piece);
             piece.moveToSquare(this.board.getSquare (pawnRow, i));
         }

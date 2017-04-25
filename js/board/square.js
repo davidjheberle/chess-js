@@ -25,5 +25,9 @@ game.Square = me.Entity.extend({
 
     isOccupied: function () {
         return this.piece != null;
+    },
+
+    isLocatedAt: function (c, r) {
+        return this.row === r && this.column === c;
     }
 });
