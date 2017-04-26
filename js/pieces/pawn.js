@@ -1,8 +1,3 @@
-game.PieceState = {
-    IDLE : 0,
-    HELD : 1
-}
-
 game.Pawn = game.Piece.extend({
     init: function (player, pieceColor) {
         this._super(game.Piece, "init", [

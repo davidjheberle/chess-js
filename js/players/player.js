@@ -27,7 +27,7 @@ game.Player = me.Entity.extend({
                 break;
         }
 
-        piece = new game.Piece(this, game.PieceType.ROOK, this.color);
+        piece = new game.Rook(this, this.color);
         me.game.world.addChild(piece);
         piece.moveToSquare(this.board.getSquare (nobleRow, 0));
 
@@ -55,7 +55,7 @@ game.Player = me.Entity.extend({
         me.game.world.addChild(piece);
         piece.moveToSquare(this.board.getSquare (nobleRow, 6));
 
-        piece = new game.Piece(this, game.PieceType.ROOK, this.color);
+        piece = new game.Rook(this, this.color);
         me.game.world.addChild(piece);
         piece.moveToSquare(this.board.getSquare (nobleRow, 7));
 
