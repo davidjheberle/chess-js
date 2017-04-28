@@ -47,9 +47,9 @@ game.Board = me.Entity.extend({
     },
 
     getSquare: function (r, c) {
-        if (this.squares.length < r) { return null; }
-        if (this.squares[r].length < c) { return null; }
         if (r < 0 || c < 0) { return null; }
+        if (r >= this.squares.length) { return null; }
+        if (c >= this.squares[r].length) { return null; }
         return this.squares[r][c];
     },
 

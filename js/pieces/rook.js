@@ -11,45 +11,59 @@ game.Rook = game.Piece.extend({
         return true;
     },
 
-    isMoveValid: function (square) {
-        // if (!this.hasMoved && 4 from king && empty spaces between)
-        var direction;
-        var diff;
-        var workSquare;
-        if (square.row == this.square.row) {
-            // get the difference and go to it
-            // check if the path is clear
-            direction = square.column < this.square.column ? -1 : 1;
-            diff = Math.abs(this.square.column - square.column);
-            for (i = 1; i < diff; i++) {
-                workSquare = this.player.board.getSquare(this.square.row,
-                                                         this.square.column + i * direction);
-                if (workSquare.isOccupied()) {
-                    // return false if not the target square
-                    // else return true to take the piece
-                    return workSquare === square;
-                }
-            }
-            return true;
-        }
-        if (square.column == this.square.column) {
-            // get the difference and go to it
-            // check if the path is clear
-            direction = square.row < this.square.row ? -1 : 1;
-            diff = Math.abs(this.square.row - square.row);
-            for (i = 1; i < diff; i++) {
-                workSquare = this.player.board.getSquare(this.square.row + i * direction,
-                                                         this.square.column);
-                if (workSquare.isOccupied()) {
-                    // return false if not the target square
-                    // else return true to take the piece
-                    return workSquare === square;
-                }
-            }
-            return true;
-        }
+    getValidSquares: function () {
+        var validSquares = [];
+        var straightSquares;
 
-        // invalid
-        return false;
+        // right
+        straightSquares = this.getStraightSquares(1, 0);
+        for (i = 0; i < straightSquares.length; i++) {
+            validSquares.push(straightSquares[i]);
+        }
+        // left
+        straightSquares = this.getStraightSquares(-1, 0);
+        for (i = 0; i < straightSquares.length; i++) {
+            validSquares.push(straightSquares[i]);
+        }
+        // up
+        straightSquares = this.getStraightSquares(0, -1);
+        for (i = 0; i < straightSquares.length; i++) {
+            validSquares.push(straightSquares[i]);
+        }
+        // down
+        straightSquares = this.getStraightSquares(0, 1);
+        for (i = 0; i < straightSquares.length; i++) {
+            validSquares.push(straightSquares[i]);
+        }
+        return validSquares;
+    },
+
+    getStraightSquares: function (horizontal, vertical) {
+        if (!(Math.abs(horizontal) == 1 && vertical == 0) &&
+            !(Math.abs(vertical) == 1 && horizontal == 0))
+        {
+            return [];
+        }
+        var straightSquares = [];
+        var r = this.square.row;
+        var c = this.square.column;
+        var workSquare;
+        while (1) {
+            r += vertical;
+            c += horizontal;
+            workSquare = this.player.board.getSquare(r, c);
+            if (workSquare == null) {
+                break;
+            }
+            if (workSquare.isOccupied()) {
+                if (workSquare.piece.color != this.color) {
+                    straightSquares.push(workSquare);
+                }
+                break;
+            } else {
+                straightSquares.push(workSquare);
+            }
+        }
+        return straightSquares;
     }
 });

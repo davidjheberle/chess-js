@@ -45,7 +45,7 @@ game.Piece = me.DraggableEntity.extend({
                 this.moveBack();
                 return;
             }
-            
+
             // leave the previous square for good
             this.square.piece = null;
         }
@@ -72,7 +72,12 @@ game.Piece = me.DraggableEntity.extend({
 
     isMoveValid: function (square) {
         // override
-        return true;
+        return this.getValidSquares().includes(square);
+    },
+
+    getValidSquares: function () {
+        // override
+        return [];
     },
 
     setPieceState: function (state) {
