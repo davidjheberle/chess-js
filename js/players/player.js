@@ -39,7 +39,7 @@ game.Player = me.Entity.extend({
         me.game.world.addChild(piece);
         piece.moveToSquare(this.board.getSquare (nobleRow, 2));
 
-        piece = new game.Piece(this, game.PieceType.QUEEN, this.color);
+        piece = new game.Queen(this, this.color);
         me.game.world.addChild(piece);
         piece.moveToSquare(this.board.getSquare (nobleRow, 3));
 
