@@ -31,7 +31,7 @@ game.Player = me.Entity.extend({
         me.game.world.addChild(piece);
         piece.moveToSquare(this.board.getSquare (nobleRow, 0));
 
-        piece = new game.Piece(this, game.PieceType.KNIGHT, this.color);
+        piece = new game.Knight(this, this.color);
         me.game.world.addChild(piece);
         piece.moveToSquare(this.board.getSquare (nobleRow, 1));
 
@@ -51,7 +51,7 @@ game.Player = me.Entity.extend({
         me.game.world.addChild(piece);
         piece.moveToSquare(this.board.getSquare (nobleRow, 5));
 
-        piece = new game.Piece(this, game.PieceType.KNIGHT, this.color);
+        piece = new game.Knight(this, this.color);
         me.game.world.addChild(piece);
         piece.moveToSquare(this.board.getSquare (nobleRow, 6));
 
