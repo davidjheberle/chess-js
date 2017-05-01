@@ -29,7 +29,7 @@ game.Pawn = game.Piece.extend({
         // diagonal left
         workSquare = this.player.board.getSquare(this.square.row + vertical,
                                                  this.square.column - 1);
-        if (workSquare != null &&
+        if (workSquare &&
             workSquare.isOccupied() &&
             workSquare.piece.color != this.color) {
             validSquares.push(workSquare);
@@ -38,7 +38,7 @@ game.Pawn = game.Piece.extend({
         // diagonal right
         workSquare = this.player.board.getSquare(this.square.row + vertical,
                                                  this.square.column + 1);
-        if (workSquare != null &&
+        if (workSquare &&
             workSquare.isOccupied() &&
             workSquare.piece.color != this.color) {
             validSquares.push(workSquare);
@@ -47,7 +47,7 @@ game.Pawn = game.Piece.extend({
         // up
         workSquare = this.player.board.getSquare(this.square.row + vertical,
                                                  this.square.column);
-        if (workSquare != null &&
+        if (workSquare &&
             !workSquare.isOccupied()) {
             validSquares.push(workSquare);
         } else {
@@ -58,7 +58,7 @@ game.Pawn = game.Piece.extend({
         if (!this.hasMoved) {
             workSquare = this.player.board.getSquare(this.square.row + vertical * 2,
                                                      this.square.column);
-            if (workSquare != null &&
+            if (workSquare &&
                 !workSquare.isOccupied()) {
                 validSquares.push(workSquare);
             }

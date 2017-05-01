@@ -17,43 +17,43 @@ game.King = game.Piece.extend({
 
         // right
         adjacentSquare = this.getAdjacentSquare(1, 0);
-        if (adjacentSquare != null) {
+        if (adjacentSquare) {
             validSquares.push(adjacentSquare);
         }
         // left
         adjacentSquare = this.getAdjacentSquare(-1, 0);
-        if (adjacentSquare != null) {
+        if (adjacentSquare) {
             validSquares.push(adjacentSquare);
         }
         // up
         adjacentSquare = this.getAdjacentSquare(0, -1);
-        if (adjacentSquare != null) {
+        if (adjacentSquare) {
             validSquares.push(adjacentSquare);
         }
         // down
         adjacentSquare = this.getAdjacentSquare(0, 1);
-        if (adjacentSquare != null) {
+        if (adjacentSquare) {
             validSquares.push(adjacentSquare);
         }
 
         // up left
         adjacentSquare = this.getAdjacentSquare(-1, -1);
-        if (adjacentSquare != null) {
+        if (adjacentSquare) {
             validSquares.push(adjacentSquare);
         }
         // down left
         adjacentSquare = this.getAdjacentSquare(-1, 1);
-        if (adjacentSquare != null) {
+        if (adjacentSquare) {
             validSquares.push(adjacentSquare);
         }
         // up right
         adjacentSquare = this.getAdjacentSquare(1, -1);
-        if (adjacentSquare != null) {
+        if (adjacentSquare) {
             validSquares.push(adjacentSquare);
         }
         // down right
         adjacentSquare = this.getAdjacentSquare(1, 1);
-        if (adjacentSquare != null) {
+        if (adjacentSquare) {
             validSquares.push(adjacentSquare);
         }
         return validSquares;
@@ -66,7 +66,7 @@ game.King = game.Piece.extend({
         var r = this.square.row + vertical;
         var c = this.square.column + horizontal;
         var adjacentSquare = this.player.board.getSquare(r, c);
-        if (adjacentSquare == null) { return null; }
+        if (!adjacentSquare) { return null; }
         if (adjacentSquare.isOccupied()) {
             if (adjacentSquare.piece.color != this.color) {
                 return adjacentSquare;

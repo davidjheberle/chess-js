@@ -50,7 +50,7 @@ game.Bishop = game.Piece.extend({
             r += vertical;
             c += horizontal;
             workSquare = this.player.board.getSquare(r, c);
-            if (workSquare == null) {
+            if (!workSquare) {
                 break;
             }
             if (workSquare.isOccupied()) {
