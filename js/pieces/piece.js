@@ -1,6 +1,7 @@
 game.PieceState = {
     IDLE : 0,
-    HELD : 1
+    HELD : 1,
+    DEAD : 2
 }
 
 game.Piece = me.DraggableEntity.extend({
@@ -31,19 +32,22 @@ game.Piece = me.DraggableEntity.extend({
     },
 
     moveToSquare: function (square) {
-        // check if this is a valid move
-        if (square.isOccupied() && square.piece != this) {
-            this.moveBack();
-            return;
-        }
         // if this piece has been set on the board already
-        if (this.square != null) {
+        if (this.square) {
             // check if the next board position leaves the king exposed
 
             // check if valid based on piece type and color
             if (!this.isMoveValid(square)) {
                 this.moveBack();
                 return;
+            }
+            if (square.isOccupied()) {
+                // if (square.piece != this &&
+                    if (!square.piece.isColor(this.color))
+                {
+                    // take the occupying piece
+                    square.piece.setPieceState(game.PieceState.DEAD);
+                }
             }
 
             // leave the previous square for good
@@ -71,7 +75,6 @@ game.Piece = me.DraggableEntity.extend({
     },
 
     isMoveValid: function (square) {
-        // override
         return this.getValidSquares().includes(square);
     },
 
@@ -92,18 +95,20 @@ game.Piece = me.DraggableEntity.extend({
                         this.pos.x - ((this.square.width - this.width) / 2),
                         this.pos.y - (((this.square.height - this.height) / 2) + this.offsetY));
 
-                    if (closestSquare.isOccupied ()) {
-                        // go back to the last square this piece was on
-                        this.moveToSquare(this.square);
-                    } else {
-                        this.moveToSquare(closestSquare);
-                    }
+                    this.moveToSquare(closestSquare);
                 }
                 break;
 
             case game.PieceState.HELD:
                 // piece has been picked up
                 this.pos.z = 50;
+                me.game.world.sort(true);
+                break;
+
+            case game.PieceState.DEAD:
+                this.pos.x = 0;
+                this.pos.y = 0;
+                this.pos.z = 0;
                 me.game.world.sort(true);
                 break;
 
@@ -114,6 +119,14 @@ game.Piece = me.DraggableEntity.extend({
 
     isHeld: function () {
         return this.state == game.PieceState.HELD;
+    },
+
+    isDead: function () {
+        return this.state == game.PieceState.DEAD;
+    },
+
+    isColor: function (color) {
+        return this.color == color;
     },
 
     initEvents: function () {
@@ -139,8 +152,10 @@ game.Piece = me.DraggableEntity.extend({
     },
 
     dragStart: function (e) {
-        this._super(me.DraggableEntity, "dragStart", [e]);
-        this.setPieceState(game.PieceState.HELD);
+        if (!this.isDead()) {
+            this._super(me.DraggableEntity, "dragStart", [e]);
+            this.setPieceState(game.PieceState.HELD);
+        }
     },
 
     dragEnd: function (e) {

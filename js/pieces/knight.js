@@ -17,42 +17,42 @@ game.Knight = game.Piece.extend({
 
         // 2 right 1 up
         lSquare = this.getLSquare(2, -1);
-        if (lSquare) {
+        if (lSquare != null) {
             validSquares.push(lSquare);
         }
         // 2 right 1 down
         lSquare = this.getLSquare(2, 1);
-        if (lSquare) {
+        if (lSquare != null) {
             validSquares.push(lSquare);
         }
         // 2 left 1 up
         lSquare = this.getLSquare(-2, -1);
-        if (lSquare) {
+        if (lSquare != null) {
             validSquares.push(lSquare);
         }
         // 2 left 1 down
         lSquare = this.getLSquare(-2, 1);
-        if (lSquare) {
+        if (lSquare != null) {
             validSquares.push(lSquare);
         }
         // 1 right 2 up
         lSquare = this.getLSquare(1, -2);
-        if (lSquare) {
+        if (lSquare != null) {
             validSquares.push(lSquare);
         }
         // 1 left 2 up
         lSquare = this.getLSquare(-1, -2);
-        if (lSquare) {
+        if (lSquare != null) {
             validSquares.push(lSquare);
         }
         // 1 right 2 down
         lSquare = this.getLSquare(1, 2);
-        if (lSquare) {
+        if (lSquare != null) {
             validSquares.push(lSquare);
         }
         // 1 left 2 down
         lSquare = this.getLSquare(-1, 2);
-        if (lSquare) {
+        if (lSquare != null) {
             validSquares.push(lSquare);
         }
         return validSquares;
@@ -67,7 +67,7 @@ game.Knight = game.Piece.extend({
         var r = this.square.row + vertical;
         var c = this.square.column + horizontal;
         var lSquare = this.player.board.getSquare(r, c);
-        if (!lSquare) { return null; }
+        if (lSquare == null) { return null; }
         if (lSquare.isOccupied()) {
             if (lSquare.piece.color != this.color) {
                 return lSquare;
