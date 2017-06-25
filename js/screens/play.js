@@ -4,10 +4,10 @@ game.PlayScreen = me.ScreenObject.extend({
      */
     onResetEvent : function () {
         // Add a background color.
-        me.game.world.addChild(new me.ColorLayer("background", "#000000"), 0);
+        me.game.world.addChild(new me.ColorLayer("background", "#000000"), -1);
 
         // Create the board.
-        me.game.world.addChild(me.pool.pull("board"));
+        me.game.world.addChild(me.pool.pull("board"), 0);
 
         // Bind input.
         me.input.bindKey(me.input.KEY.LEFT, "left");

@@ -29,6 +29,7 @@ game.Piece = me.DraggableEntity.extend({
         var frame = this.type * 2 + this.color;
         this.renderable.addAnimation("idle", [frame], 1);
         this.renderable.setCurrentAnimation("idle");
+        this.renv
     },
 
     moveToSquare: function (square) {
@@ -106,10 +107,13 @@ game.Piece = me.DraggableEntity.extend({
                 break;
 
             case game.PieceState.DEAD:
-                this.pos.x = 0;
-                this.pos.y = 0;
-                this.pos.z = 0;
-                me.game.world.sort(true);
+            
+                // remove the old pointerdown and pointerup events
+                this.removePointerEvent("pointerdown", this);
+                this.removePointerEvent("pointerup", this);
+
+                // send this piece to its player's graveyard
+                this.player.putPieceInGraveyard(this);
                 break;
 
             default:

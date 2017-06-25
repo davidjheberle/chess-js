@@ -46,6 +46,14 @@ game.Board = me.Entity.extend({
         return true;
     },
 
+    draw: function (renderer) {
+        renderer.setColor('#444');
+        renderer.fillRect(
+            this.pos.x - 4,
+            this.pos.y - 4,
+            this.width + 8, this.height + 8);
+    },
+
     getSquare: function (r, c) {
         if (r < 0 || c < 0) { return null; }
         if (r >= this.squares.length) { return null; }

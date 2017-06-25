@@ -8,11 +8,24 @@ game.Player = me.Entity.extend({
         this.direction = direction;
         this.board = board;
 
+        var graveyardX;
+        switch (this.direction) {
+            case game.PieceDirection.UP:
+                graveyardX = 520;
+                break;
+
+            default:
+                graveyardX = 40;
+                break;
+
+        }
+        this.graveyard = new game.Graveyard(graveyardX, 80, 80, 320, 8, 2);
+        me.game.world.addChild(this.graveyard, 0);
+
         this.setPieces ();
     },
 
     setPieces: function () {
-
         var nobleRow;
         var pawnRow;
         switch (this.direction) {
@@ -64,5 +77,9 @@ game.Player = me.Entity.extend({
             me.game.world.addChild(piece);
             piece.moveToSquare(this.board.getSquare (pawnRow, i));
         }
+    },
+
+    putPieceInGraveyard: function (piece) {
+        this.graveyard.addPiece(piece);
     }
 });
