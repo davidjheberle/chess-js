@@ -81,5 +81,13 @@ game.Player = me.Entity.extend({
 
     putPieceInGraveyard: function (piece) {
         this.graveyard.addPiece(piece);
+    },
+
+    isTurnOwner: function () {
+        return this.color == this.board.turnOwner;
+    },
+
+    endTurn: function () {
+        this.board.switchTurnOwner ();
     }
 });

@@ -1,6 +1,8 @@
 game.Board = me.Entity.extend({
     init: function () {
 
+        this.turnOwner = game.PieceColor.WHITE;
+
         // 2d array of squares [row, column]
         this.squares = [];
 
@@ -82,5 +84,20 @@ game.Board = me.Entity.extend({
             }
         }
         return this.getSquare(closestR, closestC);
+    },
+
+    switchTurnOwner: function () {
+        switch (this.turnOwner) {
+            case game.PieceColor.WHITE:
+                this.turnOwner = game.PieceColor.BLACK;
+                break;
+
+            case game.PieceColor.BLACK:
+                this.turnOwner = game.PieceColor.WHITE;
+                break;
+
+            default:
+                break;
+        }
     }
 });

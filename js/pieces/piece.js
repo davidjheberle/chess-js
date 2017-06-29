@@ -55,6 +55,7 @@ game.Piece = me.DraggableEntity.extend({
             this.square.piece = null;
         }
         this.positionOnSquare(square);
+        this.player.endTurn ();
     },
 
     moveBack: function () {
@@ -107,10 +108,6 @@ game.Piece = me.DraggableEntity.extend({
                 break;
 
             case game.PieceState.DEAD:
-            
-                // remove the old pointerdown and pointerup events
-                this.removePointerEvent("pointerdown", this);
-                this.removePointerEvent("pointerup", this);
 
                 // send this piece to its player's graveyard
                 this.player.putPieceInGraveyard(this);
@@ -142,10 +139,22 @@ game.Piece = me.DraggableEntity.extend({
 
         // define the new events that return false (don't fall through)
         this.mouseDown = function (e) {
+
+            // don't allow mouse down when dead
+            if (this.isDead () || !this.player.isTurnOwner ()) {
+                return false;
+            }
+
             this.translatePointerEvent(e, me.event.DRAGSTART);
             return false;
         };
         this.mouseUp = function (e) {
+
+            // don't allow mouse up when dead
+            if (this.isDead () || !this.player.isTurnOwner ()) {
+                return false;
+            }
+
             this.translatePointerEvent(e, me.event.DRAGEND);
             return false;
         };
