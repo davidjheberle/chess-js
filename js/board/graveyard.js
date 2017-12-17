@@ -53,13 +53,33 @@ game.Graveyard = me.Entity.extend({
       return;
     }
 
+    // Add piece to the grave.
     this.graves[this.graveIndex].addPiece(piece);
 
+    // Increment grave index.
     this.graveIndex++;
   },
 
-  // Revive a piece and return it to the board.
-  revivePiece: function(pieceType) {
+  // Remove a piece and return it to the board.
+  removePiece: function(piece) {
+    // Search for the grave with the piece.
+    for (i = 0; i < this.graves.length; i++) {
+      if (this.graves[i].piece == piece) {
+        // Remove the piece from the grave.
+        this.graves[i].removePiece();
 
+        // Remove falsy values.
+        this.graves.filter(Boolean);
+
+        // Decrement grave index.
+        this.graveIndex--;
+        break;
+      }
+    }
+  },
+
+  // True if graveyard is empty.
+  isEmpty: function() {
+    return this.graveIndex == 0;
   }
 });

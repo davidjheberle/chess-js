@@ -39,8 +39,9 @@ game.Piece = me.DraggableEntity.extend({
 
   },
 
-  // Move to the specified square.
-  moveToSquare: function(square) {
+  // Set to the specified square to start the game.
+  // Return true if piece was successfully set.
+  setToSquare: function(square) {
     // If this piece has been set on the board already.
     if (this.square) {
       // Check if the next board position leaves the king exposed.
@@ -48,7 +49,7 @@ game.Piece = me.DraggableEntity.extend({
       // Check if valid based on piece type and color.
       if (!this.isMoveValid(square)) {
         this.moveBack();
-        return;
+        return false;
       }
       if (square.isOccupied()) {
         if (!square.piece.isColor(this.color)) {
@@ -61,6 +62,20 @@ game.Piece = me.DraggableEntity.extend({
       this.square.piece = null;
     }
     this.positionOnSquare(square);
+    return true;
+  },
+
+  // Move to the specified square.
+  moveToSquare: function(square) {
+    // Set to the square.
+    if (this.setToSquare(square)) {
+      // Finish the movement.
+      this.finishMove();
+    }
+  },
+
+  // Finish moving.
+  finishMove: function() {
     this.player.endTurn();
   },
 
@@ -119,7 +134,7 @@ game.Piece = me.DraggableEntity.extend({
 
       case game.PieceState.DEAD:
         // Send this piece to its player's graveyard.
-        this.player.putPieceInGraveyard(this);
+        this.player.graveyard.addPiece(this);
         break;
 
       default:
@@ -154,7 +169,9 @@ game.Piece = me.DraggableEntity.extend({
     this.mouseDown = function(e) {
 
       // Don't allow mouse down when dead.
-      if (this.isDead() || !this.player.isTurnOwner()) {
+      if ((this.isDead() && !this.player.isSacrificingPiece()) ||
+        (!this.isDead() && this.player.isSacrificingPiece()) ||
+        !this.player.isTurnOwner()) {
         return false;
       }
 
@@ -164,7 +181,9 @@ game.Piece = me.DraggableEntity.extend({
     this.mouseUp = function(e) {
 
       // Don't allow mouse up when dead.
-      if (this.isDead() || !this.player.isTurnOwner()) {
+      if ((this.isDead() && !this.player.isSacrificingPiece()) ||
+        (!this.isDead() && this.player.isSacrificingPiece()) ||
+        !this.player.isTurnOwner()) {
         return false;
       }
 
@@ -180,14 +199,22 @@ game.Piece = me.DraggableEntity.extend({
   // Drag start event.
   dragStart: function(e) {
     if (!this.isDead()) {
-      this._super(me.DraggableEntity, "dragStart", [e]);
+      // Hold the piece if it's not dead.
       this.setPieceState(game.PieceState.HELD);
+      this._super(me.DraggableEntity, "dragStart", [e]);
+    } else {
+      // Attempt to revice this piece if it's clicked on.
+      this.player.revivePiece(this);
+      this.player.endTurn();
     }
   },
 
   // Drag end events.
   dragEnd: function(e) {
-    this._super(me.DraggableEntity, "dragEnd", [e]);
-    this.setPieceState(game.PieceState.IDLE);
+    if (!this.isDead()) {
+      // Idle this piece if it's not dead.
+      this.setPieceState(game.PieceState.IDLE);
+      this._super(me.DraggableEntity, "dragEnd", [e]);
+    }
   }
 });

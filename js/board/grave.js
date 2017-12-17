@@ -31,14 +31,17 @@ game.Grave = me.Entity.extend({
       this.width - 4, this.height - 4);
   },
 
+  // True if occupied.
   isOccupied: function() {
     return this.piece != null;
   },
 
+  // True if located at column, row.s
   isLocatedAt: function(c, r) {
     return this.row === r && this.column === c;
   },
 
+  // Add the specified piece.
   addPiece: function(piece) {
     if (this.isOccupied() == true) {
       return;
@@ -49,5 +52,11 @@ game.Grave = me.Entity.extend({
     piece.square = null;
     this.piece = piece;
     me.game.world.sort(true);
+  },
+
+  // Remove the piece.
+  removePiece: function() {
+    this.piece.setPieceState(game.PieceState.IDLE);
+    this.piece = null;
   }
 });

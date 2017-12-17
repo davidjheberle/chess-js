@@ -8,6 +8,7 @@ game.Player = me.Entity.extend({
     this.color = color;
     this.direction = direction;
     this.board = board;
+    this.sacrificialPiece = null;
 
     var graveyardX;
     switch (this.direction) {
@@ -44,46 +45,41 @@ game.Player = me.Entity.extend({
 
     piece = new game.Rook(this, this.color);
     me.game.world.addChild(piece);
-    piece.moveToSquare(this.board.getSquare(nobleRow, 0));
+    piece.setToSquare(this.board.getSquare(nobleRow, 0));
 
     piece = new game.Knight(this, this.color);
     me.game.world.addChild(piece);
-    piece.moveToSquare(this.board.getSquare(nobleRow, 1));
+    piece.setToSquare(this.board.getSquare(nobleRow, 1));
 
     piece = new game.Bishop(this, this.color);
     me.game.world.addChild(piece);
-    piece.moveToSquare(this.board.getSquare(nobleRow, 2));
+    piece.setToSquare(this.board.getSquare(nobleRow, 2));
 
     piece = new game.Queen(this, this.color);
     me.game.world.addChild(piece);
-    piece.moveToSquare(this.board.getSquare(nobleRow, 3));
+    piece.setToSquare(this.board.getSquare(nobleRow, 3));
 
     piece = new game.King(this, this.color);
     me.game.world.addChild(piece);
-    piece.moveToSquare(this.board.getSquare(nobleRow, 4));
+    piece.setToSquare(this.board.getSquare(nobleRow, 4));
 
     piece = new game.Bishop(this, this.color);
     me.game.world.addChild(piece);
-    piece.moveToSquare(this.board.getSquare(nobleRow, 5));
+    piece.setToSquare(this.board.getSquare(nobleRow, 5));
 
     piece = new game.Knight(this, this.color);
     me.game.world.addChild(piece);
-    piece.moveToSquare(this.board.getSquare(nobleRow, 6));
+    piece.setToSquare(this.board.getSquare(nobleRow, 6));
 
     piece = new game.Rook(this, this.color);
     me.game.world.addChild(piece);
-    piece.moveToSquare(this.board.getSquare(nobleRow, 7));
+    piece.setToSquare(this.board.getSquare(nobleRow, 7));
 
     for (i = 0; i < 8; i++) {
       piece = new game.Pawn(this, this.color);
       me.game.world.addChild(piece);
-      piece.moveToSquare(this.board.getSquare(pawnRow, i));
+      piece.setToSquare(this.board.getSquare(pawnRow, i));
     }
-  },
-
-  // Put the specified piece in the graveyard.
-  putPieceInGraveyard: function(piece) {
-    this.graveyard.addPiece(piece);
   },
 
   // True if it's this player's turn.
@@ -94,5 +90,37 @@ game.Player = me.Entity.extend({
   // End this player's turn.
   endTurn: function() {
     this.board.switchTurnOwner();
+  },
+
+  // True if player is sacrificing a piece.
+  isSacrificingPiece: function() {
+    return this.sacrificialPiece != null;
+  },
+
+  // Start sacrifice.
+  sacrificePiece: function(sacrificialPiece) {
+    if (this.graveyard.isEmpty()) {
+      this.endTurn();
+    } else {
+      this.sacrificialPiece = sacrificialPiece;
+    }
+  },
+
+  // Finish sacrifice.
+  revivePiece: function(revivalPiece) {
+    var square = this.sacrificialPiece.square;
+
+    // Remove the revival piece from the graveyard.
+    this.graveyard.removePiece(revivalPiece);
+
+    // Add the sacrificial piece to the graveyard.
+    this.sacrificialPiece.setPieceState(game.PieceState.DEAD);
+
+    // Move the revived piece to the square the sacrific was on.
+    revivalPiece.setToSquare(square);
+    revivalPiece.setPieceState(game.PieceState.IDLE);
+
+    // Forget about the sacrific.
+    this.sacrificialPiece = null;
   }
 });

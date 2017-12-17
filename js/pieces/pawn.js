@@ -14,6 +14,32 @@ game.Pawn = game.Piece.extend({
     return true;
   },
 
+  // Finish moving.
+  finishMove: function() {
+    // Check if on the enemy's back line.
+    if (this.isOnEnemyBackLine()) {
+      // Sacrific this piece to revive another.
+      this.player.sacrificePiece(this);
+    } else {
+      // Finish the move.
+      this._super(game.Piece, "finishMove");
+    }
+  },
+
+  // Return true if positioned in the enemy's back line.
+  isOnEnemyBackLine: function() {
+    switch (this.player.direction) {
+      case game.PieceDirection.UP:
+        // Check if the current space's row is 0.
+        return this.square.row == 0;
+
+      case game.PieceDirection.DOWN:
+        // Check if the current space's row is 7.
+        return this.square.row == 7;
+    }
+    return false;
+  },
+
   // Return array of valid destination squares.
   getValidSquares: function() {
     var validSquares = [];
