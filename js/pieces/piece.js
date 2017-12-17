@@ -1,3 +1,4 @@
+// Piece state enum.
 game.PieceState = {
   IDLE: 0,
   HELD: 1,
@@ -5,6 +6,7 @@ game.PieceState = {
 }
 
 game.Piece = me.DraggableEntity.extend({
+  // Init.
   init: function(player, pieceType, pieceColor) {
     this._super(me.DraggableEntity, "init", [0, 0, {
       image: "pieces",
@@ -19,48 +21,50 @@ game.Piece = me.DraggableEntity.extend({
     this.hasMoved = false;
   },
 
+  // Update.
   update: function(dt) {
     this._super(me.DraggableEntity, "update", [dt]);
     return true;
   },
 
+  // Load the piece image based on the piece type and color.
   choosePieceImage: function() {
-    // type and frame enum int values match sprite sheet frames.
+    // Type and frame enum int values match sprite sheet frames.
     var frame = this.type * 2 + this.color;
     this.renderable.addAnimation("idle", [frame], 1);
     this.renderable.setCurrentAnimation("idle");
-    this.renv
   },
 
   moveToSquare: function(square) {
-    // if this piece has been set on the board already
+    // If this piece has been set on the board already.
     if (this.square) {
-      // check if the next board position leaves the king exposed
+      // Check if the next board position leaves the king exposed.
 
-      // check if valid based on piece type and color
+      // Check if valid based on piece type and color.
       if (!this.isMoveValid(square)) {
         this.moveBack();
         return;
       }
       if (square.isOccupied()) {
-        // if (square.piece != this &&
         if (!square.piece.isColor(this.color)) {
-          // take the occupying piece
+          // Take the occupying piece.
           square.piece.setPieceState(game.PieceState.DEAD);
         }
       }
 
-      // leave the previous square for good
+      // leave the previous square.
       this.square.piece = null;
     }
     this.positionOnSquare(square);
     this.player.endTurn();
   },
 
+  // Move back to the occupied square.
   moveBack: function() {
     this.positionOnSquare(this.square);
   },
 
+  // Position this piece on the given square.
   positionOnSquare: function(square) {
     if (this.square != null &&
       this.square != square) {
@@ -74,23 +78,26 @@ game.Piece = me.DraggableEntity.extend({
     me.game.world.sort(true);
   },
 
+  // Check if the move is valid.
   isMoveValid: function(square) {
     return this.getValidSquares().includes(square);
   },
 
+  // Return array of valid destination squares.
   getValidSquares: function() {
     // override
     return [];
   },
 
+  // Set piece state.
   setPieceState: function(state) {
     var prevState = this.state;
     this.state = state;
     switch (this.state) {
       case game.PieceState.IDLE:
-        // if the piece was held and is now idle
+        // If the piece was held and is now idle.
         if (prevState == game.PieceState.HELD) {
-          // place it on the nearest space
+          // Place it on the nearest space.
           var closestSquare = this.player.board.getClosestSquare(
             this.pos.x - ((this.square.width - this.width) / 2),
             this.pos.y - (((this.square.height - this.height) / 2) + this.offsetY));
@@ -100,14 +107,13 @@ game.Piece = me.DraggableEntity.extend({
         break;
 
       case game.PieceState.HELD:
-        // piece has been picked up
+        // Piece has been picked up.
         this.pos.z = 50;
         me.game.world.sort(true);
         break;
 
       case game.PieceState.DEAD:
-
-        // send this piece to its player's graveyard
+        // Send this piece to its player's graveyard.
         this.player.putPieceInGraveyard(this);
         break;
 
@@ -116,29 +122,33 @@ game.Piece = me.DraggableEntity.extend({
     }
   },
 
+  // True if the piece state is held.
   isHeld: function() {
     return this.state == game.PieceState.HELD;
   },
 
+  // True if the peice state is dead.
   isDead: function() {
     return this.state == game.PieceState.DEAD;
   },
 
+  // True if the piece color is equal to the given color.
   isColor: function(color) {
     return this.color == color;
   },
 
+  // Init events including input events.
   initEvents: function() {
     this._super(me.DraggableEntity, "initEvents");
 
-    // remove the old pointerdown and pointerup events
+    // Remove the old pointerdown and pointerup events.
     this.removePointerEvent("pointerdown", this);
     this.removePointerEvent("pointerup", this);
 
-    // define the new events that return false (don't fall through)
+    // Define the new events that return false (don't fall through).
     this.mouseDown = function(e) {
 
-      // don't allow mouse down when dead
+      // Don't allow mouse down when dead.
       if (this.isDead() || !this.player.isTurnOwner()) {
         return false;
       }
@@ -148,7 +158,7 @@ game.Piece = me.DraggableEntity.extend({
     };
     this.mouseUp = function(e) {
 
-      // don't allow mouse up when dead
+      // Don't allow mouse up when dead.
       if (this.isDead() || !this.player.isTurnOwner()) {
         return false;
       }
@@ -157,11 +167,12 @@ game.Piece = me.DraggableEntity.extend({
       return false;
     };
 
-    // add the new pointerdown and pointerup events
+    // Add the new pointerdown and pointerup events.
     this.onPointerEvent("pointerdown", this, this.mouseDown.bind(this));
     this.onPointerEvent("pointerup", this, this.mouseUp.bind(this));
   },
 
+  // Drag start event.
   dragStart: function(e) {
     if (!this.isDead()) {
       this._super(me.DraggableEntity, "dragStart", [e]);
@@ -169,6 +180,7 @@ game.Piece = me.DraggableEntity.extend({
     }
   },
 
+  // Drag end events.
   dragEnd: function(e) {
     this._super(me.DraggableEntity, "dragEnd", [e]);
     this.setPieceState(game.PieceState.IDLE);

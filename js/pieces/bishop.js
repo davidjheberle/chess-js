@@ -1,4 +1,5 @@
 game.Bishop = game.Piece.extend({
+  // Init.
   init: function(player, pieceColor) {
     this._super(game.Piece, "init", [
       player,
@@ -7,11 +8,13 @@ game.Bishop = game.Piece.extend({
     ]);
   },
 
+  // Update.
   update: function(dt) {
     this._super(game.Piece, "update", [dt]);
     return true;
   },
 
+  // Return array of valid destination squares.
   getValidSquares: function() {
     var validSquares = [];
     var diagonalSquares;
@@ -39,6 +42,7 @@ game.Bishop = game.Piece.extend({
     return validSquares;
   },
 
+  // Return array of diagonal squares.
   getDiagonalSquares: function(horizontal, vertical) {
     if (Math.abs(horizontal) != 1 && Math.abs(vertical) != 1) {
       return [];

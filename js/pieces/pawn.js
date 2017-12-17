@@ -1,4 +1,5 @@
 game.Pawn = game.Piece.extend({
+  // Init.
   init: function(player, pieceColor) {
     this._super(game.Piece, "init", [
       player,
@@ -7,11 +8,13 @@ game.Pawn = game.Piece.extend({
     ]);
   },
 
+  // Update.
   update: function(dt) {
     this._super(game.Piece, "update", [dt]);
     return true;
   },
 
+  // Return array of valid destination squares.
   getValidSquares: function() {
     var validSquares = [];
     var workSquare;

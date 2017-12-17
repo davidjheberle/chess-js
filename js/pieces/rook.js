@@ -1,4 +1,5 @@
 game.Rook = game.Piece.extend({
+  // Init.
   init: function(player, pieceColor) {
     this._super(game.Piece, "init", [
       player,
@@ -7,11 +8,13 @@ game.Rook = game.Piece.extend({
     ]);
   },
 
+  // Update.
   update: function(dt) {
     this._super(game.Piece, "update", [dt]);
     return true;
   },
 
+  // Return array of valid destination squares.
   getValidSquares: function() {
     var validSquares = [];
     var straightSquares;
@@ -39,6 +42,7 @@ game.Rook = game.Piece.extend({
     return validSquares;
   },
 
+  // Return array of horizontal and vertical squares.
   getStraightSquares: function(horizontal, vertical) {
     if (!(Math.abs(horizontal) == 1 && vertical == 0) &&
       !(Math.abs(vertical) == 1 && horizontal == 0)) {

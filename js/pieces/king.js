@@ -1,4 +1,5 @@
 game.King = game.Piece.extend({
+  // Init.
   init: function(player, pieceColor) {
     this._super(game.Piece, "init", [
       player,
@@ -7,11 +8,13 @@ game.King = game.Piece.extend({
     ]);
   },
 
+  // Update.
   update: function(dt) {
     this._super(game.Piece, "update", [dt]);
     return true;
   },
 
+  // Return array of valid destination squares.
   getValidSquares: function() {
     var validSquares = [];
     var adjacentSquare;
@@ -60,6 +63,7 @@ game.King = game.Piece.extend({
     return validSquares;
   },
 
+  // Return array of adjacent squares.
   getAdjacentSquare: function(horizontal, vertical) {
     if (Math.abs(horizontal) > 1 || Math.abs(vertical) > 1) {
       return null;
