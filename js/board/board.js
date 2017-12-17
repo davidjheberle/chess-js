@@ -39,8 +39,8 @@ game.Board = me.Entity.extend({
     }
 
     // create 2 players and have them set up their pieces
-    this.player1 = new game.Player(game.PieceColor.WHITE, game.PieceDirection.UP, this);
-    this.player2 = new game.Player(game.PieceColor.BLACK, game.PieceDirection.DOWN, this);
+    this.player1 = new game.AI(game.PieceColor.WHITE, game.PieceDirection.UP, this);
+    this.player2 = new game.AI(game.PieceColor.BLACK, game.PieceDirection.DOWN, this);
   },
 
   update: function(dt) {
