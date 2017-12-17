@@ -1,9 +1,9 @@
 game.Board = me.Entity.extend({
+  // Init.
   init: function() {
-
     this.turnOwner = game.PieceColor.WHITE;
 
-    // 2d array of squares [row, column]
+    // 2d array of squares [row, column].
     this.squares = [];
 
     var width = 320;
@@ -38,16 +38,18 @@ game.Board = me.Entity.extend({
       squareX = 0;
     }
 
-    // create 2 players and have them set up their pieces
+    // Create 2 players and have them set up their pieces.
     this.player1 = new game.AI(game.PieceColor.WHITE, game.PieceDirection.UP, this);
     this.player2 = new game.AI(game.PieceColor.BLACK, game.PieceDirection.DOWN, this);
   },
 
+  // Update.
   update: function(dt) {
     this._super(me.Entity, "update", [dt]);
     return true;
   },
 
+  // Draw.
   draw: function(renderer) {
     renderer.setColor('#444');
     renderer.fillRect(
@@ -56,6 +58,7 @@ game.Board = me.Entity.extend({
       this.width + 8, this.height + 8);
   },
 
+  // Get sqaure at row, column.
   getSquare: function(r, c) {
     if (r < 0 || c < 0) {
       return null;
@@ -69,6 +72,7 @@ game.Board = me.Entity.extend({
     return this.squares[r][c];
   },
 
+  // Get closest square to x, y position.
   getClosestSquare: function(x, y) {
     var closestX = Number.POSITIVE_INFINITY;
     var closestY = Number.POSITIVE_INFINITY;
@@ -92,6 +96,7 @@ game.Board = me.Entity.extend({
     return this.getSquare(closestR, closestC);
   },
 
+  // Switch the turn owner.
   switchTurnOwner: function() {
     switch (this.turnOwner) {
       case game.PieceColor.WHITE:

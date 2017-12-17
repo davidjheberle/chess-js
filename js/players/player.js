@@ -1,4 +1,5 @@
 game.Player = me.Entity.extend({
+  // Init.
   init: function(color, direction, board) {
     this._super(me.Entity, "init", [0, 0, {
       width: 0,
@@ -25,6 +26,7 @@ game.Player = me.Entity.extend({
     this.setPieces();
   },
 
+  // Set pieces on the game board.
   setPieces: function() {
     var nobleRow;
     var pawnRow;
@@ -79,14 +81,17 @@ game.Player = me.Entity.extend({
     }
   },
 
+  // Put the specified piece in the graveyard.
   putPieceInGraveyard: function(piece) {
     this.graveyard.addPiece(piece);
   },
 
+  // True if it's this player's turn.
   isTurnOwner: function() {
     return this.color == this.board.turnOwner;
   },
 
+  // End this player's turn.
   endTurn: function() {
     this.board.switchTurnOwner();
   }

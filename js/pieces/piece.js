@@ -35,6 +35,11 @@ game.Piece = me.DraggableEntity.extend({
     this.renderable.setCurrentAnimation("idle");
   },
 
+  calculateMoves: function() {
+
+  },
+
+  // Move to the specified square.
   moveToSquare: function(square) {
     // If this piece has been set on the board already.
     if (this.square) {
@@ -52,7 +57,7 @@ game.Piece = me.DraggableEntity.extend({
         }
       }
 
-      // leave the previous square.
+      // Leave the previous square.
       this.square.piece = null;
     }
     this.positionOnSquare(square);

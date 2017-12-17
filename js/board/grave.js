@@ -1,4 +1,5 @@
 game.Grave = me.Entity.extend({
+  // Init.
   init: function(x, y, width, height, color, row, column) {
     // position, width, height
     this._super(me.Entity, "init", [x, y, {
@@ -11,10 +12,12 @@ game.Grave = me.Entity.extend({
     this.piece = null;
   },
 
+  // Update.
   update: function() {
     return false;
   },
 
+  // Draw.
   draw: function(renderer) {
     renderer.setColor('#444');
     renderer.fillRect(

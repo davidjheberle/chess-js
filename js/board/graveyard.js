@@ -1,10 +1,11 @@
 game.Graveyard = me.Entity.extend({
+  // Init.
   init: function(x, y, width, height, rows, columns) {
 
     this.numRows = rows;
     this.numColumns = columns;
 
-    // array of graves
+    // Array of graves.
     this.graves = [];
     this.graveIndex = 0;
 
@@ -30,11 +31,13 @@ game.Graveyard = me.Entity.extend({
     }
   },
 
+  // Update.
   update: function(dt) {
     this._super(me.Entity, "update", [dt]);
     return true;
   },
 
+  // Draw.
   draw: function(renderer) {
     renderer.setColor('#444');
     renderer.fillRect(
@@ -43,8 +46,9 @@ game.Graveyard = me.Entity.extend({
       this.width + 4, this.height + 4);
   },
 
+  // Add a piece to the graveyard.
   addPiece: function(piece) {
-    // get the next open space and add this piece there.
+    // Get the next open space and add this piece there.
     if (this.graveIndex >= this.graves.length) {
       return;
     }
@@ -54,6 +58,7 @@ game.Graveyard = me.Entity.extend({
     this.graveIndex++;
   },
 
+  // Revive a piece and return it to the board.
   revivePiece: function(pieceType) {
 
   }
