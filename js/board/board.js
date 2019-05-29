@@ -106,9 +106,6 @@ game.Board = me.Entity.extend({
       case game.PieceColor.BLACK:
         this.turnOwner = game.PieceColor.WHITE;
         break;
-
-      default:
-        break;
     }
   }
 });

@@ -136,9 +136,6 @@ game.Piece = me.DraggableEntity.extend({
         // Send this piece to its player's graveyard.
         this.player.graveyard.addPiece(this);
         break;
-
-      default:
-        break;
     }
   },
 
@@ -198,13 +195,14 @@ game.Piece = me.DraggableEntity.extend({
 
   // Drag start event.
   dragStart: function(e) {
-    if (!this.isDead()) {
+    if (!this.player.isPromotingPawn()) {
       // Hold the piece if it's not dead.
       this.setPieceState(game.PieceState.HELD);
       this._super(me.DraggableEntity, "dragStart", [e]);
-    } else {
-      // Attempt to revice this piece if it's clicked on.
-      this.player.revivePiece(this);
+    } else if (this.type != game.PieceType.PAWN &&
+               this.type != game.PieceType.KING) {
+      // Promote a pawn to this piece's rank if it's clicked on.
+      this.player.finishPawnPromotion(this.type);
       this.player.endTurn();
     }
   },

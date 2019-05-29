@@ -52,11 +52,5 @@ game.Grave = me.Entity.extend({
     piece.square = null;
     this.piece = piece;
     me.game.world.sort(true);
-  },
-
-  // Remove the piece.
-  removePiece: function() {
-    this.piece.setPieceState(game.PieceState.IDLE);
-    this.piece = null;
   }
 });
