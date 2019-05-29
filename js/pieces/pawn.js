@@ -17,17 +17,17 @@ game.Pawn = game.Piece.extend({
   // Finish moving.
   finishMove: function() {
     // Check if on the enemy's back line.
-    if (this.isOnEnemyBackLine()) {
-      // Sacrific this piece to revive another.
-      this.player.sacrificePiece(this);
+    if (this.isOnRankEight()) {
+      // Promote this pawn.
+      this.player.startPawnPromotion(this);
     } else {
       // Finish the move.
       this._super(game.Piece, "finishMove");
     }
   },
 
-  // Return true if positioned in the enemy's back line.
-  isOnEnemyBackLine: function() {
+  // Return true if positioned on rank eight (far row).
+  isOnRankEight: function() {
     switch (this.player.direction) {
       case game.PieceDirection.UP:
         // Check if the current space's row is 0.

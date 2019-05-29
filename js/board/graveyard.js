@@ -60,24 +60,6 @@ game.Graveyard = me.Entity.extend({
     this.graveIndex++;
   },
 
-  // Remove a piece and return it to the board.
-  removePiece: function(piece) {
-    // Search for the grave with the piece.
-    for (i = 0; i < this.graves.length; i++) {
-      if (this.graves[i].piece == piece) {
-        // Remove the piece from the grave.
-        this.graves[i].removePiece();
-
-        // Remove falsy values.
-        this.graves.filter(Boolean);
-
-        // Decrement grave index.
-        this.graveIndex--;
-        break;
-      }
-    }
-  },
-
   // True if graveyard is empty.
   isEmpty: function() {
     return this.graveIndex == 0;
