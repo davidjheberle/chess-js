@@ -1,17 +1,9 @@
-game.Queen = game.Piece.extend({
+game.Behavior.Queen = game.Behavior.extend({
   // Init.
-  init: function(player, pieceColor) {
-    this._super(game.Piece, "init", [
-      player,
-      game.PieceType.QUEEN,
-      pieceColor
+  init: function(piece) {
+    this._super(game.Behavior, "init", [
+      piece
     ]);
-  },
-
-  // Update.
-  update: function(dt) {
-    this._super(game.Piece, "update", [dt]);
-    return true;
   },
 
   // Return array of valid destination squares.
@@ -71,18 +63,18 @@ game.Queen = game.Piece.extend({
       return [];
     }
     var straightSquares = [];
-    var r = this.square.row;
-    var c = this.square.column;
+    var r = this.piece.square.row;
+    var c = this.piece.square.column;
     var workSquare;
     while (1) {
       r += vertical;
       c += horizontal;
-      workSquare = this.player.board.getSquare(r, c);
+      workSquare = this.piece.player.board.getSquare(r, c);
       if (workSquare == null) {
         break;
       }
       if (workSquare.isOccupied()) {
-        if (workSquare.piece.color != this.color) {
+        if (workSquare.piece.color != this.piece.color) {
           straightSquares.push(workSquare);
         }
         break;
@@ -99,18 +91,18 @@ game.Queen = game.Piece.extend({
       return [];
     }
     var diagonalSquares = [];
-    var r = this.square.row;
-    var c = this.square.column;
+    var r = this.piece.square.row;
+    var c = this.piece.square.column;
     var workSquare;
     while (1) {
       r += vertical;
       c += horizontal;
-      workSquare = this.player.board.getSquare(r, c);
+      workSquare = this.piece.player.board.getSquare(r, c);
       if (workSquare == null) {
         break;
       }
       if (workSquare.isOccupied()) {
-        if (workSquare.piece.color != this.color) {
+        if (workSquare.piece.color != this.piece.color) {
           diagonalSquares.push(workSquare);
         }
         break;
