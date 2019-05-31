@@ -14,11 +14,9 @@ game.Piece = me.DraggableEntity.extend({
       height: 64
     }]);
     this.player = player;
-    this.type = pieceType;
-    this.color = pieceColor;
     this.offsetY = -20;
-    this.choosePieceImage();
     this.hasMoved = false;
+    this.setTypeAndColor(pieceType, pieceColor);
   },
 
   // Update.
@@ -27,86 +25,49 @@ game.Piece = me.DraggableEntity.extend({
     return true;
   },
 
+  // Set this piece type and color.
+  setTypeAndColor: function(type, color) {
+    this.type = type;
+    this.color = color;
+    this.choosePieceImage(type, color);
+    this.setBehavior(type);
+  },
+
   // Load the piece image based on the piece type and color.
-  choosePieceImage: function() {
+  choosePieceImage: function(type, color) {
     // Type and frame enum int values match sprite sheet frames.
-    var frame = this.type * 2 + this.color;
+    var frame = type * 2 + color;
     this.renderable.addAnimation("idle", [frame], 1);
     this.renderable.setCurrentAnimation("idle");
   },
 
-  calculateMoves: function() {
+  // Set the behavior of the piece.
+  setBehavior: function(type) {
+    switch (type) {
+      case game.PieceType.PAWN:
+        this.behavior = new game.Behavior.Pawn(this);
+        break;
 
-  },
+      case game.PieceType.ROOK:
+        this.behavior = new game.Behavior.Rook(this);
+        break;
 
-  // Set to the specified square to start the game.
-  // Return true if piece was successfully set.
-  setToSquare: function(square) {
-    // If this piece has been set on the board already.
-    if (this.square) {
-      // Check if the next board position leaves the king exposed.
+      case game.PieceType.KNIGHT:
+        this.behavior = new game.Behavior.Knight(this);
+        break;
 
-      // Check if valid based on piece type and color.
-      if (!this.isMoveValid(square)) {
-        this.moveBack();
-        return false;
-      }
-      if (square.isOccupied()) {
-        if (!square.piece.isColor(this.color)) {
-          // Take the occupying piece.
-          square.piece.setPieceState(game.PieceState.DEAD);
-        }
-      }
+      case game.PieceType.BISHOP:
+        this.behavior = new game.Behavior.Bishop(this);
+        break;
 
-      // Leave the previous square.
-      this.square.piece = null;
+      case game.PieceType.QUEEN:
+        this.behavior = new game.Behavior.Queen(this);
+        break;
+
+      case game.PieceType.KING:
+        this.behavior = new game.Behavior.King(this);
+        break;
     }
-    this.positionOnSquare(square);
-    return true;
-  },
-
-  // Move to the specified square.
-  moveToSquare: function(square) {
-    // Set to the square.
-    if (this.setToSquare(square)) {
-      // Finish the movement.
-      this.finishMove();
-    }
-  },
-
-  // Finish moving.
-  finishMove: function() {
-    this.player.endTurn();
-  },
-
-  // Move back to the occupied square.
-  moveBack: function() {
-    this.positionOnSquare(this.square);
-  },
-
-  // Position this piece on the given square.
-  positionOnSquare: function(square) {
-    if (this.square != null &&
-      this.square != square) {
-      this.hasMoved = true;
-    }
-    this.pos.x = square.pos.x + ((square.width - this.width) / 2);
-    this.pos.y = square.pos.y + (((square.height - this.height) / 2) + this.offsetY);
-    this.pos.z = square.row + 2;
-    this.square = square;
-    this.square.piece = this;
-    me.game.world.sort(true);
-  },
-
-  // Check if the move is valid.
-  isMoveValid: function(square) {
-    return this.getValidSquares().includes(square);
-  },
-
-  // Return array of valid destination squares.
-  getValidSquares: function() {
-    // override
-    return [];
   },
 
   // Set piece state.
@@ -122,7 +83,7 @@ game.Piece = me.DraggableEntity.extend({
             this.pos.x - ((this.square.width - this.width) / 2),
             this.pos.y - (((this.square.height - this.height) / 2) + this.offsetY));
 
-          this.moveToSquare(closestSquare);
+          this.behavior.moveToSquare(closestSquare);
         }
         break;
 

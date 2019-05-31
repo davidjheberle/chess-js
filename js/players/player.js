@@ -42,42 +42,42 @@ game.Player = me.Entity.extend({
         break;
     }
 
-    piece = new game.Rook(this, this.color);
+    piece = new game.Piece(this, game.PieceType.ROOK, this.color);
     me.game.world.addChild(piece);
-    piece.setToSquare(this.board.getSquare(nobleRow, 0));
+    piece.behavior.setToSquare(this.board.getSquare(nobleRow, 0));
 
-    piece = new game.Knight(this, this.color);
+    piece = new game.Piece(this, game.PieceType.KNIGHT, this.color);
     me.game.world.addChild(piece);
-    piece.setToSquare(this.board.getSquare(nobleRow, 1));
+    piece.behavior.setToSquare(this.board.getSquare(nobleRow, 1));
 
-    piece = new game.Bishop(this, this.color);
+    piece = new game.Piece(this, game.PieceType.BISHOP, this.color);
     me.game.world.addChild(piece);
-    piece.setToSquare(this.board.getSquare(nobleRow, 2));
+    piece.behavior.setToSquare(this.board.getSquare(nobleRow, 2));
 
-    piece = new game.Queen(this, this.color);
+    piece = new game.Piece(this, game.PieceType.QUEEN, this.color);
     me.game.world.addChild(piece);
-    piece.setToSquare(this.board.getSquare(nobleRow, 3));
+    piece.behavior.setToSquare(this.board.getSquare(nobleRow, 3));
 
-    piece = new game.King(this, this.color);
+    piece = new game.Piece(this, game.PieceType.KING, this.color);
     me.game.world.addChild(piece);
-    piece.setToSquare(this.board.getSquare(nobleRow, 4));
+    piece.behavior.setToSquare(this.board.getSquare(nobleRow, 4));
 
-    piece = new game.Bishop(this, this.color);
+    piece = new game.Piece(this, game.PieceType.BISHOP, this.color);
     me.game.world.addChild(piece);
-    piece.setToSquare(this.board.getSquare(nobleRow, 5));
+    piece.behavior.setToSquare(this.board.getSquare(nobleRow, 5));
 
-    piece = new game.Knight(this, this.color);
+    piece = new game.Piece(this, game.PieceType.KNIGHT, this.color);
     me.game.world.addChild(piece);
-    piece.setToSquare(this.board.getSquare(nobleRow, 6));
+    piece.behavior.setToSquare(this.board.getSquare(nobleRow, 6));
 
-    piece = new game.Rook(this, this.color);
+    piece = new game.Piece(this, game.PieceType.ROOK, this.color);
     me.game.world.addChild(piece);
-    piece.setToSquare(this.board.getSquare(nobleRow, 7));
+    piece.behavior.setToSquare(this.board.getSquare(nobleRow, 7));
 
     for (i = 0; i < 8; i++) {
-      piece = new game.Pawn(this, this.color);
+      piece = new game.Piece(this, game.PieceType.PAWN, this.color);
       me.game.world.addChild(piece);
-      piece.setToSquare(this.board.getSquare(pawnRow, i));
+      piece.behavior.setToSquare(this.board.getSquare(pawnRow, i));
     }
   },
 
@@ -103,36 +103,8 @@ game.Player = me.Entity.extend({
 
   // Finish the pawn promotion.
   finishPawnPromotion: function(promotionRank) {
-    var square = this.pawnToPromote.square;
-
-    // Remove the pawn from the square.
-    square.piece = null;
-
-    // Copy the information from the pawn to promote into a new piece of the
-    // designated rank.
-    var piece;
-    switch (promotionRank) {
-      case game.PieceType.ROOK:
-        piece = new game.Rook(this, this.color);
-        break;
-
-      case game.PieceType.KNIGHT:
-        piece = new game.Knight(this, this.color);
-        break;
-
-      case game.PieceType.BISHOP:
-        piece = new game.Bishop(this, this.color);
-        break;
-
-      case game.PieceType.QUEEN:
-        piece = new game.Queen(this, this.color);
-        break;
-    }
-    me.game.world.addChild(piece);
-    piece.setToSquare(square);
-
-    // Perminantly remove the pawn.
-    me.game.world.removeChild(this.pawnToPromote);
+    // Set the pawn's new type.
+    this.pawnToPromote.setTypeAndColor(promotionRank, this.color);
 
     // Clean up.
     this.pawnToPromote = null;

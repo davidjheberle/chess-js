@@ -1,17 +1,9 @@
-game.Pawn = game.Piece.extend({
+game.Behavior.Pawn = game.Behavior.extend({
   // Init.
-  init: function(player, pieceColor) {
-    this._super(game.Piece, "init", [
-      player,
-      game.PieceType.PAWN,
-      pieceColor
+  init: function(piece) {
+    this._super(game.Behavior, "init", [
+      piece
     ]);
-  },
-
-  // Update.
-  update: function(dt) {
-    this._super(game.Piece, "update", [dt]);
-    return true;
   },
 
   // Finish moving.
@@ -19,23 +11,23 @@ game.Pawn = game.Piece.extend({
     // Check if on the enemy's back line.
     if (this.isOnRankEight()) {
       // Promote this pawn.
-      this.player.startPawnPromotion(this);
+      this.piece.player.startPawnPromotion(this.piece);
     } else {
       // Finish the move.
-      this._super(game.Piece, "finishMove");
+      this._super(game.Behavior, "finishMove");
     }
   },
 
   // Return true if positioned on rank eight (far row).
   isOnRankEight: function() {
-    switch (this.player.direction) {
+    switch (this.piece.player.direction) {
       case game.PieceDirection.UP:
         // Check if the current space's row is 0.
-        return this.square.row == 0;
+        return this.piece.square.row == 0;
 
       case game.PieceDirection.DOWN:
         // Check if the current space's row is 7.
-        return this.square.row == 7;
+        return this.piece.square.row == 7;
     }
     return false;
   },
@@ -46,7 +38,7 @@ game.Pawn = game.Piece.extend({
     var workSquare;
 
     var vertical;
-    switch (this.player.direction) {
+    switch (this.piece.player.direction) {
       case game.PieceDirection.UP:
         vertical = -1;
         break;
@@ -57,26 +49,26 @@ game.Pawn = game.Piece.extend({
     }
 
     // diagonal left
-    workSquare = this.player.board.getSquare(this.square.row + vertical,
-      this.square.column - 1);
+    workSquare = this.piece.player.board.getSquare(this.piece.square.row + vertical,
+      this.piece.square.column - 1);
     if (workSquare != null &&
       workSquare.isOccupied() &&
-      workSquare.piece.color != this.color) {
+      workSquare.piece.color != this.piece.color) {
       validSquares.push(workSquare);
     }
 
     // diagonal right
-    workSquare = this.player.board.getSquare(this.square.row + vertical,
-      this.square.column + 1);
+    workSquare = this.piece.player.board.getSquare(this.piece.square.row + vertical,
+      this.piece.square.column + 1);
     if (workSquare != null &&
       workSquare.isOccupied() &&
-      workSquare.piece.color != this.color) {
+      workSquare.piece.color != this.piece.color) {
       validSquares.push(workSquare);
     }
 
     // up
-    workSquare = this.player.board.getSquare(this.square.row + vertical,
-      this.square.column);
+    workSquare = this.piece.player.board.getSquare(this.piece.square.row + vertical,
+      this.piece.square.column);
     if (workSquare != null &&
       !workSquare.isOccupied()) {
       validSquares.push(workSquare);
@@ -85,9 +77,9 @@ game.Pawn = game.Piece.extend({
     }
 
     // up 2
-    if (!this.hasMoved) {
-      workSquare = this.player.board.getSquare(this.square.row + vertical * 2,
-        this.square.column);
+    if (!this.piece.hasMoved) {
+      workSquare = this.piece.player.board.getSquare(this.piece.square.row + vertical * 2,
+        this.piece.square.column);
       if (workSquare &&
         !workSquare.isOccupied()) {
         validSquares.push(workSquare);

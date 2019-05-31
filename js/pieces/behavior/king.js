@@ -1,17 +1,9 @@
-game.King = game.Piece.extend({
+game.Behavior.King = game.Behavior.extend({
   // Init.
-  init: function(player, pieceColor) {
-    this._super(game.Piece, "init", [
-      player,
-      game.PieceType.KING,
-      pieceColor
+  init: function(piece) {
+    this._super(game.Behavior, "init", [
+      piece
     ]);
-  },
-
-  // Update.
-  update: function(dt) {
-    this._super(game.Piece, "update", [dt]);
-    return true;
   },
 
   // Return array of valid destination squares.
@@ -68,14 +60,14 @@ game.King = game.Piece.extend({
     if (Math.abs(horizontal) > 1 || Math.abs(vertical) > 1) {
       return null;
     }
-    var r = this.square.row + vertical;
-    var c = this.square.column + horizontal;
-    var adjacentSquare = this.player.board.getSquare(r, c);
+    var r = this.piece.square.row + vertical;
+    var c = this.piece.square.column + horizontal;
+    var adjacentSquare = this.piece.player.board.getSquare(r, c);
     if (adjacentSquare == null) {
       return null;
     }
     if (adjacentSquare.isOccupied()) {
-      if (adjacentSquare.piece.color != this.color) {
+      if (adjacentSquare.piece.color != this.piece.color) {
         return adjacentSquare;
       }
     } else {
