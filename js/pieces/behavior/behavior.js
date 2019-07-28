@@ -57,7 +57,8 @@ game.Behavior = me.Entity.extend({
   positionOnSquare: function(square) {
     if (this.piece.square != null &&
       this.piece.square != square) {
-      this.piece.hasMoved = true;
+      this.piece.moveCount++;
+      this.piece.sinceMove = 0;
     }
     this.piece.pos.x = square.pos.x + ((square.width - this.piece.width) / 2);
     this.piece.pos.y = square.pos.y + (((square.height - this.piece.height) / 2) + this.piece.offsetY);

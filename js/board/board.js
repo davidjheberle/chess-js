@@ -101,10 +101,12 @@ game.Board = me.Entity.extend({
     switch (this.turnOwner) {
       case game.PieceColor.WHITE:
         this.turnOwner = game.PieceColor.BLACK;
+        this.player2.startTurn();
         break;
 
       case game.PieceColor.BLACK:
         this.turnOwner = game.PieceColor.WHITE;
+        this.player1.startTurn();
         break;
     }
   }

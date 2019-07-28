@@ -36,6 +36,7 @@ game.Behavior.Pawn = game.Behavior.extend({
   getValidSquares: function() {
     var validSquares = [];
     var workSquare;
+    var enPassantSquare;
 
     var vertical;
     switch (this.piece.player.direction) {
@@ -51,18 +52,36 @@ game.Behavior.Pawn = game.Behavior.extend({
     // diagonal left
     workSquare = this.piece.player.board.getSquare(this.piece.square.row + vertical,
       this.piece.square.column - 1);
+    enPassantSquare = this.piece.player.board.getSquare(this.piece.square.row,
+      this.piece.square.column - 1);
     if (workSquare != null &&
       workSquare.isOccupied() &&
       workSquare.piece.color != this.piece.color) {
+      validSquares.push(workSquare);
+    } else if (workSquare != null &&
+      enPassantSquare != null &&
+      enPassantSquare.isOccupied() &&
+      enPassantSquare.piece.color != this.piece.color &&
+      enPassantSquare.piece.moveCount == 1 &&
+      enPassantSquare.piece.sinceMove == 0) {
       validSquares.push(workSquare);
     }
 
     // diagonal right
     workSquare = this.piece.player.board.getSquare(this.piece.square.row + vertical,
       this.piece.square.column + 1);
+    enPassantSquare = this.piece.player.board.getSquare(this.piece.square.row,
+      this.piece.square.column + 1);
     if (workSquare != null &&
       workSquare.isOccupied() &&
       workSquare.piece.color != this.piece.color) {
+      validSquares.push(workSquare);
+    } else if (workSquare != null &&
+      enPassantSquare != null &&
+      enPassantSquare.isOccupied() &&
+      enPassantSquare.piece.color != this.piece.color &&
+      enPassantSquare.piece.moveCount == 1 &&
+      enPassantSquare.piece.sinceMove == 0) {
       validSquares.push(workSquare);
     }
 
@@ -77,7 +96,7 @@ game.Behavior.Pawn = game.Behavior.extend({
     }
 
     // up 2
-    if (!this.piece.hasMoved) {
+    if (!this.piece.hasMoved()) {
       workSquare = this.piece.player.board.getSquare(this.piece.square.row + vertical * 2,
         this.piece.square.column);
       if (workSquare &&
@@ -85,6 +104,7 @@ game.Behavior.Pawn = game.Behavior.extend({
         validSquares.push(workSquare);
       }
     }
+
     return validSquares;
   }
 });

@@ -15,7 +15,7 @@ game.Piece = me.DraggableEntity.extend({
     }]);
     this.player = player;
     this.offsetY = -20;
-    this.hasMoved = false;
+    this.moveCount = 0;
     this.setTypeAndColor(pieceType, pieceColor);
   },
 
@@ -113,6 +113,11 @@ game.Piece = me.DraggableEntity.extend({
   // True if the piece color is equal to the given color.
   isColor: function(color) {
     return this.color == color;
+  },
+
+  // True if the piece's move count is granther than 0.
+  hasMoved: function() {
+    return this.moveCount > 0;
   },
 
   // Init events including input events.

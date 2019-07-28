@@ -86,6 +86,20 @@ game.Player = me.Entity.extend({
     return this.color == this.board.turnOwner;
   },
 
+  // Start this player's turn.
+  startTurn: function() {
+    for (var i = 0; i < this.board.squares.length; i++) {
+      var rows = this.board.squares[i];
+      for (var j = 0; j < rows.length; j++) {
+        var square = rows[j];
+        if (square.isOccupied() &&
+          square.piece.isColor(this.color)) {
+          square.piece.sinceMove++;
+        }
+      }
+    }
+  },
+
   // End this player's turn.
   endTurn: function() {
     this.board.switchTurnOwner();
