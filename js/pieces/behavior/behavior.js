@@ -25,6 +25,25 @@ game.Behavior = me.Entity.extend({
           // Take the occupying piece.
           square.piece.setPieceState(game.PieceState.DEAD);
         }
+      } else if (square.isOnRank(6, this.piece.player.direction)) {
+        // Check for en-passant pawn.
+        var enPassantSquare;
+        switch (this.piece.player.direction) {
+          case game.PieceDirection.UP:
+            enPassantSquare = this.piece.player.board.getSquare(square.row + 1, square.column);
+            break;
+
+          case game.PieceDirection.DOWN:
+            enPassantSquare = this.piece.player.board.getSquare(square.row - 1, square.column);
+            break;
+        }
+        if (enPassantSquare != null &&
+          enPassantSquare.isOccupied() &&
+          !enPassantSquare.piece.isColor(this.piece.color) &&
+          enPassantSquare.piece.type == game.PieceType.PAWN &&
+          enPassantSquare.piece.sinceMove == 0) {
+          enPassantSquare.piece.setPieceState(game.PieceState.DEAD);
+        }
       }
 
       // Leave the previous square.
@@ -57,7 +76,8 @@ game.Behavior = me.Entity.extend({
   positionOnSquare: function(square) {
     if (this.piece.square != null &&
       this.piece.square != square) {
-      this.piece.hasMoved = true;
+      this.piece.moveCount++;
+      this.piece.sinceMove = 0;
     }
     this.piece.pos.x = square.pos.x + ((square.width - this.piece.width) / 2);
     this.piece.pos.y = square.pos.y + (((square.height - this.piece.height) / 2) + this.piece.offsetY);
