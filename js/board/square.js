@@ -34,5 +34,19 @@ game.Square = me.Entity.extend({
   // Return true if the square is located at the specified column and row.
   isLocatedAt: function(c, r) {
     return this.row === r && this.column === c;
+  },
+
+  // Check the square's rank based on direction.
+  isOnRank: function(rank, direction) {
+    switch (direction) {
+      case game.PieceDirection.UP:
+        // Check if the current space's row is 8 - rank.
+        return this.row === 8 - rank;
+
+      case game.PieceDirection.DOWN:
+        // Check if the current space's row is rank - 1.
+        return this.row === rank - 1;
+    }
+    return false;
   }
 });

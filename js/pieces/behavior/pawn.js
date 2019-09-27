@@ -9,27 +9,13 @@ game.Behavior.Pawn = game.Behavior.extend({
   // Finish moving.
   finishMove: function() {
     // Check if on the enemy's back line.
-    if (this.isOnRankEight()) {
+    if (this.piece.square.isOnRank(8, this.piece.player.direction)) {
       // Promote this pawn.
       this.piece.player.startPawnPromotion(this.piece);
     } else {
       // Finish the move.
       this._super(game.Behavior, "finishMove");
     }
-  },
-
-  // Return true if positioned on rank eight (far row).
-  isOnRankEight: function() {
-    switch (this.piece.player.direction) {
-      case game.PieceDirection.UP:
-        // Check if the current space's row is 0.
-        return this.piece.square.row == 0;
-
-      case game.PieceDirection.DOWN:
-        // Check if the current space's row is 7.
-        return this.piece.square.row == 7;
-    }
-    return false;
   },
 
   // Return array of valid destination squares.
@@ -99,7 +85,7 @@ game.Behavior.Pawn = game.Behavior.extend({
     if (!this.piece.hasMoved()) {
       workSquare = this.piece.player.board.getSquare(this.piece.square.row + vertical * 2,
         this.piece.square.column);
-      if (workSquare &&
+      if (workSquare != null &&
         !workSquare.isOccupied()) {
         validSquares.push(workSquare);
       }
