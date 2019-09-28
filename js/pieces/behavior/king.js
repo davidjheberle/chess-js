@@ -52,6 +52,17 @@ game.Behavior.King = game.Behavior.extend({
     if (adjacentSquare != null) {
       validSquares.push(adjacentSquare);
     }
+
+    // castle to column 0
+    if (this.canCastleTo(0)) {
+
+    }
+
+    // castle to column 7
+    if (this.canCastleTo(7)) {
+
+    }
+
     return validSquares;
   },
 
@@ -74,5 +85,65 @@ game.Behavior.King = game.Behavior.extend({
       return adjacentSquare;
     }
     return null;
+  },
+
+  canCastleTo: function(column) {
+    // Calculate the direction that must be checked later on.
+    // Assert column was recieved correctly.
+    var checkDirection;
+    if (column == 7) {
+      checkDirection = 1;
+    } else if (column == 0) {
+      checkDirection = -1;
+    } else {
+      console.error("column is " + column + ", it must be 7 or 0.");
+    }
+
+    // Return false if the king has moved.
+    if (this.piece.moveCount != 0) {
+      console.log("King has moved.");
+      return false;
+    }
+
+    // Return false if the king is in check.
+
+    var board = this.piece.player.board;
+    var rookSquare = board.getSquare(this.piece.square.row, column);
+
+    // Return false if the rook square is not occupied.
+    if (!rookSquare.isOccupied()) {
+      console.log("Rook square is empty.");
+      return false;
+    }
+
+    // Return false if the rook square isn't occupied by a rook.
+    if (rookSquare.piece.type != game.PieceType.ROOK) {
+      console.log("Piece in rook square is not rook.");
+      return false;
+    }
+
+    // Return false if the rook has moved.
+    if (rookSquare.piece.moveCount != 0) {
+      console.log("Rook has moved.");
+      return false;
+    }
+
+    // Return false if any of the squares between the rook and the king are occupied.
+    var checkColumn = this.piece.square.column;
+    var checkRow = this.piece.square.row;
+    var checkSquare;
+    checkColumn += checkDirection;
+    while (checkColumn != column) {
+      checkSquare = board.getSquare(checkRow, checkColumn);
+      if (checkSquare.isOccupied()) {
+        console.log("Space at column " + checkColumn + " is occupied.");
+        return false;
+      }
+      checkColumn += checkDirection;
+    }
+
+    // Return false if any of the spaces the king must step on put it in check.
+    console.log("true");
+    return true;
   }
 });
