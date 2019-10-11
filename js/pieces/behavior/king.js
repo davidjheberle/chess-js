@@ -56,13 +56,13 @@ game.Behavior.King = game.Behavior.extend({
 
     // castle to column 0
     if (this.canCastleTo(0)) {
-      targetSquare = board.getSquare(this.piece.row, 0);
+      targetSquare = board.getSquare(this.piece.square.row, this.piece.square.column - 2);
       validSquares.push(targetSquare);
     }
 
     // castle to column 7
     if (this.canCastleTo(7)) {
-      targetSquare = board.getSquare(this.piece.row, 7);
+      targetSquare = board.getSquare(this.piece.square.row, this.piece.square.column + 2);
       validSquares.push(targetSquare);
     }
 
@@ -104,7 +104,6 @@ game.Behavior.King = game.Behavior.extend({
 
     // Return false if the king has moved.
     if (this.piece.moveCount != 0) {
-      console.log("King has moved.");
       return false;
     }
 
@@ -140,7 +139,6 @@ game.Behavior.King = game.Behavior.extend({
     while (checkColumn != column) {
       checkSquare = board.getSquare(checkRow, checkColumn);
       if (checkSquare.isOccupied()) {
-        console.log("Space at column " + checkColumn + " is occupied.");
         return false;
       }
       checkColumn += checkDirection;
@@ -148,7 +146,6 @@ game.Behavior.King = game.Behavior.extend({
 
     // Return false if any of the spaces the king must step on put it in check.
     // TODO
-    console.log("true");
     return true;
   }
 });

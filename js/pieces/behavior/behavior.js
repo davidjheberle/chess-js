@@ -13,6 +13,8 @@ game.Behavior = me.Entity.extend({
   setToSquare: function(square) {
     // If this piece has been set on the board already.
     if (this.piece.square) {
+      var board = this.piece.player.board;
+
       // Check if the next board position leaves the king exposed.
 
       // Check if valid based on piece type and color.
@@ -25,24 +27,59 @@ game.Behavior = me.Entity.extend({
           // Take the occupying piece.
           square.piece.setPieceState(game.PieceState.DEAD);
         }
-      } else if (square.isOnRank(6, this.piece.player.direction)) {
+      } else {
         // Check for en-passant pawn.
-        var enPassantSquare;
-        switch (this.piece.player.direction) {
-          case game.PieceDirection.UP:
-            enPassantSquare = this.piece.player.board.getSquare(square.row + 1, square.column);
-            break;
+        if (square.isOnRank(6, this.piece.player.direction)) {
+          var enPassantSquare;
+          switch (this.piece.player.direction) {
+            case game.PieceDirection.UP:
+              enPassantSquare = board.getSquare(square.row + 1, square.column);
+              break;
 
-          case game.PieceDirection.DOWN:
-            enPassantSquare = this.piece.player.board.getSquare(square.row - 1, square.column);
-            break;
+            case game.PieceDirection.DOWN:
+              enPassantSquare = board.getSquare(square.row - 1, square.column);
+              break;
+          }
+          if (enPassantSquare != null &&
+            enPassantSquare.isOccupied() &&
+            !enPassantSquare.piece.isColor(this.piece.color) &&
+            enPassantSquare.piece.type == game.PieceType.PAWN &&
+            enPassantSquare.piece.sinceMove == 0) {
+            enPassantSquare.piece.setPieceState(game.PieceState.DEAD);
+          }
         }
-        if (enPassantSquare != null &&
-          enPassantSquare.isOccupied() &&
-          !enPassantSquare.piece.isColor(this.piece.color) &&
-          enPassantSquare.piece.type == game.PieceType.PAWN &&
-          enPassantSquare.piece.sinceMove == 0) {
-          enPassantSquare.piece.setPieceState(game.PieceState.DEAD);
+
+        // Check for castling.
+        // 2 squares towards the rook.
+        // Rook to the square the king crossed.
+        var castleDifference = square.column - this.piece.square.column;
+        if (this.piece.type == game.PieceType.KING &&
+          Math.abs(castleDifference) == 2) {
+          var castleDirection = castleDifference < 0 ? -1 : 1;
+          var rookFromColumn;
+          switch (castleDirection) {
+            // castling to the left
+            case -1:
+              rookFromColumn = 0;
+              break;
+
+
+            // castling to the right
+            case 1:
+              rookFromColumn = 7;
+              break;
+          }
+          var rookToSquare = board.getSquare(square.row, square.column - castleDirection);
+          var rookFromSquare = board.getSquare(square.row, rookFromColumn);
+
+          if (rookFromSquare.isOccupied() &&
+            rookFromSquare.piece.isColor(this.piece.color) &&
+            rookFromSquare.piece.type == game.PieceType.ROOK) {
+
+            // Move the rook.
+            rookFromSquare.piece.behavior.positionOnSquare(rookToSquare);
+            rookFromSquare.piece = null;
+          }
         }
       }
 
