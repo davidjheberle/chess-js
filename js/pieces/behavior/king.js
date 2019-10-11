@@ -8,59 +8,62 @@ game.Behavior.King = game.Behavior.extend({
 
   // Return array of valid destination squares.
   getValidSquares: function() {
+    var board = this.piece.player.board;
     var validSquares = [];
-    var adjacentSquare;
+    var targetSquare;
 
     // right
-    adjacentSquare = this.getAdjacentSquare(1, 0);
-    if (adjacentSquare != null) {
-      validSquares.push(adjacentSquare);
+    targetSquare = this.getAdjacentSquare(1, 0);
+    if (targetSquare != null) {
+      validSquares.push(targetSquare);
     }
     // left
-    adjacentSquare = this.getAdjacentSquare(-1, 0);
-    if (adjacentSquare != null) {
-      validSquares.push(adjacentSquare);
+    targetSquare = this.getAdjacentSquare(-1, 0);
+    if (targetSquare != null) {
+      validSquares.push(targetSquare);
     }
     // up
-    adjacentSquare = this.getAdjacentSquare(0, -1);
-    if (adjacentSquare != null) {
-      validSquares.push(adjacentSquare);
+    targetSquare = this.getAdjacentSquare(0, -1);
+    if (targetSquare != null) {
+      validSquares.push(targetSquare);
     }
     // down
-    adjacentSquare = this.getAdjacentSquare(0, 1);
-    if (adjacentSquare != null) {
-      validSquares.push(adjacentSquare);
+    targetSquare = this.getAdjacentSquare(0, 1);
+    if (targetSquare != null) {
+      validSquares.push(targetSquare);
     }
 
     // up left
-    adjacentSquare = this.getAdjacentSquare(-1, -1);
-    if (adjacentSquare != null) {
-      validSquares.push(adjacentSquare);
+    targetSquare = this.getAdjacentSquare(-1, -1);
+    if (targetSquare != null) {
+      validSquares.push(targetSquare);
     }
     // down left
-    adjacentSquare = this.getAdjacentSquare(-1, 1);
-    if (adjacentSquare != null) {
-      validSquares.push(adjacentSquare);
+    targetSquare = this.getAdjacentSquare(-1, 1);
+    if (targetSquare != null) {
+      validSquares.push(targetSquare);
     }
     // up right
-    adjacentSquare = this.getAdjacentSquare(1, -1);
-    if (adjacentSquare != null) {
-      validSquares.push(adjacentSquare);
+    targetSquare = this.getAdjacentSquare(1, -1);
+    if (targetSquare != null) {
+      validSquares.push(targetSquare);
     }
     // down right
-    adjacentSquare = this.getAdjacentSquare(1, 1);
-    if (adjacentSquare != null) {
-      validSquares.push(adjacentSquare);
+    targetSquare = this.getAdjacentSquare(1, 1);
+    if (targetSquare != null) {
+      validSquares.push(targetSquare);
     }
 
     // castle to column 0
     if (this.canCastleTo(0)) {
-
+      targetSquare = board.getSquare(this.piece.row, 0);
+      validSquares.push(targetSquare);
     }
 
     // castle to column 7
     if (this.canCastleTo(7)) {
-
+      targetSquare = board.getSquare(this.piece.row, 7);
+      validSquares.push(targetSquare);
     }
 
     return validSquares;
@@ -106,6 +109,7 @@ game.Behavior.King = game.Behavior.extend({
     }
 
     // Return false if the king is in check.
+    // TODO
 
     var board = this.piece.player.board;
     var rookSquare = board.getSquare(this.piece.square.row, column);
@@ -143,6 +147,7 @@ game.Behavior.King = game.Behavior.extend({
     }
 
     // Return false if any of the spaces the king must step on put it in check.
+    // TODO
     console.log("true");
     return true;
   }
