@@ -108,7 +108,9 @@ game.Behavior.King = game.Behavior.extend({
     }
 
     // Return false if the king is in check.
-    // TODO
+    if (this.piece.isPieceVulnerable()) {
+      return false;
+    }
 
     var board = this.piece.player.board;
     var rookSquare = board.getSquare(this.piece.square.row, column);

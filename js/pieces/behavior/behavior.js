@@ -133,5 +133,19 @@ game.Behavior = me.Entity.extend({
   getValidSquares: function() {
     // override
     return [];
+  },
+
+  // Return array of vulnerable pieces.
+  getVulnerablePieces: function() {
+    var vulnerablePieces = [];
+    var validSquares = this.getValidSquares();
+    var workingPiece;
+    for (i = 0; i < validSquares.length; i++) {
+      piece = validSquares[i].piece;
+      if (piece != null) {
+        vulnerablePieces.push(piece)
+      }
+    }
+    return vulnerablePieces;
   }
 });
