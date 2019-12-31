@@ -6,9 +6,8 @@ game.Behavior.King = game.Behavior.extend({
     ]);
   },
 
-  // Return array of valid destination squares.
-  getValidSquares: function() {
-    var board = this.piece.player.board;
+  // Return array of valid capture squares.
+  getValidCaptures: function() {
     var validSquares = [];
     var targetSquare;
 
@@ -53,19 +52,25 @@ game.Behavior.King = game.Behavior.extend({
     if (targetSquare != null) {
       validSquares.push(targetSquare);
     }
+    return validSquares;
+  },
+
+  // Return array of valid destination squares.
+  getValidDestinations: function() {
+    var board = this.piece.player.board;
+    var validSquares = this.getValidCaptures();
+    var targetSquare;
 
     // castle to column 0
     if (this.canCastleTo(0)) {
       targetSquare = board.getSquare(this.piece.square.row, this.piece.square.column - 2);
       validSquares.push(targetSquare);
     }
-
     // castle to column 7
     if (this.canCastleTo(7)) {
       targetSquare = board.getSquare(this.piece.square.row, this.piece.square.column + 2);
       validSquares.push(targetSquare);
     }
-
     return validSquares;
   },
 

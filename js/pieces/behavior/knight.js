@@ -6,8 +6,8 @@ game.Behavior.Knight = game.Behavior.extend({
     ]);
   },
 
-  // Return array of valid destination squares.
-  getValidSquares: function() {
+  // Return array of valid capture squares.
+  getValidCaptures: function() {
     var validSquares = [];
     var lSquare;
 
@@ -52,6 +52,11 @@ game.Behavior.Knight = game.Behavior.extend({
       validSquares.push(lSquare);
     }
     return validSquares;
+  },
+
+  // Return array of valid destination squares.
+  getValidDestinations: function() {
+    return this.getValidCaptures();
   },
 
   getLSquare: function(horizontal, vertical) {

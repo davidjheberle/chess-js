@@ -126,11 +126,17 @@ game.Behavior = me.Entity.extend({
 
   // Check if the move is valid.
   isMoveValid: function(square) {
-    return this.getValidSquares().includes(square);
+    return this.getValidDestinations().includes(square);
+  },
+
+  // Return array of valid capture squares.
+  getValidCaptures: function() {
+    // override
+    return [];
   },
 
   // Return array of valid destination squares.
-  getValidSquares: function() {
+  getValidDestinations: function() {
     // override
     return [];
   },
@@ -138,8 +144,7 @@ game.Behavior = me.Entity.extend({
   // Return array of vulnerable pieces.
   getVulnerablePieces: function() {
     var vulnerablePieces = [];
-    var validSquares = this.getValidSquares();
-    var workingPiece;
+    var validSquares = this.getValidCaptures();
     for (i = 0; i < validSquares.length; i++) {
       piece = validSquares[i].piece;
       if (piece != null) {

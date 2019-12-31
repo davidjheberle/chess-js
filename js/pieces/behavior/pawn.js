@@ -18,8 +18,8 @@ game.Behavior.Pawn = game.Behavior.extend({
     }
   },
 
-  // Return array of valid destination squares.
-  getValidSquares: function() {
+  // Return array of valid capture squares.
+  getValidCaptures: function() {
     var validSquares = [];
     var workSquare;
     var enPassantSquare;
@@ -71,6 +71,23 @@ game.Behavior.Pawn = game.Behavior.extend({
       validSquares.push(workSquare);
     }
 
+    return validSquares;
+  },
+
+  // Return array of valid destination squares.
+  getValidDestinations: function() {
+    var validSquares = this.getValidCaptures();
+
+    var vertical;
+    switch (this.piece.player.direction) {
+      case game.PieceDirection.UP:
+        vertical = -1;
+        break;
+      case game.PieceDirection.DOWN:
+        vertical = 1;
+        break;
+    }
+
     // up
     workSquare = this.piece.player.board.getSquare(this.piece.square.row + vertical,
       this.piece.square.column);
@@ -80,7 +97,6 @@ game.Behavior.Pawn = game.Behavior.extend({
     } else {
       return validSquares;
     }
-
     // up 2
     if (!this.piece.hasMoved()) {
       workSquare = this.piece.player.board.getSquare(this.piece.square.row + vertical * 2,
@@ -90,7 +106,6 @@ game.Behavior.Pawn = game.Behavior.extend({
         validSquares.push(workSquare);
       }
     }
-
     return validSquares;
   }
 });

@@ -6,8 +6,8 @@ game.Behavior.Queen = game.Behavior.extend({
     ]);
   },
 
-  // Return array of valid destination squares.
-  getValidSquares: function() {
+  // Return array of valid capture squares.
+  getValidCaptures: function() {
     var validSquares = [];
     var straightSquares;
     var diagonalSquares;
@@ -54,6 +54,11 @@ game.Behavior.Queen = game.Behavior.extend({
       validSquares.push(diagonalSquares[i]);
     }
     return validSquares;
+  },
+
+  // Return array of valid destination squares.
+  getValidDestinations: function() {
+    return this.getValidCaptures();
   },
 
   // Return array of horizontal and vertical squares.

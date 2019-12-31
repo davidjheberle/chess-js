@@ -192,8 +192,7 @@ game.Piece = me.DraggableEntity.extend({
       for (var c = 0; c < board.squares[r].length; c++) {
         piece = board.squares[r][c].piece;
         if (piece != null &&
-            piece.color != this.color &&
-            piece.type != game.PieceType.KING) {
+            piece.color != this.color) {
           vulnerablePieces = piece.behavior.getVulnerablePieces();
           if (vulnerablePieces.includes(this)) {
             return true;
