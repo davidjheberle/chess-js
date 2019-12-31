@@ -138,21 +138,25 @@ game.Behavior.King = game.Behavior.extend({
       return false;
     }
 
-    // Return false if any of the squares between the rook and the king are occupied.
+    // Return false if any of the squares between the rook and the king are:
+    // 1. Occupied.
+    // 2. Vulnerable.
     var checkColumn = this.piece.square.column;
     var checkRow = this.piece.square.row;
     var checkSquare;
     checkColumn += checkDirection;
     while (checkColumn != column) {
       checkSquare = board.getSquare(checkRow, checkColumn);
+      // Check occupied.
       if (checkSquare.isOccupied()) {
+        return false;
+      }
+      // Check vulnerable.
+      if (board.isSquareVulnerable(checkSquare, this.piece.color)) {
         return false;
       }
       checkColumn += checkDirection;
     }
-
-    // Return false if any of the spaces the king must step on put it in check.
-    // TODO
     return true;
   }
 });
