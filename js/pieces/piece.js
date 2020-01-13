@@ -180,5 +180,26 @@ game.Piece = me.DraggableEntity.extend({
       this.setPieceState(game.PieceState.IDLE);
       this._super(me.DraggableEntity, "dragEnd", [e]);
     }
+  },
+
+  // Check if this piece is vulnerable.
+  isPieceVulnerable: function() {
+    // Loop through all squares.
+    var piece;
+    var vulnerablePieces;
+    var board = this.player.board;
+    for (var r = 0; r < board.squares.length; r++) {
+      for (var c = 0; c < board.squares[r].length; c++) {
+        piece = board.squares[r][c].piece;
+        if (piece != null &&
+            piece.color != this.color) {
+          vulnerablePieces = piece.behavior.getVulnerablePieces();
+          if (vulnerablePieces.includes(this)) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
 });

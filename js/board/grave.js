@@ -36,7 +36,7 @@ game.Grave = me.Entity.extend({
     return this.piece != null;
   },
 
-  // True if located at column, row.s
+  // True if located at column, row.
   isLocatedAt: function(c, r) {
     return this.row === r && this.column === c;
   },

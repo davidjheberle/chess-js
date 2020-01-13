@@ -6,8 +6,8 @@ game.Behavior.Bishop = game.Behavior.extend({
     ]);
   },
 
-  // Return array of valid destination squares.
-  getValidSquares: function() {
+  // Return array of valid capture squares.
+  getValidCaptures: function() {
     var validSquares = [];
     var diagonalSquares;
 
@@ -32,6 +32,11 @@ game.Behavior.Bishop = game.Behavior.extend({
       validSquares.push(diagonalSquares[i]);
     }
     return validSquares;
+  },
+
+  // Return array of valid destination squares.
+  getValidDestinations: function() {
+    return this.getValidCaptures();
   },
 
   // Return array of diagonal squares.

@@ -109,5 +109,24 @@ game.Board = me.Entity.extend({
         this.player1.startTurn();
         break;
     }
+  },
+
+  // Check if a square is a vulnerable position for the given color.
+  isSquareVulnerable: function(square, color) {
+    // Loop through all squares.
+    var vulnerableSqaures;
+    for (var r = 0; r < this.squares.length; r++) {
+      for (var c = 0; c < this.squares[r].length; c++) {
+        piece = this.squares[r][c].piece;
+        if (piece != null &&
+            piece.color != color) {
+          vulnerableSqaures = piece.behavior.getValidCaptures();
+          if (vulnerableSqaures.includes(square)) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
 });
