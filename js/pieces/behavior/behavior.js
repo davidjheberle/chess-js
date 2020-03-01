@@ -116,8 +116,8 @@ game.Behavior = me.Entity.extend({
       this.piece.moveCount++;
       this.piece.sinceMove = 0;
     }
-    this.piece.pos.x = square.pos.x + ((square.width - this.piece.width) / 2);
-    this.piece.pos.y = square.pos.y + (((square.height - this.piece.height) / 2) + this.piece.offsetY);
+    this.piece.pos.x = square.pos.x - this.piece.width / 2;
+    this.piece.pos.y = square.pos.y - this.piece.height / 2 + this.piece.offsetY;
     this.piece.pos.z = square.row + 2;
     this.piece.square = square;
     this.piece.square.piece = this.piece;

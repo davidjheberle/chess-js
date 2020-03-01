@@ -1,39 +1,38 @@
-game.Graveyard = me.Entity.extend({
+game.Graveyard = me.Renderable.extend({
   // Init.
   init: function(x, y, width, height, rows, columns) {
-
     this.numRows = rows;
     this.numColumns = columns;
+    this.borderPaddingX = 2;
+    this.borderPaddingY = 2;
 
     // Array of graves.
     this.graves = [];
     this.graveIndex = 0;
 
-    this._super(me.Entity, "init", [x, y, {
-      width: width,
-      height: height
-    }]);
+    this._super(me.Renderable, "init", [x, y, width, height]);
 
     var grave;
-    var graveX = 0;
-    var graveY = 0;
     var graveWidth = width / this.numColumns;
     var graveHeight = height / this.numRows;
+    var originX = -width / 2 + graveWidth / 2;
+    var graveX = originX;
+    var graveY = -this.height / 2 + graveHeight / 2;
     for (r = 0; r < this.numRows; r++) {
       for (c = 0; c < this.numColumns; c++) {
-        grave = new game.Grave(graveX + x, graveY + y, graveWidth, graveHeight, '#aaa', r, c);
+        grave = new game.Grave(this.pos.x + graveX, this.pos.y + graveY, graveWidth, graveHeight, '#aaa', r, c);
         me.game.world.addChild(grave, 1);
         this.graves.push(grave);
         graveX += graveWidth;
       }
       graveY += graveHeight;
-      graveX = 0;
+      graveX = originX;
     }
   },
 
   // Update.
   update: function(dt) {
-    this._super(me.Entity, "update", [dt]);
+    this._super(me.Renderable, "update", [dt]);
     return true;
   },
 
@@ -41,9 +40,10 @@ game.Graveyard = me.Entity.extend({
   draw: function(renderer) {
     renderer.setColor('#444');
     renderer.fillRect(
-      this.pos.x - 2,
-      this.pos.y - 2,
-      this.width + 4, this.height + 4);
+      this.pos.x + this.borderPaddingX,
+      this.pos.y + this.borderPaddingY,
+      this.width - this.borderPaddingX * 2,
+      this.height - this.borderPaddingY * 2);
   },
 
   // Add a piece to the graveyard.

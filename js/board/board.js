@@ -1,25 +1,27 @@
-game.Board = me.Entity.extend({
+game.Board = me.Renderable.extend({
   // Init.
   init: function() {
     this.turnOwner = game.PieceColor.WHITE;
+    this.borderPaddingX = 4;
+    this.borderPaddingY = 4;
 
     // 2d array of squares [row, column].
     this.squares = [];
 
-    var width = 320;
-    var height = 320;
-    var x = me.game.viewport.width / 2 - width / 2;
-    var y = me.game.viewport.height / 2 - height / 2;
-    this._super(me.Entity, "init", [x, y, {
-      width: width,
-      height: height
-    }]);
+    // x, y, width, height
+    this._super(me.Renderable, "init", [
+      me.game.viewport.width / 2,
+      me.game.viewport.height / 2,
+      320,
+      320
+    ]);
 
     var square;
-    var squareX = 0;
-    var squareY = 0;
-    var squareWidth = width / 8;
-    var squareHeight = height / 8;
+    var squareWidth = this.width / 8;
+    var squareHeight = this.height / 8;
+    var originX = -this.width / 2 + squareWidth / 2;
+    var squareX = originX;
+    var squareY = -this.height / 2 + squareHeight / 2;
     var squareColor;
     for (r = 0; r < 8; r++) {
       this.squares.push([]);
@@ -29,13 +31,13 @@ game.Board = me.Entity.extend({
         } else {
           squareColor = '#000';
         }
-        square = new game.Square(squareX + x, squareY + y, squareWidth, squareHeight, squareColor, r, c);
+        square = new game.Square(this.pos.x + squareX, this.pos.y + squareY, squareWidth, squareHeight, squareColor, r, c);
         me.game.world.addChild(square, 1);
         this.squares[r].push(square);
         squareX += squareWidth;
       }
       squareY += squareHeight;
-      squareX = 0;
+      squareX = originX;
     }
 
     // Create 2 players and have them set up their pieces.
@@ -45,7 +47,7 @@ game.Board = me.Entity.extend({
 
   // Update.
   update: function(dt) {
-    this._super(me.Entity, "update", [dt]);
+    this._super(me.Renderable, "update", [dt]);
     return true;
   },
 
@@ -53,9 +55,10 @@ game.Board = me.Entity.extend({
   draw: function(renderer) {
     renderer.setColor('#444');
     renderer.fillRect(
-      this.pos.x - 4,
-      this.pos.y - 4,
-      this.width + 8, this.height + 8);
+      this.pos.x - this.borderPaddingX,
+      this.pos.y - this.borderPaddingY,
+      this.width + this.borderPaddingX * 2,
+      this.height + this.borderPaddingY * 2);
   },
 
   // Get sqaure at row, column.

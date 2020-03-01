@@ -1,15 +1,14 @@
-game.Grave = me.Entity.extend({
+game.Grave = me.Renderable.extend({
   // Init.
   init: function(x, y, width, height, color, row, column) {
-    // position, width, height
-    this._super(me.Entity, "init", [x, y, {
-      width: width,
-      height: height
-    }]);
+    // x, y, width, height
+    this._super(me.Renderable, "init", [x, y, width, height]);
     this.color = color;
     this.row = row;
     this.column = column;
     this.piece = null;
+    this.borderPaddingX = 2;
+    this.borderPaddingY = 2;
   },
 
   // Update.
@@ -26,9 +25,10 @@ game.Grave = me.Entity.extend({
       this.width, this.height);
     renderer.setColor(this.color);
     renderer.fillRect(
-      this.pos.x + 2,
-      this.pos.y + 2,
-      this.width - 4, this.height - 4);
+      this.pos.x + this.borderPaddingX,
+      this.pos.y + this.borderPaddingY,
+      this.width - this.borderPaddingX * 2,
+      this.height - this.borderPaddingY * 2);
   },
 
   // True if occupied.

@@ -13,14 +13,14 @@ game.Player = me.Entity.extend({
     var graveyardX;
     switch (this.direction) {
       case game.PieceDirection.UP:
-        graveyardX = 520;
+        graveyardX = 560;
         break;
 
       default:
-        graveyardX = 40;
+        graveyardX = 80;
         break;
     }
-    this.graveyard = new game.Graveyard(graveyardX, 80, 80, 320, 8, 2);
+    this.graveyard = new game.Graveyard(graveyardX, 240, 80, 320, 8, 2);
     me.game.world.addChild(this.graveyard, 0);
 
     this.setPieces();

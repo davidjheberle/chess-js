@@ -12,8 +12,8 @@ var game = {
     }
 
     // Add "#debug" to the URL to enable the debug Panel.
-    if (me.game.HASH.debug === true) {
-      window.onReady(function() {
+    if (me.utils.getUriFragment().debug === true) {
+      me.device.onReady(function() {
         me.plugin.register.defer(this, me.debug.Panel, "debug", me.input.KEY.V);
       });
     }
