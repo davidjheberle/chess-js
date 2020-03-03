@@ -84,13 +84,13 @@ game.Board = me.Renderable.extend({
     var workX;
     var workY;
     for (i = 0; i < this.squares.length; i++) {
-      workX = Math.abs(x - this.squares[0][i].pos.x);
+      workX = Math.abs(x - this.squares[0][i].pos.x + this.squares[0][i].width / 2);
       if (workX < closestX) {
         closestX = workX;
         closestC = i;
       }
 
-      workY = Math.abs(y - this.squares[i][0].pos.y);
+      workY = Math.abs(y - this.squares[i][0].pos.y + this.squares[i][0].height / 2);
       if (workY < closestY) {
         closestY = workY;
         closestR = i;
