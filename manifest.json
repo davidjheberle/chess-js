@@ -1,6 +1,6 @@
 {
-  "short_name": "melonJS Boilerplate",
-  "name": "My melonJS Boilerplate Game",
+  "short_name": "chess-js",
+  "name": "chess-js",
   "orientation": "landscape",
   "developer": {
     "name": "melonjs",
