@@ -2,7 +2,7 @@ game.PlayScreen = me.Stage.extend({
   /**
    * action to perform on state change
    */
-  onResetEvent: function() {
+  onResetEvent: function () {
     // Add a background color.
     me.game.world.addChild(new me.ColorLayer("background", "#000000"), -1);
 
@@ -19,7 +19,7 @@ game.PlayScreen = me.Stage.extend({
   /**
    * action to perform when leaving this screen (state change)
    */
-  onDestroyEvent: function() {
+  onDestroyEvent: function () {
     // Unbind input.
     me.input.unbindKey(me.input.KEY.LEFT);
     me.input.unbindKey(me.input.KEY.RIGHT);

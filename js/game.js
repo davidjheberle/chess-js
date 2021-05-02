@@ -1,17 +1,17 @@
 /* Game namespace */
 var game = {
   // Run on page load.
-  "onload": function() {
-    
+  "onload": function () {
+
     // Initialize the video.
-    if (!me.video.init(640, 480, {parent : "screen", scale : "auto", scaleMethod : "flex"})) {
+    if (!me.video.init(640, 480, { parent: "screen", scale: "auto", scaleMethod: "flex" })) {
       alert("Your browser does not support HTML5 canvas.");
       return;
     }
 
     // Add "#debug" to the URL to enable the debug Panel.
     if (me.utils.getUriFragment().debug === true) {
-      me.device.onReady(function() {
+      me.device.onReady(function () {
         me.plugin.register.defer(this, me.debug.Panel, "debug", me.input.KEY.V);
       });
     }
@@ -25,7 +25,7 @@ var game = {
   },
 
   // Run on game resources loaded.
-  "loaded": function() {
+  "loaded": function () {
 
     // Add entities to the entity pool.
     me.pool.register("board", game.Board);

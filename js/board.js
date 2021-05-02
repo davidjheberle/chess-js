@@ -1,7 +1,7 @@
 game.Board = me.Renderable.extend({
   // Init.
-  init: function() {
-    this.turnOwner = game.PieceColor.WHITE;
+  init: function () {
+    this.turnOwner = game.PieceColor.BLACK;
     this.borderPaddingX = 4;
     this.borderPaddingY = 4;
 
@@ -23,9 +23,9 @@ game.Board = me.Renderable.extend({
     var squareX = originX;
     var squareY = -this.height / 2 + squareHeight / 2;
     var squareColor;
-    for (r = 0; r < 8; r++) {
+    for (r = 0; r < 8; ++r) {
       this.squares.push([]);
-      for (c = 0; c < 8; c++) {
+      for (c = 0; c < 8; ++c) {
         if (((r + c) % 2) == 0) {
           squareColor = '#fff';
         } else {
@@ -41,18 +41,20 @@ game.Board = me.Renderable.extend({
     }
 
     // Create 2 players and have them set up their pieces.
-    this.player1 = new game.AI(game.PieceColor.WHITE, game.PieceDirection.UP, this);
-    this.player2 = new game.AI(game.PieceColor.BLACK, game.PieceDirection.DOWN, this);
+    this.player1 = new game.Player(game.PieceColor.WHITE, this);
+    this.player2 = new game.Player(game.PieceColor.BLACK, this);
+
+    this.switchTurnOwner();
   },
 
   // Update.
-  update: function(dt) {
+  update: function (dt) {
     this._super(me.Renderable, "update", [dt]);
     return true;
   },
 
   // Draw.
-  draw: function(renderer) {
+  draw: function (renderer) {
     renderer.setColor('#444');
     renderer.fillRect(
       this.pos.x - this.borderPaddingX,
@@ -62,7 +64,7 @@ game.Board = me.Renderable.extend({
   },
 
   // Get sqaure at row, column.
-  getSquare: function(r, c) {
+  getSquare: function (r, c) {
     if (r < 0 || c < 0) {
       return null;
     }
@@ -76,14 +78,14 @@ game.Board = me.Renderable.extend({
   },
 
   // Get closest square to x, y position.
-  getClosestSquare: function(x, y) {
+  getClosestSquare: function (x, y) {
     var closestX = Number.POSITIVE_INFINITY;
     var closestY = Number.POSITIVE_INFINITY;
     var closestR = -1;
     var closestC = -1;
     var workX;
     var workY;
-    for (i = 0; i < this.squares.length; i++) {
+    for (i = 0; i < this.squares.length; ++i) {
       workX = Math.abs(x - this.squares[0][i].pos.x + this.squares[0][i].width / 2);
       if (workX < closestX) {
         closestX = workX;
@@ -100,36 +102,40 @@ game.Board = me.Renderable.extend({
   },
 
   // Switch the turn owner.
-  switchTurnOwner: function() {
+  switchTurnOwner: function () {
     switch (this.turnOwner) {
       case game.PieceColor.WHITE:
         this.turnOwner = game.PieceColor.BLACK;
         this.player2.startTurn();
+        this.calculateMoves();
         break;
 
       case game.PieceColor.BLACK:
         this.turnOwner = game.PieceColor.WHITE;
         this.player1.startTurn();
+        this.calculateMoves();
         break;
     }
   },
 
-  // Check if a square is a vulnerable position for the given color.
-  isSquareVulnerable: function(square, color) {
-    // Loop through all squares.
-    var vulnerableSqaures;
-    for (var r = 0; r < this.squares.length; r++) {
-      for (var c = 0; c < this.squares[r].length; c++) {
+  // Calculate all possible moves.
+  calculateMoves : function () {
+    var piece;
+    var pieces = [];
+    for (var r = 0; r < this.squares.length; ++r) {
+      for (var c = 0; c < this.squares[r].length; ++c) {
+        this.squares[r][c].threats = [];
         piece = this.squares[r][c].piece;
-        if (piece != null &&
-            piece.color != color) {
-          vulnerableSqaures = piece.behavior.getValidCaptures();
-          if (vulnerableSqaures.includes(square)) {
-            return true;
-          }
+        if (piece != null) {
+          pieces.push(piece);
         }
       }
     }
-    return false;
+    pieces.forEach(function (p, i) {
+      p.behavior.calculateMoves();
+    });
+    pieces.forEach(function (p, i) {
+      p.behavior.pruneMoves();
+    });
   }
 });

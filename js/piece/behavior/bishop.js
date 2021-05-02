@@ -1,46 +1,40 @@
 game.Behavior.Bishop = game.Behavior.extend({
   // Init.
-  init: function(piece) {
+  init: function (piece) {
     this._super(game.Behavior, "init", [
       piece
     ]);
   },
 
-  // Return array of valid capture squares.
-  getValidCaptures: function() {
-    var validSquares = [];
+  // Caculate possible moves.
+  calculateMoves: function () {
     var diagonalSquares;
+    this.moves = [];
 
     // up left
     diagonalSquares = this.getDiagonalSquares(-1, -1);
-    for (i = 0; i < diagonalSquares.length; i++) {
-      validSquares.push(diagonalSquares[i]);
+    for (i = 0; i < diagonalSquares.length; ++i) {
+      this.moves.push(new game.Move.Default(this.piece.square, diagonalSquares[i]));
     }
     // down left
     diagonalSquares = this.getDiagonalSquares(-1, 1);
-    for (i = 0; i < diagonalSquares.length; i++) {
-      validSquares.push(diagonalSquares[i]);
+    for (i = 0; i < diagonalSquares.length; ++i) {
+      this.moves.push(new game.Move.Default(this.piece.square, diagonalSquares[i]));
     }
     // up right
     diagonalSquares = this.getDiagonalSquares(1, -1);
-    for (i = 0; i < diagonalSquares.length; i++) {
-      validSquares.push(diagonalSquares[i]);
+    for (i = 0; i < diagonalSquares.length; ++i) {
+      this.moves.push(new game.Move.Default(this.piece.square, diagonalSquares[i]));
     }
     // down right
     diagonalSquares = this.getDiagonalSquares(1, 1);
-    for (i = 0; i < diagonalSquares.length; i++) {
-      validSquares.push(diagonalSquares[i]);
+    for (i = 0; i < diagonalSquares.length; ++i) {
+      this.moves.push(new game.Move.Default(this.piece.square, diagonalSquares[i]));
     }
-    return validSquares;
-  },
-
-  // Return array of valid destination squares.
-  getValidDestinations: function() {
-    return this.getValidCaptures();
   },
 
   // Return array of diagonal squares.
-  getDiagonalSquares: function(horizontal, vertical) {
+  getDiagonalSquares: function (horizontal, vertical) {
     if (Math.abs(horizontal) != 1 && Math.abs(vertical) != 1) {
       return [];
     }
@@ -55,13 +49,9 @@ game.Behavior.Bishop = game.Behavior.extend({
       if (workSquare == null) {
         break;
       }
+      diagonalSquares.push(workSquare);
       if (workSquare.isOccupied()) {
-        if (workSquare.piece.color != this.piece.color) {
-          diagonalSquares.push(workSquare);
-        }
         break;
-      } else {
-        diagonalSquares.push(workSquare);
       }
     }
     return diagonalSquares;
