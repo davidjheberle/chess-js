@@ -12,7 +12,9 @@ game.PieceColor = {
   WHITE: 1
 }
 
-game.PieceDirection = {
-  UP: 0,
-  DOWN: 1
+game.MoveType = {
+  DEFAULT: 0,
+  MOVE: 1,
+  CAPTURE: 2,
+  CASTLE: 3
 }

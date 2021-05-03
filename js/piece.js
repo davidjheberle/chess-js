@@ -7,7 +7,7 @@ game.PieceState = {
 
 game.Piece = me.DraggableEntity.extend({
   // Init.
-  init: function(player, pieceType, pieceColor) {
+  init: function (player, pieceType, pieceColor) {
     this._super(me.DraggableEntity, "init", [0, 0, {
       image: "pieces",
       width: 64,
@@ -20,13 +20,13 @@ game.Piece = me.DraggableEntity.extend({
   },
 
   // Update.
-  update: function(dt) {
+  update: function (dt) {
     this._super(me.DraggableEntity, "update", [dt]);
     return true;
   },
 
   // Set this piece type and color.
-  setTypeAndColor: function(type, color) {
+  setTypeAndColor: function (type, color) {
     this.type = type;
     this.color = color;
     this.choosePieceImage(type, color);
@@ -34,7 +34,7 @@ game.Piece = me.DraggableEntity.extend({
   },
 
   // Load the piece image based on the piece type and color.
-  choosePieceImage: function(type, color) {
+  choosePieceImage: function (type, color) {
     // Type and frame enum int values match sprite sheet frames.
     var frame = type * 2 + color;
     this.renderable.addAnimation("idle", [frame], 1);
@@ -42,7 +42,7 @@ game.Piece = me.DraggableEntity.extend({
   },
 
   // Set the behavior of the piece.
-  setBehavior: function(type) {
+  setBehavior: function (type) {
     switch (type) {
       case game.PieceType.PAWN:
         this.behavior = new game.Behavior.Pawn(this);
@@ -71,7 +71,7 @@ game.Piece = me.DraggableEntity.extend({
   },
 
   // Set piece state.
-  setPieceState: function(state) {
+  setPieceState: function (state) {
     var prevState = this.state;
     this.state = state;
     switch (this.state) {
@@ -101,27 +101,27 @@ game.Piece = me.DraggableEntity.extend({
   },
 
   // True if the piece state is held.
-  isHeld: function() {
+  isHeld: function () {
     return this.state == game.PieceState.HELD;
   },
 
   // True if the peice state is dead.
-  isDead: function() {
+  isDead: function () {
     return this.state == game.PieceState.DEAD;
   },
 
   // True if the piece color is equal to the given color.
-  isColor: function(color) {
+  isColor: function (color) {
     return this.color == color;
   },
 
   // True if the piece's move count is granther than 0.
-  hasMoved: function() {
+  hasMoved: function () {
     return this.moveCount > 0;
   },
 
   // Init events including input events.
-  initEvents: function() {
+  initEvents: function () {
     this._super(me.DraggableEntity, "initEvents");
 
     // Remove the old pointerdown and pointerup events.
@@ -129,27 +129,21 @@ game.Piece = me.DraggableEntity.extend({
     this.removePointerEvent("pointerup", this);
 
     // Define the new events that return false (don't fall through).
-    this.mouseDown = function(e) {
+    this.mouseDown = function (e) {
 
       // Don't allow mouse down when dead.
-      if ((this.isDead() && !this.player.isSacrificingPiece()) ||
-        (!this.isDead() && this.player.isSacrificingPiece()) ||
-        !this.player.isTurnOwner()) {
+      if (!this.player.isTurnOwner()) {
         return false;
       }
-
       this.translatePointerEvent(e, me.event.DRAGSTART);
       return false;
     };
-    this.mouseUp = function(e) {
+    this.mouseUp = function (e) {
 
       // Don't allow mouse up when dead.
-      if ((this.isDead() && !this.player.isSacrificingPiece()) ||
-        (!this.isDead() && this.player.isSacrificingPiece()) ||
-        !this.player.isTurnOwner()) {
+      if (!this.player.isTurnOwner()) {
         return false;
       }
-
       this.translatePointerEvent(e, me.event.DRAGEND);
       return false;
     };
@@ -160,13 +154,14 @@ game.Piece = me.DraggableEntity.extend({
   },
 
   // Drag start event.
-  dragStart: function(e) {
-    if (!this.player.isPromotingPawn()) {
+  dragStart: function (e) {
+    if (!this.isDead() && !this.player.isPromotingPawn()) {
       // Hold the piece if it's not dead.
       this.setPieceState(game.PieceState.HELD);
       this._super(me.DraggableEntity, "dragStart", [e]);
-    } else if (this.type != game.PieceType.PAWN &&
-               this.type != game.PieceType.KING) {
+    } else if (this.player.isPromotingPawn() &&
+      this.type != game.PieceType.PAWN &&
+      this.type != game.PieceType.KING) {
       // Promote a pawn to this piece's rank if it's clicked on.
       this.player.finishPawnPromotion(this.type);
       this.player.endTurn();
@@ -174,32 +169,11 @@ game.Piece = me.DraggableEntity.extend({
   },
 
   // Drag end events.
-  dragEnd: function(e) {
+  dragEnd: function (e) {
     if (!this.isDead()) {
       // Idle this piece if it's not dead.
       this.setPieceState(game.PieceState.IDLE);
       this._super(me.DraggableEntity, "dragEnd", [e]);
     }
-  },
-
-  // Check if this piece is vulnerable.
-  isPieceVulnerable: function() {
-    // Loop through all squares.
-    var piece;
-    var vulnerablePieces;
-    var board = this.player.board;
-    for (var r = 0; r < board.squares.length; r++) {
-      for (var c = 0; c < board.squares[r].length; c++) {
-        piece = board.squares[r][c].piece;
-        if (piece != null &&
-            piece.color != this.color) {
-          vulnerablePieces = piece.behavior.getVulnerablePieces();
-          if (vulnerablePieces.includes(this)) {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
   }
 });
