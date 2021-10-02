@@ -1,40 +1,34 @@
 {
   "name": "chess-js",
   "version": "1.0.0",
-  "description": "chess-js",
-  "homepage": "https://www.rustygrill.com/chess-js/",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/davidjheberle/chess-js.git"
-  },
-  "bugs": {
-    "url": "https://github.com/davidjheberle/chess-js/issues"
-  },
+  "main": "index.js",
+  "author": "David J. Heberle",
   "license": "MIT",
-  "author": {
-    "name": "David J. Heberle",
-    "email": "davidjheberle@gmail.com"
-  },
-  "main": "main.js",
   "devDependencies": {
-    "grunt": "^1.2.1",
-    "grunt-asar": "github:bwin/grunt-asar#update-asar",
-    "grunt-contrib-clean": "^2.0.0",
-    "grunt-contrib-concat": "^1.0.1",
-    "grunt-contrib-connect": "^2.1.0",
-    "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-uglify": "^4.0.1",
-    "grunt-contrib-watch": "^1.1.0",
-    "grunt-download-electron": "^2.1.4",
-    "grunt-processhtml": "^0.4.1",
-    "grunt-replace": "^1.0.1"
-  },
-  "dependencies": {
-    "coffeescript": "^2.5.1"
+    "@babel/cli": "^7.15.7",
+    "@babel/core": "^7.15.5",
+    "@babel/preset-env": "^7.15.6",
+    "@babel/register": "^7.15.3",
+    "babel-loader": "^8.2.2",
+    "copy-webpack-plugin": "^9.0.1",
+    "favicons": "^6.2.2",
+    "favicons-webpack-plugin": "^5.0.2",
+    "fs": "^0.0.1-security",
+    "html-webpack-plugin": "^5.3.2",
+    "webpack": "^5.54.0",
+    "webpack-cli": "^4.8.0",
+    "webpack-dev-server": "^4.2.1"
   },
   "scripts": {
-    "build": "grunt",
-    "serve": "npm run build && grunt serve",
-    "dist": "grunt dist"
+    "dev": "webpack-dev-server --mode=development --config webpack.config.js",
+    "build": "webpack --mode=production --config webpack.config.js"
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.12.1",
+    "css-loader": "^6.3.0",
+    "events": "^3.3.0",
+    "melonjs": "^9.1.0",
+    "punycode": "^2.1.1",
+    "style-loader": "^3.3.0"
   }
 }
