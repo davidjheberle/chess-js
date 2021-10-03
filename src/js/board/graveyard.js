@@ -2,7 +2,7 @@ import * as me from 'melonjs/dist/melonjs.module.js';
 
 import Grave from 'js/board/grave.js'
 
-var Graveyard = me.Entity.extend({
+var Graveyard = me.Renderable.extend({
 
   // Init.
   init: function (x, y, width, height, rows, columns) {
@@ -15,7 +15,7 @@ var Graveyard = me.Entity.extend({
     this.graves = [];
     this.graveIndex = 0;
 
-    this._super(me.Entity, "init", [x, y, { width: width, height: height }]);
+    this._super(me.Renderable, "init", [x, y, width, height]);
 
     var grave;
     var graveWidth = width / this.numColumns;

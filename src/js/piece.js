@@ -24,6 +24,7 @@ var Piece = me.DraggableEntity.extend({
       image: "pieces",
       width: 64,
       height: 64
+      //anchorPoint: new me.Vector2d(.5, .5)
     }]);
     this.player = player;
     this.offsetY = -20;

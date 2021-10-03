@@ -5,7 +5,7 @@ import Player from 'js/player.js';
 import Square from 'js/board/square.js';
 
  // Note : Jay Inheritance to be replaced with standard ES6 inheritance in melonjs 10+
-var Board = me.Entity.extend({
+var Board = me.Renderable.extend({
 
   // Init.
   init: function () {
@@ -17,13 +17,11 @@ var Board = me.Entity.extend({
     this.squares = [];
 
     // x, y, width, height
-    this._super(me.Entity, "init", [
+    this._super(me.Renderable, "init", [
       me.game.viewport.width / 2,
       me.game.viewport.height / 2,
-      {
-        width: 320,
-        height: 320
-      }
+      320,
+      320
     ]);
 
     var square;

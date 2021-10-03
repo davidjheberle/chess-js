@@ -1,11 +1,11 @@
 import * as me from 'melonjs/dist/melonjs.module.js';
 
-var Grave = me.Entity.extend({
+var Grave = me.Renderable.extend({
 
   // Init.
   init: function (x, y, width, height, color, row, column) {
     // x, y, width, height
-    this._super(me.Entity, "init", [x, y, { width: width, height: height }]);
+    this._super(me.Renderable, "init", [x, y, width, height]);
     this.color = color;
     this.row = row;
     this.column = column;

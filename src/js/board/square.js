@@ -2,12 +2,12 @@ import * as me from 'melonjs/dist/melonjs.module.js';
 
 import { PieceColor } from 'js/enums.js';
 
-var Square = me.Entity.extend({
+var Square = me.Renderable.extend({
 
   // Init.
   init: function (x, y, width, height, color, row, column) {
     // x, y, width, height
-    this._super(me.Entity, "init", [x, y, { width: width, height: height }]);
+    this._super(me.Renderable, "init", [x, y, width, height]);
     this.color = color;
     this.row = row;
     this.column = column;
@@ -21,7 +21,8 @@ var Square = me.Entity.extend({
     renderer.fillRect(
       this.pos.x,
       this.pos.y,
-      this.width, this.height);
+      this.width,
+      this.height);
   },
 
   // Update.
