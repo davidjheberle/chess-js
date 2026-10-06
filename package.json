@@ -15,26 +15,17 @@
     "name": "David J. Heberle",
     "email": "davidjheberle@gmail.com"
   },
-  "main": "main.js",
-  "devDependencies": {
-    "grunt": "^1.2.1",
-    "grunt-asar": "github:bwin/grunt-asar#update-asar",
-    "grunt-contrib-clean": "^2.0.0",
-    "grunt-contrib-concat": "^1.0.1",
-    "grunt-contrib-connect": "^2.1.0",
-    "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-uglify": "^4.0.1",
-    "grunt-contrib-watch": "^1.1.0",
-    "grunt-download-electron": "^2.1.4",
-    "grunt-processhtml": "^0.4.1",
-    "grunt-replace": "^1.0.1"
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "coffeescript": "^2.5.1"
+    "@melonjs/debug-plugin": "^16.1.1",
+    "melonjs": "^20.7.0"
   },
-  "scripts": {
-    "build": "grunt",
-    "serve": "npm run build && grunt serve",
-    "dist": "grunt dist"
+  "devDependencies": {
+    "vite": "^6.4.4"
   }
 }

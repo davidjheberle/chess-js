@@ -1,38 +1,44 @@
-game.Board = me.Renderable.extend({
+import { Renderable } from "melonjs";
+import { app } from "./app.js";
+import { PieceColor } from "./enums.js";
+import { Player } from "./player.js";
+import { Square } from "./board/square.js";
+
+export class Board extends Renderable {
   // Init.
-  init: function () {
-    this.turnOwner = game.PieceColor.BLACK;
+  constructor() {
+    // x, y, width, height
+    super(
+      app.viewport.width / 2,
+      app.viewport.height / 2,
+      320,
+      320
+    );
+
+    this.turnOwner = PieceColor.BLACK;
     this.borderPaddingX = 4;
     this.borderPaddingY = 4;
 
     // 2d array of squares [row, column].
     this.squares = [];
 
-    // x, y, width, height
-    this._super(me.Renderable, "init", [
-      me.game.viewport.width / 2,
-      me.game.viewport.height / 2,
-      320,
-      320
-    ]);
-
-    var square;
-    var squareWidth = this.width / 8;
-    var squareHeight = this.height / 8;
-    var originX = -this.width / 2 + squareWidth / 2;
-    var squareX = originX;
-    var squareY = -this.height / 2 + squareHeight / 2;
-    var squareColor;
-    for (r = 0; r < 8; ++r) {
+    let square;
+    const squareWidth = this.width / 8;
+    const squareHeight = this.height / 8;
+    const originX = -this.width / 2 + squareWidth / 2;
+    let squareX = originX;
+    let squareY = -this.height / 2 + squareHeight / 2;
+    let squareColor;
+    for (let r = 0; r < 8; ++r) {
       this.squares.push([]);
-      for (c = 0; c < 8; ++c) {
+      for (let c = 0; c < 8; ++c) {
         if (((r + c) % 2) == 0) {
           squareColor = '#fff';
         } else {
           squareColor = '#000';
         }
-        square = new game.Square(this.pos.x + squareX, this.pos.y + squareY, squareWidth, squareHeight, squareColor, r, c);
-        me.game.world.addChild(square, 1);
+        square = new Square(this.pos.x + squareX, this.pos.y + squareY, squareWidth, squareHeight, squareColor, r, c);
+        app.world.addChild(square, 1);
         this.squares[r].push(square);
         squareX += squareWidth;
       }
@@ -41,30 +47,30 @@ game.Board = me.Renderable.extend({
     }
 
     // Create 2 players and have them set up their pieces.
-    this.player1 = new game.Player(game.PieceColor.WHITE, this);
-    this.player2 = new game.Player(game.PieceColor.BLACK, this);
+    this.player1 = new Player(PieceColor.WHITE, this);
+    this.player2 = new Player(PieceColor.BLACK, this);
 
     this.switchTurnOwner();
-  },
+  }
 
   // Update.
-  update: function (dt) {
-    this._super(me.Renderable, "update", [dt]);
+  update(dt) {
+    super.update(dt);
     return true;
-  },
+  }
 
   // Draw.
-  draw: function (renderer) {
+  draw(renderer) {
     renderer.setColor('#444');
     renderer.fillRect(
       this.pos.x - this.borderPaddingX,
       this.pos.y - this.borderPaddingY,
       this.width + this.borderPaddingX * 2,
       this.height + this.borderPaddingY * 2);
-  },
+  }
 
   // Get sqaure at row, column.
-  getSquare: function (r, c) {
+  getSquare(r, c) {
     if (r < 0 || c < 0) {
       return null;
     }
@@ -75,17 +81,17 @@ game.Board = me.Renderable.extend({
       return null;
     }
     return this.squares[r][c];
-  },
+  }
 
   // Get closest square to x, y position.
-  getClosestSquare: function (x, y) {
-    var closestX = Number.POSITIVE_INFINITY;
-    var closestY = Number.POSITIVE_INFINITY;
-    var closestR = -1;
-    var closestC = -1;
-    var workX;
-    var workY;
-    for (i = 0; i < this.squares.length; ++i) {
+  getClosestSquare(x, y) {
+    let closestX = Number.POSITIVE_INFINITY;
+    let closestY = Number.POSITIVE_INFINITY;
+    let closestR = -1;
+    let closestC = -1;
+    let workX;
+    let workY;
+    for (let i = 0; i < this.squares.length; ++i) {
       workX = Math.abs(x - this.squares[0][i].pos.x + this.squares[0][i].width / 2);
       if (workX < closestX) {
         closestX = workX;
@@ -99,31 +105,31 @@ game.Board = me.Renderable.extend({
       }
     }
     return this.getSquare(closestR, closestC);
-  },
+  }
 
   // Switch the turn owner.
-  switchTurnOwner: function () {
+  switchTurnOwner() {
     switch (this.turnOwner) {
-      case game.PieceColor.WHITE:
-        this.turnOwner = game.PieceColor.BLACK;
+      case PieceColor.WHITE:
+        this.turnOwner = PieceColor.BLACK;
         this.player2.startTurn();
         this.calculateMoves();
         break;
 
-      case game.PieceColor.BLACK:
-        this.turnOwner = game.PieceColor.WHITE;
+      case PieceColor.BLACK:
+        this.turnOwner = PieceColor.WHITE;
         this.player1.startTurn();
         this.calculateMoves();
         break;
     }
-  },
+  }
 
   // Calculate all possible moves.
-  calculateMoves : function () {
-    var piece;
-    var pieces = [];
-    for (var r = 0; r < this.squares.length; ++r) {
-      for (var c = 0; c < this.squares[r].length; ++c) {
+  calculateMoves() {
+    let piece;
+    const pieces = [];
+    for (let r = 0; r < this.squares.length; ++r) {
+      for (let c = 0; c < this.squares[r].length; ++c) {
         this.squares[r][c].threats = [];
         piece = this.squares[r][c].piece;
         if (piece != null) {
@@ -138,4 +144,4 @@ game.Board = me.Renderable.extend({
       p.behavior.pruneMoves();
     });
   }
-});
+}

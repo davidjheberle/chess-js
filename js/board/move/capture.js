@@ -1,9 +1,10 @@
-game.Move.Capture = game.Move.extend({  
+import { MoveType } from "../../enums.js";
+import { Move } from "../move.js";
+
+export class CaptureMove extends Move {
   // Init.
-  init: function (from, to) {
-    this._super(game.Move, "init", [
-      from, to, game.MoveType.CAPTURE
-    ]);
+  constructor(from, to) {
+    super(from, to, MoveType.CAPTURE);
     this.to.threats.push(this.piece);
   }
-});
+}

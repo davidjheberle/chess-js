@@ -1,37 +1,36 @@
-game.Behavior = me.Entity.extend({
+import { MoveType, PieceState } from "../enums.js";
+import { app } from "../app.js";
+
+export class Behavior {
   // Init.
-  init: function (piece) {
-    this._super(me.Entity, "init", [0, 0, {
-      width: 0,
-      height: 0
-    }]);
+  constructor(piece) {
     this.piece = piece;
     this.moves = [];
-  },
+  }
 
   // Move to the specified square.
-  moveToSquare: function (square) {
-    var move = this.getMove(square);
+  moveToSquare(square) {
+    const move = this.getMove(square);
     if (move != null) {
       this.performMove(move);
       this.finishMove();
     } else {
       this.moveBack();
     }
-  },
+  }
 
   // Perform a move.
-  performMove: function (move) {
+  performMove(move) {
     switch (move.type) {
-      case game.MoveType.CASTLE:
+      case MoveType.CASTLE:
         // Move the rook.
-        m.target.behavior.positionOnSquare(m.rookTo);
-        m.rookFrom.piece = null;
+        move.target.behavior.positionOnSquare(move.rookTo);
+        move.rookFrom.piece = null;
         break;
 
       default:
         if (move.target != null) {
-          move.target.setPieceState(game.PieceState.DEAD);
+          move.target.setPieceState(PieceState.DEAD);
         }
     }
 
@@ -40,20 +39,20 @@ game.Behavior = me.Entity.extend({
 
     // Go to the next square.
     this.positionOnSquare(move.to);
-  },
+  }
 
   // Finish moving.
-  finishMove: function () {
+  finishMove() {
     this.piece.player.endTurn();
-  },
+  }
 
   // Move back to the occupied square.
-  moveBack: function () {
+  moveBack() {
     this.positionOnSquare(this.piece.square);
-  },
+  }
 
   // Position this piece on the given square.
-  positionOnSquare: function (square) {
+  positionOnSquare(square) {
     if (this.piece.square != null &&
       this.piece.square != square) {
       this.piece.moveCount++;
@@ -64,25 +63,25 @@ game.Behavior = me.Entity.extend({
     this.piece.pos.z = square.row + 2;
     this.piece.square = square;
     this.piece.square.piece = this.piece;
-    me.game.world.sort(true);
-  },
+    app.world.sort(true);
+  }
 
   // Get move based on its 'to' square.
-  getMove: function (toSquare) {
+  getMove(toSquare) {
     return this.moves.find(function (m) {
       return m.to.equals(toSquare);
     });
-  },
+  }
 
   // Calculate possible moves.
-  calculateMoves: function () {
+  calculateMoves() {
     // override
     this.moves = [];
-  },
+  }
 
   // Prune invalid moves.
-  pruneMoves: function () {
-    var valid = [];
+  pruneMoves() {
+    const valid = [];
     this.moves.forEach(function (m, i) {
       if (m.target == null ||
         m.target.color != m.piece.color) {
@@ -91,4 +90,4 @@ game.Behavior = me.Entity.extend({
     });
     this.moves = valid;
   }
-});
+}

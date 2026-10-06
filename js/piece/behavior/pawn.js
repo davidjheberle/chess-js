@@ -1,36 +1,35 @@
-game.Behavior.Pawn = game.Behavior.extend({
-  // Init.
-  init: function (piece) {
-    this._super(game.Behavior, "init", [
-      piece
-    ]);
-  },
+import { MoveType, PieceColor } from "../../enums.js";
+import { Behavior } from "../behavior.js";
+import { Move } from "../../board/move.js";
+import { CaptureMove } from "../../board/move/capture.js";
+import { EnpassantMove } from "../../board/move/enpassant.js";
 
+export class PawnBehavior extends Behavior {
   // Finish moving.
-  finishMove: function () {
+  finishMove() {
     // Check if on the enemy's back line.
     if (this.piece.square.isOnRank(8, this.piece.color)) {
       // Promote this pawn.
       this.piece.player.startPawnPromotion(this.piece);
     } else {
       // Finish the move.
-      this._super(game.Behavior, "finishMove");
+      super.finishMove();
     }
-  },
+  }
 
   // Calculate possible moves.
-  calculateMoves: function () {
+  calculateMoves() {
     var workSquare;
     var enPassantSquare;
     this.moves = [];
 
     var vertical;
     switch (this.piece.color) {
-      case game.PieceColor.WHITE:
+      case PieceColor.WHITE:
         vertical = -1;
         break;
 
-      case game.PieceColor.BLACK:
+      case PieceColor.BLACK:
         vertical = 1;
         break;
     }
@@ -41,9 +40,9 @@ game.Behavior.Pawn = game.Behavior.extend({
     enPassantSquare = this.piece.player.board.getSquare(this.piece.square.row,
       this.piece.square.column - 1);
     if (workSquare != null) {
-      this.moves.push(new game.Move.Capture(this.piece.square, workSquare));
+      this.moves.push(new CaptureMove(this.piece.square, workSquare));
       if (enPassantSquare != null) {
-        this.moves.push(new game.Move.Enpassant(this.piece.square, workSquare, enPassantSquare));
+        this.moves.push(new EnpassantMove(this.piece.square, workSquare, enPassantSquare));
       }
     }
 
@@ -53,9 +52,9 @@ game.Behavior.Pawn = game.Behavior.extend({
     enPassantSquare = this.piece.player.board.getSquare(this.piece.square.row,
       this.piece.square.column + 1);
     if (workSquare != null) {
-      this.moves.push(new game.Move.Capture(this.piece.square, workSquare));
+      this.moves.push(new CaptureMove(this.piece.square, workSquare));
       if (enPassantSquare != null) {
-        this.moves.push(new game.Move.Enpassant(this.piece.square, workSquare, enPassantSquare));
+        this.moves.push(new EnpassantMove(this.piece.square, workSquare, enPassantSquare));
       }
     }
 
@@ -63,38 +62,38 @@ game.Behavior.Pawn = game.Behavior.extend({
     workSquare = this.piece.player.board.getSquare(this.piece.square.row + vertical,
       this.piece.square.column);
     if (workSquare != null) {
-      this.moves.push(new game.Move(this.piece.square, workSquare, game.MoveType.MOVE));
+      this.moves.push(new Move(this.piece.square, workSquare, MoveType.MOVE));
     }
     // up 2
     if (!this.piece.hasMoved()) {
       workSquare = this.piece.player.board.getSquare(this.piece.square.row + vertical * 2,
         this.piece.square.column);
       if (workSquare != null) {
-        this.moves.push(new game.Move(this.piece.square, workSquare, game.MoveType.MOVE));
+        this.moves.push(new Move(this.piece.square, workSquare, MoveType.MOVE));
       }
     }
-  },
+  }
 
   // Prune invalid moves.
-  pruneMoves: function () {
+  pruneMoves() {
     // override
     var valid = [];
     this.moves.forEach(function (m, i) {
       switch (m.type) {
-        case game.MoveType.MOVE:
+        case MoveType.MOVE:
           if (m.target == null) {
             valid.push(m);
           }
           break;
 
-        case game.MoveType.CAPTURE:
+        case MoveType.CAPTURE:
           if (m.target != null &&
             m.target.color != m.piece.color) {
             valid.push(m);
           }
           break;
 
-        case game.MoveType.ENPASSANT:
+        case MoveType.ENPASSANT:
           if (m.target != null &&
             m.target.color != m.piece.color &&
             m.target.moveCount == 1 &&
@@ -106,4 +105,4 @@ game.Behavior.Pawn = game.Behavior.extend({
     });
     this.moves = valid;
   }
-});
+}

@@ -1,10 +1,11 @@
-game.Move.Enpassant = game.Move.extend({  
+import { MoveType } from "../../enums.js";
+import { Move } from "../move.js";
+
+export class EnpassantMove extends Move {
   // Init.
-  init: function (from, to, enpassant) {
-    this._super(game.Move, "init", [
-      from, to, game.MoveType.ENPASSANT
-    ]);
+  constructor(from, to, enpassant) {
+    super(from, to, MoveType.ENPASSANT);
     this.enpassant = enpassant;
     this.target = this.enpassant.piece;
   }
-});
+}

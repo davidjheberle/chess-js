@@ -1,23 +1,26 @@
-game.Grave = me.Renderable.extend({
+import { Renderable } from "melonjs";
+import { app } from "../app.js";
+
+export class Grave extends Renderable {
   // Init.
-  init: function (x, y, width, height, color, row, column) {
+  constructor(x, y, width, height, color, row, column) {
     // x, y, width, height
-    this._super(me.Renderable, "init", [x, y, width, height]);
+    super(x, y, width, height);
     this.color = color;
     this.row = row;
     this.column = column;
     this.piece = null;
     this.borderPaddingX = 2;
     this.borderPaddingY = 2;
-  },
+  }
 
   // Update.
-  update: function () {
+  update() {
     return false;
-  },
+  }
 
   // Draw.
-  draw: function (renderer) {
+  draw(renderer) {
     renderer.setColor('#444');
     renderer.fillRect(
       this.pos.x,
@@ -29,20 +32,20 @@ game.Grave = me.Renderable.extend({
       this.pos.y + this.borderPaddingY,
       this.width - this.borderPaddingX * 2,
       this.height - this.borderPaddingY * 2);
-  },
+  }
 
   // True if occupied.
-  isOccupied: function () {
+  isOccupied() {
     return this.piece != null;
-  },
+  }
 
   // True if located at column, row.
-  isLocatedAt: function (c, r) {
+  isLocatedAt(c, r) {
     return this.row === r && this.column === c;
-  },
+  }
 
   // Add the specified piece.
-  addPiece: function (piece) {
+  addPiece(piece) {
     if (this.isOccupied() == true) {
       return;
     }
@@ -52,6 +55,6 @@ game.Grave = me.Renderable.extend({
     piece.square.piece = null;
     piece.square = null;
     this.piece = piece;
-    me.game.world.sort(true);
+    app.world.sort(true);
   }
-});
+}

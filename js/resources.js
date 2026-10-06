@@ -1,7 +1,7 @@
-game.resources = [
-    {
-        "name": "pieces",
-        "type": "image",
-        "src": "data/img/pieces.png"
-    }
+export const resources = [
+  {
+    "name": "pieces",
+    "type": "image",
+    "src": "data/img/pieces.png"
+  }
 ];
