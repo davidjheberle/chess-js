@@ -1,6 +1,12 @@
-game.Graveyard = me.Renderable.extend({
+import { Renderable } from "melonjs";
+import { app } from "../app.js";
+import { Grave } from "./grave.js";
+
+export class Graveyard extends Renderable {
   // Init.
-  init: function (x, y, width, height, rows, columns) {
+  constructor(x, y, width, height, rows, columns) {
+    super(x, y, width, height);
+
     this.numRows = rows;
     this.numColumns = columns;
     this.borderPaddingX = 2;
@@ -10,44 +16,42 @@ game.Graveyard = me.Renderable.extend({
     this.graves = [];
     this.graveIndex = 0;
 
-    this._super(me.Renderable, "init", [x, y, width, height]);
-
-    var grave;
-    var graveWidth = width / this.numColumns;
-    var graveHeight = height / this.numRows;
-    var originX = -width / 2 + graveWidth / 2;
-    var graveX = originX;
-    var graveY = -this.height / 2 + graveHeight / 2;
-    for (r = 0; r < this.numRows; ++r) {
-      for (c = 0; c < this.numColumns; ++c) {
-        grave = new game.Grave(this.pos.x + graveX, this.pos.y + graveY, graveWidth, graveHeight, '#aaa', r, c);
-        me.game.world.addChild(grave, 1);
+    let grave;
+    const graveWidth = width / this.numColumns;
+    const graveHeight = height / this.numRows;
+    const originX = -width / 2 + graveWidth / 2;
+    let graveX = originX;
+    let graveY = -this.height / 2 + graveHeight / 2;
+    for (let r = 0; r < this.numRows; ++r) {
+      for (let c = 0; c < this.numColumns; ++c) {
+        grave = new Grave(this.pos.x + graveX, this.pos.y + graveY, graveWidth, graveHeight, '#aaa', r, c);
+        app.world.addChild(grave, 1);
         this.graves.push(grave);
         graveX += graveWidth;
       }
       graveY += graveHeight;
       graveX = originX;
     }
-  },
+  }
 
   // Update.
-  update: function (dt) {
-    this._super(me.Renderable, "update", [dt]);
+  update(dt) {
+    super.update(dt);
     return true;
-  },
+  }
 
   // Draw.
-  draw: function (renderer) {
+  draw(renderer) {
     renderer.setColor('#444');
     renderer.fillRect(
       this.pos.x + this.borderPaddingX,
       this.pos.y + this.borderPaddingY,
       this.width - this.borderPaddingX * 2,
       this.height - this.borderPaddingY * 2);
-  },
+  }
 
   // Add a piece to the graveyard.
-  addPiece: function (piece) {
+  addPiece(piece) {
     // Get the next open space and add this piece there.
     if (this.graveIndex >= this.graves.length) {
       return;
@@ -58,10 +62,10 @@ game.Graveyard = me.Renderable.extend({
 
     // Increment grave index.
     this.graveIndex++;
-  },
+  }
 
   // True if graveyard is empty.
-  isEmpty: function () {
+  isEmpty() {
     return this.graveIndex == 0;
   }
-});
+}

@@ -1,13 +1,11 @@
-game.Behavior.King = game.Behavior.extend({
-  // Init.
-  init: function (piece) {
-    this._super(game.Behavior, "init", [
-      piece
-    ]);
-  },
+import { MoveType, PieceType } from "../../enums.js";
+import { Behavior } from "../behavior.js";
+import { CastleMove } from "../../board/move/castle.js";
+import { DefaultMove } from "../../board/move/default.js";
 
+export class KingBehavior extends Behavior {
   // Caculate possible moves.
-  calculateMoves: function () {
+  calculateMoves() {
     var targetSquare;
     var board = this.piece.player.board;
     this.moves = [];
@@ -15,53 +13,53 @@ game.Behavior.King = game.Behavior.extend({
     // right
     targetSquare = this.getAdjacentSquare(1, 0);
     if (targetSquare != null) {
-      this.moves.push(new game.Move.Default(this.piece.square, targetSquare));
+      this.moves.push(new DefaultMove(this.piece.square, targetSquare));
     }
     // left
     targetSquare = this.getAdjacentSquare(-1, 0);
     if (targetSquare != null) {
-      this.moves.push(new game.Move.Default(this.piece.square, targetSquare));
+      this.moves.push(new DefaultMove(this.piece.square, targetSquare));
     }
     // up
     targetSquare = this.getAdjacentSquare(0, -1);
     if (targetSquare != null) {
-      this.moves.push(new game.Move.Default(this.piece.square, targetSquare));
+      this.moves.push(new DefaultMove(this.piece.square, targetSquare));
     }
     // down
     targetSquare = this.getAdjacentSquare(0, 1);
     if (targetSquare != null) {
-      this.moves.push(new game.Move.Default(this.piece.square, targetSquare));
+      this.moves.push(new DefaultMove(this.piece.square, targetSquare));
     }
 
     // up left
     targetSquare = this.getAdjacentSquare(-1, -1);
     if (targetSquare != null) {
-      this.moves.push(new game.Move.Default(this.piece.square, targetSquare));
+      this.moves.push(new DefaultMove(this.piece.square, targetSquare));
     }
     // down left
     targetSquare = this.getAdjacentSquare(-1, 1);
     if (targetSquare != null) {
-      this.moves.push(new game.Move.Default(this.piece.square, targetSquare));
+      this.moves.push(new DefaultMove(this.piece.square, targetSquare));
     }
     // up right
     targetSquare = this.getAdjacentSquare(1, -1);
     if (targetSquare != null) {
-      this.moves.push(new game.Move.Default(this.piece.square, targetSquare));
+      this.moves.push(new DefaultMove(this.piece.square, targetSquare));
     }
     // down right
     targetSquare = this.getAdjacentSquare(1, 1);
     if (targetSquare != null) {
-      this.moves.push(new game.Move.Default(this.piece.square, targetSquare));
+      this.moves.push(new DefaultMove(this.piece.square, targetSquare));
     }
 
     // castle to column 0
     targetSquare = board.getSquare(this.piece.square.row, this.piece.square.column - 2);
-    rookFromSquare = board.getSquare(this.piece.square.row, 0);
-    rookToSquare = board.getSquare(this.piece.square.row, this.piece.square.column - 1);
+    let rookFromSquare = board.getSquare(this.piece.square.row, 0);
+    let rookToSquare = board.getSquare(this.piece.square.row, this.piece.square.column - 1);
     if (targetSquare != null &&
       rookFromSquare != null &&
       rookToSquare != null) {
-      this.moves.push(new game.Move.Castle(this.piece.square, targetSquare, rookFromSquare, rookToSquare));
+      this.moves.push(new CastleMove(this.piece.square, targetSquare, rookFromSquare, rookToSquare));
     }
     // castle to column 7
     targetSquare = board.getSquare(this.piece.square.row, this.piece.square.column + 2);
@@ -70,22 +68,22 @@ game.Behavior.King = game.Behavior.extend({
     if (targetSquare != null &&
       rookFromSquare != null &&
       rookToSquare != null) {
-      this.moves.push(new game.Move.Castle(this.piece.square, targetSquare, rookFromSquare, rookToSquare));
+      this.moves.push(new CastleMove(this.piece.square, targetSquare, rookFromSquare, rookToSquare));
     }
-  },
+  }
 
   // Prune invalid moves.
-  pruneMoves: function () {
+  pruneMoves() {
     var valid = [];
     var board = this.piece.player.board;
     this.moves.forEach(function (m, i) {
       switch (m.type) {
-        case game.MoveType.CASTLE:
+        case MoveType.CASTLE:
           var result = false;
           if (m.piece.moveCount != 0) { result = true; }
           else if (m.target == null) { result = true; }
           else if (m.target.color != m.piece.color) { result = true; }
-          else if (m.target.type != game.PieceType.ROOK) { result = true; }
+          else if (m.target.type != PieceType.ROOK) { result = true; }
           else if (m.target.moveCount != 0) { result = true; }
           else if (m.from.isThreatened(m.piece.color)) { result = true; }
 
@@ -139,10 +137,10 @@ game.Behavior.King = game.Behavior.extend({
       }
     });
     this.moves = valid;
-  },
+  }
 
   // Return array of adjacent squares.
-  getAdjacentSquare: function (horizontal, vertical) {
+  getAdjacentSquare(horizontal, vertical) {
     if (Math.abs(horizontal) > 1 || Math.abs(vertical) > 1) {
       return null;
     }
@@ -161,4 +159,4 @@ game.Behavior.King = game.Behavior.extend({
     }
     return null;
   }
-});
+}

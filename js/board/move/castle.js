@@ -1,11 +1,12 @@
-game.Move.Castle = game.Move.extend({  
+import { MoveType } from "../../enums.js";
+import { Move } from "../move.js";
+
+export class CastleMove extends Move {
   // Init.
-  init: function (from, to, rookFrom, rookTo) {
-    this._super(game.Move, "init", [
-      from, to, game.MoveType.CASTLE
-    ]);
+  constructor(from, to, rookFrom, rookTo) {
+    super(from, to, MoveType.CASTLE);
     this.rookFrom = rookFrom;
     this.rookTo = rookTo;
     this.target = this.rookFrom.piece;
   }
-});
+}

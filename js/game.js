@@ -1,39 +1,37 @@
-/* Game namespace */
-var game = {
-  // Run on page load.
-  "onload": function () {
+import { audio, loader, plugin, state, utils } from "melonjs";
+import { app } from "./app.js";
+import { resources } from "./resources.js";
+import { PlayScreen } from "./screens/play.js";
 
-    // Initialize the video.
-    if (!me.video.init(640, 480, { parent: "screen", scale: "auto", scaleMethod: "flex" })) {
-      alert("Your browser does not support HTML5 canvas.");
-      return;
-    }
+// Run on page load.
+async function onload() {
 
-    // Add "#debug" to the URL to enable the debug Panel.
-    if (me.utils.getUriFragment().debug === true) {
-      me.device.onReady(function () {
-        me.plugin.register.defer(this, me.debug.Panel, "debug", me.input.KEY.V);
-      });
-    }
-
-    // Initialize the audio.
-    me.audio.init("mp3,ogg");
-
-    // Set and load all resources.
-    // (this will also automatically switch to the loading screen)
-    me.loader.preload(game.resources, this.loaded.bind(this));
-  },
-
-  // Run on game resources loaded.
-  "loaded": function () {
-
-    // Add entities to the entity pool.
-    me.pool.register("board", game.Board);
-
-    // Create the play screen.
-    me.state.set(me.state.PLAY, new game.PlayScreen());
-
-    // Start the game.
-    me.state.change(me.state.PLAY);
+  // Initialize the video.
+  try {
+    await app.init();
+  } catch (e) {
+    alert("Your browser does not support HTML5 canvas.");
+    return;
   }
-};
+
+  // Add "#debug" to the URL to enable the debug Panel.
+  if (utils.getUriFragment().debug === true) {
+    const { DebugPanelPlugin } = await import("@melonjs/debug-plugin");
+    plugin.register(DebugPanelPlugin, "debugPanel");
+  }
+
+  // Initialize the audio.
+  audio.init("mp3,ogg");
+
+  // Set and load all resources.
+  // (this will also automatically switch to the loading screen)
+  await loader.preload(resources);
+
+  // Create the play screen.
+  state.set(state.PLAY, new PlayScreen());
+
+  // Start the game.
+  state.change(state.PLAY, true);
+}
+
+onload();

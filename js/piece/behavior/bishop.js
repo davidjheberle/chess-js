@@ -1,40 +1,36 @@
-game.Behavior.Bishop = game.Behavior.extend({
-  // Init.
-  init: function (piece) {
-    this._super(game.Behavior, "init", [
-      piece
-    ]);
-  },
+import { Behavior } from "../behavior.js";
+import { DefaultMove } from "../../board/move/default.js";
 
+export class BishopBehavior extends Behavior {
   // Caculate possible moves.
-  calculateMoves: function () {
+  calculateMoves() {
     var diagonalSquares;
     this.moves = [];
 
     // up left
     diagonalSquares = this.getDiagonalSquares(-1, -1);
-    for (i = 0; i < diagonalSquares.length; ++i) {
-      this.moves.push(new game.Move.Default(this.piece.square, diagonalSquares[i]));
+    for (let i = 0; i < diagonalSquares.length; ++i) {
+      this.moves.push(new DefaultMove(this.piece.square, diagonalSquares[i]));
     }
     // down left
     diagonalSquares = this.getDiagonalSquares(-1, 1);
-    for (i = 0; i < diagonalSquares.length; ++i) {
-      this.moves.push(new game.Move.Default(this.piece.square, diagonalSquares[i]));
+    for (let i = 0; i < diagonalSquares.length; ++i) {
+      this.moves.push(new DefaultMove(this.piece.square, diagonalSquares[i]));
     }
     // up right
     diagonalSquares = this.getDiagonalSquares(1, -1);
-    for (i = 0; i < diagonalSquares.length; ++i) {
-      this.moves.push(new game.Move.Default(this.piece.square, diagonalSquares[i]));
+    for (let i = 0; i < diagonalSquares.length; ++i) {
+      this.moves.push(new DefaultMove(this.piece.square, diagonalSquares[i]));
     }
     // down right
     diagonalSquares = this.getDiagonalSquares(1, 1);
-    for (i = 0; i < diagonalSquares.length; ++i) {
-      this.moves.push(new game.Move.Default(this.piece.square, diagonalSquares[i]));
+    for (let i = 0; i < diagonalSquares.length; ++i) {
+      this.moves.push(new DefaultMove(this.piece.square, diagonalSquares[i]));
     }
-  },
+  }
 
   // Return array of diagonal squares.
-  getDiagonalSquares: function (horizontal, vertical) {
+  getDiagonalSquares(horizontal, vertical) {
     if (Math.abs(horizontal) != 1 && Math.abs(vertical) != 1) {
       return [];
     }
@@ -56,4 +52,4 @@ game.Behavior.Bishop = game.Behavior.extend({
     }
     return diagonalSquares;
   }
-});
+}

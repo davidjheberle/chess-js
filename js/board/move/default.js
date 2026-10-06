@@ -1,9 +1,10 @@
-game.Move.Default = game.Move.extend({  
+import { MoveType } from "../../enums.js";
+import { Move } from "../move.js";
+
+export class DefaultMove extends Move {
   // Init.
-  init: function (from, to) {
-    this._super(game.Move, "init", [
-      from, to, game.MoveType.DEFAULT
-    ]);
+  constructor(from, to) {
+    super(from, to, MoveType.DEFAULT);
     this.to.threats.push(this.piece);
   }
-});
+}

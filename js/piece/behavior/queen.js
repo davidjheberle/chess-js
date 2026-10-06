@@ -1,62 +1,58 @@
-game.Behavior.Queen = game.Behavior.extend({
-  // Init.
-  init: function (piece) {
-    this._super(game.Behavior, "init", [
-      piece
-    ]);
-  },
+import { Behavior } from "../behavior.js";
+import { DefaultMove } from "../../board/move/default.js";
 
+export class QueenBehavior extends Behavior {
   // Calculate possible moves.
-  calculateMoves: function () {
+  calculateMoves() {
     var straightSquares;
     var diagonalSquares;
     this.moves = [];
 
     // right
     straightSquares = this.getStraightSquares(1, 0);
-    for (i = 0; i < straightSquares.length; ++i) {
-      this.moves.push(new game.Move.Default(this.piece.square, straightSquares[i]));
+    for (let i = 0; i < straightSquares.length; ++i) {
+      this.moves.push(new DefaultMove(this.piece.square, straightSquares[i]));
     }
     // left
     straightSquares = this.getStraightSquares(-1, 0);
-    for (i = 0; i < straightSquares.length; ++i) {
-      this.moves.push(new game.Move.Default(this.piece.square, straightSquares[i]));
+    for (let i = 0; i < straightSquares.length; ++i) {
+      this.moves.push(new DefaultMove(this.piece.square, straightSquares[i]));
     }
     // up
     straightSquares = this.getStraightSquares(0, -1);
-    for (i = 0; i < straightSquares.length; ++i) {
-      this.moves.push(new game.Move.Default(this.piece.square, straightSquares[i]));
+    for (let i = 0; i < straightSquares.length; ++i) {
+      this.moves.push(new DefaultMove(this.piece.square, straightSquares[i]));
     }
     // down
     straightSquares = this.getStraightSquares(0, 1);
-    for (i = 0; i < straightSquares.length; ++i) {
-      this.moves.push(new game.Move.Default(this.piece.square, straightSquares[i]));
+    for (let i = 0; i < straightSquares.length; ++i) {
+      this.moves.push(new DefaultMove(this.piece.square, straightSquares[i]));
     }
 
     // up left
     diagonalSquares = this.getDiagonalSquares(-1, -1);
-    for (i = 0; i < diagonalSquares.length; ++i) {
-      this.moves.push(new game.Move.Default(this.piece.square, diagonalSquares[i]));
+    for (let i = 0; i < diagonalSquares.length; ++i) {
+      this.moves.push(new DefaultMove(this.piece.square, diagonalSquares[i]));
     }
     // down left
     diagonalSquares = this.getDiagonalSquares(-1, 1);
-    for (i = 0; i < diagonalSquares.length; ++i) {
-      this.moves.push(new game.Move.Default(this.piece.square, diagonalSquares[i]));
+    for (let i = 0; i < diagonalSquares.length; ++i) {
+      this.moves.push(new DefaultMove(this.piece.square, diagonalSquares[i]));
     }
     // up right
     diagonalSquares = this.getDiagonalSquares(1, -1);
-    for (i = 0; i < diagonalSquares.length; ++i) {
-      this.moves.push(new game.Move.Default(this.piece.square, diagonalSquares[i]));
+    for (let i = 0; i < diagonalSquares.length; ++i) {
+      this.moves.push(new DefaultMove(this.piece.square, diagonalSquares[i]));
     }
     // down right
     diagonalSquares = this.getDiagonalSquares(1, 1);
-    for (i = 0; i < diagonalSquares.length; ++i) {
-      this.moves.push(new game.Move.Default(this.piece.square, diagonalSquares[i]));
+    for (let i = 0; i < diagonalSquares.length; ++i) {
+      this.moves.push(new DefaultMove(this.piece.square, diagonalSquares[i]));
     }
-  },
+  }
 
   // Return array of horizontal and vertical squares.
-  getStraightSquares: function (horizontal, vertical) {
+  getStraightSquares(horizontal, vertical) {
     if (!(Math.abs(horizontal) == 1 && vertical == 0) &&
       !(Math.abs(vertical) == 1 && horizontal == 0)) {
       return [];
@@ -78,10 +74,10 @@ game.Behavior.Queen = game.Behavior.extend({
       }
     }
     return straightSquares;
-  },
+  }
 
   // Return array of diagonal squares.
-  getDiagonalSquares: function (horizontal, vertical) {
+  getDiagonalSquares(horizontal, vertical) {
     if (Math.abs(horizontal) != 1 && Math.abs(vertical) != 1) {
       return [];
     }
@@ -103,4 +99,4 @@ game.Behavior.Queen = game.Behavior.extend({
     }
     return diagonalSquares;
   }
-});
+}

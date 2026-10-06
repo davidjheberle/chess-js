@@ -1,29 +1,32 @@
-game.PlayScreen = me.Stage.extend({
+import { ColorLayer, Stage, input } from "melonjs";
+import { Board } from "../board.js";
+
+export class PlayScreen extends Stage {
   /**
    * action to perform on state change
    */
-  onResetEvent: function () {
+  onResetEvent(app) {
     // Add a background color.
-    me.game.world.addChild(new me.ColorLayer("background", "#000000"), -1);
+    app.world.addChild(new ColorLayer("background", "#000000"), -1);
 
     // Create the board.
-    me.game.world.addChild(me.pool.pull("board"), 0);
+    app.world.addChild(new Board(), 0);
 
     // Bind input.
-    me.input.bindKey(me.input.KEY.LEFT, "left");
-    me.input.bindKey(me.input.KEY.RIGHT, "right");
-    me.input.bindKey(me.input.KEY.A, "left");
-    me.input.bindKey(me.input.KEY.D, "right");
-  },
+    input.bindKey(input.KEY.LEFT, "left");
+    input.bindKey(input.KEY.RIGHT, "right");
+    input.bindKey(input.KEY.A, "left");
+    input.bindKey(input.KEY.D, "right");
+  }
 
   /**
    * action to perform when leaving this screen (state change)
    */
-  onDestroyEvent: function () {
+  onDestroyEvent() {
     // Unbind input.
-    me.input.unbindKey(me.input.KEY.LEFT);
-    me.input.unbindKey(me.input.KEY.RIGHT);
-    me.input.unbindKey(me.input.KEY.A);
-    me.input.unbindKey(me.input.KEY.D);
+    input.unbindKey(input.KEY.LEFT);
+    input.unbindKey(input.KEY.RIGHT);
+    input.unbindKey(input.KEY.A);
+    input.unbindKey(input.KEY.D);
   }
-});
+}

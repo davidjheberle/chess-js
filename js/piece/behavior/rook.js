@@ -1,40 +1,36 @@
-game.Behavior.Rook = game.Behavior.extend({
-  // Init.
-  init: function (piece) {
-    this._super(game.Behavior, "init", [
-      piece
-    ]);
-  },
+import { Behavior } from "../behavior.js";
+import { DefaultMove } from "../../board/move/default.js";
 
+export class RookBehavior extends Behavior {
   // Calculate possible moves.
-  calculateMoves: function () {
+  calculateMoves() {
     var straightSquares;
     this.moves = [];
 
     // right
     straightSquares = this.getStraightSquares(1, 0);
-    for (i = 0; i < straightSquares.length; ++i) {
-      this.moves.push(new game.Move.Default(this.piece.square, straightSquares[i]));
+    for (let i = 0; i < straightSquares.length; ++i) {
+      this.moves.push(new DefaultMove(this.piece.square, straightSquares[i]));
     }
     // left
     straightSquares = this.getStraightSquares(-1, 0);
-    for (i = 0; i < straightSquares.length; ++i) {
-      this.moves.push(new game.Move.Default(this.piece.square, straightSquares[i]));
+    for (let i = 0; i < straightSquares.length; ++i) {
+      this.moves.push(new DefaultMove(this.piece.square, straightSquares[i]));
     }
     // up
     straightSquares = this.getStraightSquares(0, -1);
-    for (i = 0; i < straightSquares.length; ++i) {
-      this.moves.push(new game.Move.Default(this.piece.square, straightSquares[i]));
+    for (let i = 0; i < straightSquares.length; ++i) {
+      this.moves.push(new DefaultMove(this.piece.square, straightSquares[i]));
     }
     // down
     straightSquares = this.getStraightSquares(0, 1);
-    for (i = 0; i < straightSquares.length; ++i) {
-      this.moves.push(new game.Move.Default(this.piece.square, straightSquares[i]));
+    for (let i = 0; i < straightSquares.length; ++i) {
+      this.moves.push(new DefaultMove(this.piece.square, straightSquares[i]));
     }
-  },
+  }
 
   // Return array of horizontal and vertical squares.
-  getStraightSquares: function (horizontal, vertical) {
+  getStraightSquares(horizontal, vertical) {
     if (!(Math.abs(horizontal) == 1 && vertical == 0) &&
       !(Math.abs(vertical) == 1 && horizontal == 0)) {
       return [];
@@ -57,4 +53,4 @@ game.Behavior.Rook = game.Behavior.extend({
     }
     return straightSquares;
   }
-});
+}

@@ -1,19 +1,15 @@
-game.Move = me.Entity.extend({
+export class Move {
   // Init.
-  init: function (from, to, type) {
-    this._super(me.Entity, "init", [0, 0, {
-      width: 0,
-      height: 0
-    }]);
+  constructor(from, to, type) {
     this.from = from;
     this.to = to;
     this.type = type;
     this.piece = this.from.piece;
     this.target = this.to.piece;
-  },
+  }
 
   // Equals function.
-  equals: function (move) {
+  equals(move) {
     return this.to.equals(move.to) && this.from.equals(move.from);
   }
-});
+}

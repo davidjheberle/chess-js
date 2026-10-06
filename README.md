@@ -1,64 +1,37 @@
-melonJS boilerplate
+chess-js
 -------------------------------------------------------------------------------
 
-Sample project featuring :
-- WebGL1 as default renderer
-- Video autoscaling
-- Mobile optimized HTML/CSS
-- Swiping disabled on iOS devices
-- Debug Panel (if #debug)
-- Default icons
-- asset file (resources.js) automatic generation
-- distribution build
-- Standalone build for desktop operating systems
-- ES5 & ES6 shim for non compliant browser (see index.html)
+A two-player chess game built with [melonJS](https://melonjs.org) 20.x and
+bundled with [Vite](https://vite.dev).
 
-## To run distribution
+## Running
 
-To build, be sure you have [node](http://nodejs.org) installed. Clone the project:
+Install [node](http://nodejs.org) (20.x or newer), then in the project directory:
 
-    git clone https://github.com/melonjs/boilerplate.git
+    npm install
 
-Then in the cloned directory, simply run:
+Start the dev server (with live reload) on http://localhost:8000:
 
-    [sudo] npm install
+    npm run dev
 
-Running the game:
+Add `#debug` to the URL to enable the melonJS debug panel.
 
-	npm run serve
-
-And you will have the boilerplate example running on http://localhost:8000
-
-## Building Release Versions
-
-To build:
+## Building
 
     npm run build
 
-This will create a `build` directory containing the files that can be uploaded to a server, or packaged into a mobile app.
+This creates a `build` directory containing the files that can be uploaded to
+a server. All paths are relative, so it can be served from any sub-directory.
+Preview the build locally with:
 
-----
+    npm run preview
 
-Building a standalone desktop release:
+## Layout
 
-    npm run dist
-
-Running the desktop release on Windows:
-
-    .\bin\electron.exe
-
-Running the desktop release on macOS:
-
-    open ./bin/Electron.app
-
-Running the desktop release on Linux:
-
-    ./bin/electron
-
-Note that you may have to edit the file `Gruntfile.js` if you need to better dictate the order your files load in. Note how by default the game.js and resources.js are specified in a specific order.
-
-> Note: by default the boilerplate will use the latest version of melonJS available on NPM, when deploying be sure to specify the version the game has been developed and tested against (e.g. updating the url in the [index.html](https://github.com/melonjs/boilerplate/blob/master/index.html#L27) file to specify the 8.0.1 version : https://cdn.jsdelivr.net/npm/melonjs@8.0.1/dist/melonjs.min.js). Also when used on production, it is strongly advised to remove the debug panel [preload](https://github.com/melonjs/boilerplate/blob/master/index.html#L30).
+- `index.html` – page shell; loads `js/game.js` as an ES module.
+- `js/` – game source (ES modules).
+- `public/` – static assets copied as-is into the build (`data/`, `icons/`, `manifest.json`).
+- `resources/` – source art (not shipped).
 
 -------------------------------------------------------------------------------
-Copyright (C) 2011 - 2020 Olivier Biot
 melonJS is licensed under the [MIT License](http://www.opensource.org/licenses/mit-license.php)
