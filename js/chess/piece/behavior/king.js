@@ -172,10 +172,7 @@ export class KingBehavior extends Behavior {
         }
 
         default:
-          if (
-            !m.to.isThreatened(m.piece.color) &&
-            (m.target == null || m.target.color !== m.piece.color)
-          ) {
+          if (m.target == null || m.target.color !== m.piece.color) {
             valid.push(m);
           }
           break;

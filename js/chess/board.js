@@ -130,14 +130,8 @@ export class Board {
 
   // Start the turn owner's turn.
   startTurn() {
-    for (let i = 0; i < this.squares.length; ++i) {
-      const rows = this.squares[i];
-      for (let j = 0; j < rows.length; j++) {
-        const square = rows[j];
-        if (square.isOccupied() && square.piece.isColor(this.turnOwner)) {
-          square.piece.sinceMove++;
-        }
-      }
+    for (const piece of this.getPieces(this.turnOwner)) {
+      piece.sinceMove++;
     }
   }
 

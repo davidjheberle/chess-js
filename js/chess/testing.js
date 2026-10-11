@@ -38,12 +38,8 @@ export function targets(board, name) {
 // Number of moves the turn owner can make.
 export function moveCount(board) {
   let count = 0;
-  for (const row of board.squares) {
-    for (const square of row) {
-      if (square.piece?.isColor(board.turnOwner)) {
-        count += square.piece.behavior.moves.length;
-      }
-    }
+  for (const piece of board.getPieces(board.turnOwner)) {
+    count += piece.behavior.moves.length;
   }
   return count;
 }
