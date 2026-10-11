@@ -45,8 +45,7 @@ export class Grave extends Renderable {
     piece.pos.x = this.pos.x - piece.width / 2;
     piece.pos.y = this.pos.y - piece.height / 2 + piece.offsetY;
     piece.pos.z = this.row + 2;
-    piece.square.piece = null;
-    piece.square = null;
+    piece.grave = this;
     this.piece = piece;
     app.world.sort(true);
   }

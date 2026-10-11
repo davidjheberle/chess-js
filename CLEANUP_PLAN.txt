@@ -19,7 +19,7 @@ Code quality
 [x] 9. Remove dead code
 
 Chess logic
-[ ] 10. Separate chess rules from melonJS rendering; add Vitest tests
+[x] 10. Separate chess rules from melonJS rendering; add Vitest tests
 [ ] 11. Detect check, checkmate and stalemate
 [ ] 12. Show a visible pawn promotion prompt
 
