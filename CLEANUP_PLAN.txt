@@ -1,0 +1,96 @@
+chess-js cleanup plan
+=====================
+
+CHECKLIST
+---------
+Tooling
+[x] 1. Upgrade Node to 24 LTS; pin it (.nvmrc + "engines"); move to Vite 8
+[x] 2. Enable Dependabot for npm and GitHub Actions
+[x] 3. Add "private": true to package.json
+
+Repository hygiene
+[x] 4. Ignore .idea/
+[x] 5. Fix public/manifest.json icon paths
+[~] 6. Deploy to GitHub Pages from a workflow; stop committing build/
+[ ] 7. Merge sandbox into main via PR; delete the stale "clean" branch
+
+Code quality
+[ ] 8. Add ESLint + Prettier; run lint + build in CI on every PR
+[ ] 9. Remove dead code
+
+Chess logic
+[ ] 10. Separate chess rules from melonJS rendering; add Vitest tests
+[ ] 11. Detect check, checkmate and stalemate
+[ ] 12. Show a visible pawn promotion prompt
+
+
+DETAILS
+-------
+
+1. Upgrade Node to 24 LTS
+   Node 20 reached end-of-life in April 2026, and the local install
+   (20.18, from the nodejs.org installer, owned by root) is too old for
+   Vite 8. melonJS 20 also declares "node": ">=24.0.0".
+   - Install Node 24 LTS on this machine.
+   - Add .nvmrc containing "24" so version managers and CI pick it up.
+   - Add "engines": { "node": ">=24" } to package.json.
+   - Upgrade vite ^6 -> ^8, then re-run the dev server and build.
+
+2. Dependabot
+   Add .github/dependabot.yml with monthly checks for npm and
+   github-actions. Small, regular update PRs instead of another
+   five-year jump.
+
+3. "private": true
+   Prevents an accidental `npm publish` of the game.
+
+4. Ignore .idea/
+   JetBrains project files are per-developer; add .idea/ to .gitignore.
+
+5. Manifest fixes (public/manifest.json)
+   - Three icon "src" values are missing ".png" (lines 45, 49, 53).
+   - Icon paths are absolute ("/icons/..."), which break when served
+     from a sub-directory such as /chess-js/ on GitHub Pages; make them
+     relative ("icons/...").
+   - "developer" is not a standard manifest field; drop it.
+
+6. GitHub Pages deployment
+   - Add a workflow (.github/workflows/deploy.yml) that runs
+     `npm ci && npm run build` on pushes to main and publishes build/
+     with actions/deploy-pages.
+   - Switch the repo's Pages source to "GitHub Actions".
+   - `git rm -r --cached build`, add build/ to .gitignore.
+   - Retire the gh-pages branch once the new deploy is confirmed.
+
+7. Branches
+   Open a PR from sandbox to main and merge it. Delete origin/clean if
+   it is no longer needed.
+
+8. ESLint + Prettier + CI
+   - ESLint flat config with recommended rules (no-undef would have
+     caught the implicit globals fixed during the melonJS upgrade).
+   - Prettier with settings matching the current style (2 spaces).
+   - .github/workflows/ci.yml: npm ci, lint, build on pull requests.
+
+9. Dead code
+   - Unused key bindings (LEFT/RIGHT/A/D) in js/screens/play.js.
+   - audio.init() in js/game.js (the game has no sounds).
+   - Empty public/data/bgm, map, sfx placeholder folders.
+   - Unused methods such as Square/Grave isLocatedAt.
+
+10. Separate rules from rendering + tests
+    Board state and move generation currently live in melonJS
+    Renderables, and behaviors call app.world directly. Move the
+    rules into plain modules with no melonJS imports, keep the
+    Renderables as a view layer, then cover moves, captures, castling,
+    en passant and promotion with Vitest.
+
+11. Check / checkmate / stalemate
+    The king cannot move into check, but other pieces can leave their
+    own king in check, and game end is never detected. Easiest to add
+    after step 10, with tests.
+
+12. Pawn promotion prompt
+    Promotion currently waits for the player to click one of their own
+    pieces with no on-screen hint. Show a chooser (queen, rook,
+    bishop, knight).

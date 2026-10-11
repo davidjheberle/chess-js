@@ -27,6 +27,11 @@ Preview the build locally with:
 
     npm run preview
 
+## Deploying
+
+Pushes to `main` are built and published to GitHub Pages by
+`.github/workflows/deploy.yml`: https://davidjheberle.github.io/chess-js/
+
 ## Layout
 
 - `index.html` – page shell; loads `js/game.js` as an ES module.

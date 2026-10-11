@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "chess-js",
-  "homepage": "https://www.rustygrill.com/chess-js/",
+  "homepage": "https://davidjheberle.github.io/chess-js/",
   "repository": {
     "type": "git",
     "url": "https://github.com/davidjheberle/chess-js.git"
