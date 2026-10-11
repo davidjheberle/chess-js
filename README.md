@@ -6,7 +6,8 @@ bundled with [Vite](https://vite.dev).
 
 ## Running
 
-Install [node](http://nodejs.org) (20.x or newer), then in the project directory:
+Install [node](http://nodejs.org) 24 LTS or newer (the version is pinned in
+`.nvmrc`; `fnm use` or `nvm use` picks it up), then in the project directory:
 
     npm install
 
