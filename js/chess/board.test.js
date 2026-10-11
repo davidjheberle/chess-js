@@ -160,6 +160,16 @@ describe("castling", () => {
   it("is allowed when nothing is attacked", () => {
     expect(targets(castlingBoard(2), "e1")).toContain("g1");
   });
+
+  it("is allowed queenside when only the rook's path is attacked", () => {
+    const board = new Board({ empty: true });
+    board.addPiece(KING, WHITE, 7, 4); // e1
+    board.addPiece(ROOK, WHITE, 7, 0); // a1
+    board.addPiece(ROOK, BLACK, 0, 1); // b8, attacks b1
+    board.addPiece(KING, BLACK, 0, 7); // h8
+    board.start(WHITE);
+    expect(targets(board, "e1")).toContain("c1");
+  });
 });
 
 describe("en passant", () => {
