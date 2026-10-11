@@ -4,7 +4,7 @@ import { PieceColor, PieceType } from "./enums.js";
 import { at, moveCount, play, targets } from "./testing.js";
 
 const { WHITE, BLACK } = PieceColor;
-const { PAWN, ROOK, KNIGHT, QUEEN, KING } = PieceType;
+const { PAWN, ROOK, KNIGHT, BISHOP, QUEEN, KING } = PieceType;
 
 describe("starting position", () => {
   it("has white to move with 20 moves", () => {
@@ -64,6 +64,49 @@ describe("moving", () => {
     board.addPiece(KING, BLACK, 0, 7); // h8
     board.start(WHITE);
     expect(targets(board, "e1")).toEqual(["e2", "f1", "f2"]);
+  });
+});
+
+describe("check", () => {
+  function kingBoard() {
+    const board = new Board({ empty: true });
+    board.addPiece(KING, BLACK, 0, 0); // a8
+    return board;
+  }
+
+  it("doesn't let a pinned piece move", () => {
+    const board = kingBoard();
+    board.addPiece(KING, WHITE, 7, 4); // e1
+    board.addPiece(BISHOP, WHITE, 6, 4); // e2
+    board.addPiece(ROOK, BLACK, 0, 4); // e8
+    board.start(WHITE);
+    expect(targets(board, "e2")).toEqual([]);
+  });
+
+  it("only allows moves that get out of check", () => {
+    const board = kingBoard();
+    board.addPiece(KING, WHITE, 7, 4); // e1
+    board.addPiece(ROOK, WHITE, 6, 0); // a2
+    board.addPiece(ROOK, BLACK, 0, 4); // e8
+    board.start(WHITE);
+    expect(targets(board, "a2")).toEqual(["e2"]);
+  });
+
+  it("doesn't let the king retreat along the line it's attacked on", () => {
+    const board = kingBoard();
+    board.addPiece(KING, WHITE, 6, 4); // e2
+    board.addPiece(ROOK, BLACK, 0, 4); // e8
+    board.start(WHITE);
+    expect(targets(board, "e2")).not.toContain("e1");
+  });
+
+  it("doesn't let the king capture a piece defended by the other king", () => {
+    const board = new Board({ empty: true });
+    board.addPiece(KING, WHITE, 7, 4); // e1
+    board.addPiece(KNIGHT, BLACK, 6, 4); // e2
+    board.addPiece(KING, BLACK, 5, 4); // e3
+    board.start(WHITE);
+    expect(targets(board, "e1")).not.toContain("e2");
   });
 });
 
