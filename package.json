@@ -25,7 +25,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "biome check",
-    "fix": "biome check --write"
+    "fix": "biome check --write",
+    "test": "vitest run"
   },
   "dependencies": {
     "@melonjs/debug-plugin": "^16.2.0",
@@ -33,7 +34,8 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
-    "vite": "^8.3.3"
+    "vite": "^8.3.3",
+    "vitest": "^5.0.3"
   },
   "allowScripts": {
     "fsevents": false

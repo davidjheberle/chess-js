@@ -12,4 +12,7 @@ export default defineConfig({
   server: {
     port: 8000,
   },
+  test: {
+    include: ["js/**/*.test.js"],
+  },
 });
