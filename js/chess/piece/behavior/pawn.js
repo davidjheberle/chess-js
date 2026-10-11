@@ -77,19 +77,17 @@ export class PawnBehavior extends Behavior {
     );
     if (workSquare != null) {
       this.moves.push(new Move(this.piece.square, workSquare, MoveType.MOVE));
-    }
-    // up 2, only if the square in between (up) is empty
-    if (
-      !this.piece.hasMoved() &&
-      workSquare != null &&
-      !workSquare.isOccupied()
-    ) {
-      workSquare = this.piece.board.getSquare(
-        this.piece.square.row + vertical * 2,
-        this.piece.square.column,
-      );
-      if (workSquare != null) {
-        this.moves.push(new Move(this.piece.square, workSquare, MoveType.MOVE));
+      // up 2, only if the square in between is empty
+      if (!this.piece.hasMoved() && !workSquare.isOccupied()) {
+        workSquare = this.piece.board.getSquare(
+          this.piece.square.row + vertical * 2,
+          this.piece.square.column,
+        );
+        if (workSquare != null) {
+          this.moves.push(
+            new Move(this.piece.square, workSquare, MoveType.MOVE),
+          );
+        }
       }
     }
   }
@@ -116,13 +114,11 @@ export class PawnBehavior extends Behavior {
           // The target must be a pawn that has just stepped two squares to
           // land beside this pawn, which is then on its 5th rank.
           if (
-            m.target != null &&
-            m.target.type === PieceType.PAWN &&
+            m.target?.type === PieceType.PAWN &&
             m.from.isOnRank(5, m.piece.color) &&
             m.target.color !== m.piece.color &&
             m.target.moveCount === 1 &&
-            m.target.sinceMove === 0 &&
-            m.to.piece == null
+            m.target.sinceMove === 0
           ) {
             valid.push(m);
           }
