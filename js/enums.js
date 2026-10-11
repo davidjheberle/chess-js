@@ -4,19 +4,19 @@ export const PieceType = {
   KNIGHT: 2,
   BISHOP: 3,
   QUEEN: 4,
-  KING: 5
+  KING: 5,
 };
 
 export const PieceColor = {
   BLACK: 0,
-  WHITE: 1
+  WHITE: 1,
 };
 
 // Piece state enum.
 export const PieceState = {
   IDLE: 0,
   HELD: 1,
-  DEAD: 2
+  DEAD: 2,
 };
 
 export const MoveType = {
@@ -24,5 +24,5 @@ export const MoveType = {
   MOVE: 1,
   CAPTURE: 2,
   CASTLE: 3,
-  ENPASSANT: 4
+  ENPASSANT: 4,
 };

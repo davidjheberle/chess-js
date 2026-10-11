@@ -24,7 +24,15 @@ export class Graveyard extends Renderable {
     let graveY = -this.height / 2 + graveHeight / 2;
     for (let r = 0; r < this.numRows; ++r) {
       for (let c = 0; c < this.numColumns; ++c) {
-        grave = new Grave(this.pos.x + graveX, this.pos.y + graveY, graveWidth, graveHeight, '#aaa', r, c);
+        grave = new Grave(
+          this.pos.x + graveX,
+          this.pos.y + graveY,
+          graveWidth,
+          graveHeight,
+          "#aaa",
+          r,
+          c,
+        );
         app.world.addChild(grave, 1);
         this.graves.push(grave);
         graveX += graveWidth;
@@ -42,12 +50,13 @@ export class Graveyard extends Renderable {
 
   // Draw.
   draw(renderer) {
-    renderer.setColor('#444');
+    renderer.setColor("#444");
     renderer.fillRect(
       this.pos.x + this.borderPaddingX,
       this.pos.y + this.borderPaddingY,
       this.width - this.borderPaddingX * 2,
-      this.height - this.borderPaddingY * 2);
+      this.height - this.borderPaddingY * 2,
+    );
   }
 
   // Add a piece to the graveyard.
@@ -66,6 +75,6 @@ export class Graveyard extends Renderable {
 
   // True if graveyard is empty.
   isEmpty() {
-    return this.graveIndex == 0;
+    return this.graveIndex === 0;
   }
 }

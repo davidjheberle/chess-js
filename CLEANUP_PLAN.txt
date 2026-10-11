@@ -11,11 +11,11 @@ Tooling
 Repository hygiene
 [x] 4. Ignore .idea/
 [x] 5. Fix public/manifest.json icon paths
-[~] 6. Deploy to GitHub Pages from a workflow; stop committing build/
-[ ] 7. Merge sandbox into main via PR; delete the stale "clean" branch
+[x] 6. Deploy to GitHub Pages from a workflow; stop committing build/
+[x] 7. Merge sandbox into main via PR; delete the stale "clean" branch
 
 Code quality
-[ ] 8. Add ESLint + Prettier; run lint + build in CI on every PR
+[x] 8. Add Biome (lint + format); run it + build in CI on every PR
 [ ] 9. Remove dead code
 
 Chess logic

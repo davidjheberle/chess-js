@@ -21,17 +21,15 @@ export class Grave extends Renderable {
 
   // Draw.
   draw(renderer) {
-    renderer.setColor('#444');
-    renderer.fillRect(
-      this.pos.x,
-      this.pos.y,
-      this.width, this.height);
+    renderer.setColor("#444");
+    renderer.fillRect(this.pos.x, this.pos.y, this.width, this.height);
     renderer.setColor(this.color);
     renderer.fillRect(
       this.pos.x + this.borderPaddingX,
       this.pos.y + this.borderPaddingY,
       this.width - this.borderPaddingX * 2,
-      this.height - this.borderPaddingY * 2);
+      this.height - this.borderPaddingY * 2,
+    );
   }
 
   // True if occupied.
@@ -46,7 +44,7 @@ export class Grave extends Renderable {
 
   // Add the specified piece.
   addPiece(piece) {
-    if (this.isOccupied() == true) {
+    if (this.isOccupied() === true) {
       return;
     }
     piece.pos.x = this.pos.x - piece.width / 2;

@@ -1,12 +1,12 @@
 import { Draggable, event, input, loader } from "melonjs";
 import { app } from "./app.js";
 import { PieceState, PieceType } from "./enums.js";
-import { PawnBehavior } from "./piece/behavior/pawn.js";
-import { RookBehavior } from "./piece/behavior/rook.js";
-import { KnightBehavior } from "./piece/behavior/knight.js";
 import { BishopBehavior } from "./piece/behavior/bishop.js";
-import { QueenBehavior } from "./piece/behavior/queen.js";
 import { KingBehavior } from "./piece/behavior/king.js";
+import { KnightBehavior } from "./piece/behavior/knight.js";
+import { PawnBehavior } from "./piece/behavior/pawn.js";
+import { QueenBehavior } from "./piece/behavior/queen.js";
+import { RookBehavior } from "./piece/behavior/rook.js";
 
 // Size of a single frame in the pieces sprite sheet.
 const FRAME_SIZE = 64;
@@ -39,9 +39,13 @@ export class Piece extends Draggable {
       this.image,
       (this.frame % framesPerRow) * FRAME_SIZE,
       Math.floor(this.frame / framesPerRow) * FRAME_SIZE,
-      FRAME_SIZE, FRAME_SIZE,
-      this.pos.x, this.pos.y,
-      this.width, this.height);
+      FRAME_SIZE,
+      FRAME_SIZE,
+      this.pos.x,
+      this.pos.y,
+      this.width,
+      this.height,
+    );
   }
 
   // Set this piece type and color.
@@ -94,11 +98,13 @@ export class Piece extends Draggable {
     switch (this.state) {
       case PieceState.IDLE:
         // If the piece was held and is now idle.
-        if (prevState == PieceState.HELD) {
+        if (prevState === PieceState.HELD) {
           // Place it on the nearest space.
           const closestSquare = this.player.board.getClosestSquare(
-            this.pos.x - ((this.square.width - this.width) / 2),
-            this.pos.y - (((this.square.height - this.height) / 2) + this.offsetY));
+            this.pos.x - (this.square.width - this.width) / 2,
+            this.pos.y -
+              ((this.square.height - this.height) / 2 + this.offsetY),
+          );
 
           this.behavior.moveToSquare(closestSquare);
         }
@@ -119,17 +125,17 @@ export class Piece extends Draggable {
 
   // True if the piece state is held.
   isHeld() {
-    return this.state == PieceState.HELD;
+    return this.state === PieceState.HELD;
   }
 
   // True if the peice state is dead.
   isDead() {
-    return this.state == PieceState.DEAD;
+    return this.state === PieceState.DEAD;
   }
 
   // True if the piece color is equal to the given color.
   isColor(color) {
-    return this.color == color;
+    return this.color === color;
   }
 
   // True if the piece's move count is granther than 0.
@@ -171,9 +177,11 @@ export class Piece extends Draggable {
       // Hold the piece if it's not dead.
       this.setPieceState(PieceState.HELD);
       super.dragStart(e);
-    } else if (this.player.isPromotingPawn() &&
-      this.type != PieceType.PAWN &&
-      this.type != PieceType.KING) {
+    } else if (
+      this.player.isPromotingPawn() &&
+      this.type !== PieceType.PAWN &&
+      this.type !== PieceType.KING
+    ) {
       // Promote a pawn to this piece's rank if it's clicked on.
       this.player.finishPawnPromotion(this.type);
       this.player.endTurn();

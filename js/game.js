@@ -5,11 +5,10 @@ import { PlayScreen } from "./screens/play.js";
 
 // Run on page load.
 async function onload() {
-
   // Initialize the video.
   try {
     await app.init();
-  } catch (e) {
+  } catch {
     alert("Your browser does not support HTML5 canvas.");
     return;
   }

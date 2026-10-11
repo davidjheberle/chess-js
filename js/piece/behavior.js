@@ -1,5 +1,5 @@
-import { MoveType, PieceState } from "../enums.js";
 import { app } from "../app.js";
+import { MoveType, PieceState } from "../enums.js";
 
 export class Behavior {
   // Init.
@@ -53,13 +53,13 @@ export class Behavior {
 
   // Position this piece on the given square.
   positionOnSquare(square) {
-    if (this.piece.square != null &&
-      this.piece.square != square) {
+    if (this.piece.square != null && this.piece.square !== square) {
       this.piece.moveCount++;
       this.piece.sinceMove = 0;
     }
     this.piece.pos.x = square.pos.x - this.piece.width / 2;
-    this.piece.pos.y = square.pos.y - this.piece.height / 2 + this.piece.offsetY;
+    this.piece.pos.y =
+      square.pos.y - this.piece.height / 2 + this.piece.offsetY;
     this.piece.pos.z = square.row + 2;
     this.piece.square = square;
     this.piece.square.piece = this.piece;
@@ -68,9 +68,7 @@ export class Behavior {
 
   // Get move based on its 'to' square.
   getMove(toSquare) {
-    return this.moves.find(function (m) {
-      return m.to.equals(toSquare);
-    });
+    return this.moves.find((m) => m.to.equals(toSquare));
   }
 
   // Calculate possible moves.
@@ -82,9 +80,8 @@ export class Behavior {
   // Prune invalid moves.
   pruneMoves() {
     const valid = [];
-    this.moves.forEach(function (m, i) {
-      if (m.target == null ||
-        m.target.color != m.piece.color) {
+    this.moves.forEach((m) => {
+      if (m.target == null || m.target.color !== m.piece.color) {
         valid.push(m);
       }
     });

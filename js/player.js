@@ -1,7 +1,7 @@
 import { app } from "./app.js";
+import { Graveyard } from "./board/graveyard.js";
 import { PieceColor, PieceType } from "./enums.js";
 import { Piece } from "./piece.js";
-import { Graveyard } from "./board/graveyard.js";
 
 export class Player {
   // Init.
@@ -20,7 +20,14 @@ export class Player {
         graveyardX = app.viewport.width / 2 - 240;
         break;
     }
-    this.graveyard = new Graveyard(graveyardX, app.viewport.height / 2, 80, 320, 8, 2);
+    this.graveyard = new Graveyard(
+      graveyardX,
+      app.viewport.height / 2,
+      80,
+      320,
+      8,
+      2,
+    );
     app.world.addChild(this.graveyard, 0);
 
     this.setPieces();
@@ -50,7 +57,7 @@ export class Player {
       PieceType.KING,
       PieceType.BISHOP,
       PieceType.KNIGHT,
-      PieceType.ROOK
+      PieceType.ROOK,
     ];
     for (let i = 0; i < 8; ++i) {
       this.addPiece(nobles[i], nobleRow, i);
@@ -69,7 +76,7 @@ export class Player {
 
   // True if it's this player's turn.
   isTurnOwner() {
-    return this.color == this.board.turnOwner;
+    return this.color === this.board.turnOwner;
   }
 
   // Start this player's turn.
@@ -78,8 +85,7 @@ export class Player {
       const rows = this.board.squares[i];
       for (let j = 0; j < rows.length; j++) {
         const square = rows[j];
-        if (square.isOccupied() &&
-          square.piece.isColor(this.color)) {
+        if (square.isOccupied() && square.piece.isColor(this.color)) {
           square.piece.sinceMove++;
         }
       }

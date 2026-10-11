@@ -1,5 +1,5 @@
-import { Behavior } from "../behavior.js";
 import { DefaultMove } from "../../board/move/default.js";
+import { Behavior } from "../behavior.js";
 
 export class KnightBehavior extends Behavior {
   // Calculate possible moves.
@@ -50,8 +50,10 @@ export class KnightBehavior extends Behavior {
   }
 
   getLSquare(horizontal, vertical) {
-    if (!(Math.abs(horizontal) == 2 && Math.abs(vertical) == 1) &&
-      !(Math.abs(vertical) == 2 && Math.abs(horizontal) == 1)) {
+    if (
+      !(Math.abs(horizontal) === 2 && Math.abs(vertical) === 1) &&
+      !(Math.abs(vertical) === 2 && Math.abs(horizontal) === 1)
+    ) {
       return null;
     }
     var r = this.piece.square.row + vertical;

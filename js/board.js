@@ -1,19 +1,14 @@
 import { Renderable } from "melonjs";
 import { app } from "./app.js";
+import { Square } from "./board/square.js";
 import { PieceColor } from "./enums.js";
 import { Player } from "./player.js";
-import { Square } from "./board/square.js";
 
 export class Board extends Renderable {
   // Init.
   constructor() {
     // x, y, width, height
-    super(
-      app.viewport.width / 2,
-      app.viewport.height / 2,
-      320,
-      320
-    );
+    super(app.viewport.width / 2, app.viewport.height / 2, 320, 320);
 
     this.turnOwner = PieceColor.BLACK;
     this.borderPaddingX = 4;
@@ -32,12 +27,20 @@ export class Board extends Renderable {
     for (let r = 0; r < 8; ++r) {
       this.squares.push([]);
       for (let c = 0; c < 8; ++c) {
-        if (((r + c) % 2) == 0) {
-          squareColor = '#fff';
+        if ((r + c) % 2 === 0) {
+          squareColor = "#fff";
         } else {
-          squareColor = '#000';
+          squareColor = "#000";
         }
-        square = new Square(this.pos.x + squareX, this.pos.y + squareY, squareWidth, squareHeight, squareColor, r, c);
+        square = new Square(
+          this.pos.x + squareX,
+          this.pos.y + squareY,
+          squareWidth,
+          squareHeight,
+          squareColor,
+          r,
+          c,
+        );
         app.world.addChild(square, 1);
         this.squares[r].push(square);
         squareX += squareWidth;
@@ -61,12 +64,13 @@ export class Board extends Renderable {
 
   // Draw.
   draw(renderer) {
-    renderer.setColor('#444');
+    renderer.setColor("#444");
     renderer.fillRect(
       this.pos.x - this.borderPaddingX,
       this.pos.y - this.borderPaddingY,
       this.width + this.borderPaddingX * 2,
-      this.height + this.borderPaddingY * 2);
+      this.height + this.borderPaddingY * 2,
+    );
   }
 
   // Get sqaure at row, column.
@@ -92,13 +96,17 @@ export class Board extends Renderable {
     let workX;
     let workY;
     for (let i = 0; i < this.squares.length; ++i) {
-      workX = Math.abs(x - this.squares[0][i].pos.x + this.squares[0][i].width / 2);
+      workX = Math.abs(
+        x - this.squares[0][i].pos.x + this.squares[0][i].width / 2,
+      );
       if (workX < closestX) {
         closestX = workX;
         closestC = i;
       }
 
-      workY = Math.abs(y - this.squares[i][0].pos.y + this.squares[i][0].height / 2);
+      workY = Math.abs(
+        y - this.squares[i][0].pos.y + this.squares[i][0].height / 2,
+      );
       if (workY < closestY) {
         closestY = workY;
         closestR = i;
@@ -137,10 +145,10 @@ export class Board extends Renderable {
         }
       }
     }
-    pieces.forEach(function (p, i) {
+    pieces.forEach((p) => {
       p.behavior.calculateMoves();
     });
-    pieces.forEach(function (p, i) {
+    pieces.forEach((p) => {
       p.behavior.pruneMoves();
     });
   }

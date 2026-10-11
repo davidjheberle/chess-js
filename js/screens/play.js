@@ -1,4 +1,4 @@
-import { ColorLayer, Stage, input } from "melonjs";
+import { ColorLayer, input, Stage } from "melonjs";
 import { Board } from "../board.js";
 
 export class PlayScreen extends Stage {

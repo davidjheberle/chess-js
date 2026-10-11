@@ -1,7 +1,7 @@
-import { MoveType, PieceType } from "../../enums.js";
-import { Behavior } from "../behavior.js";
 import { CastleMove } from "../../board/move/castle.js";
 import { DefaultMove } from "../../board/move/default.js";
+import { MoveType, PieceType } from "../../enums.js";
+import { Behavior } from "../behavior.js";
 
 export class KingBehavior extends Behavior {
   // Caculate possible moves.
@@ -53,22 +53,52 @@ export class KingBehavior extends Behavior {
     }
 
     // castle to column 0
-    targetSquare = board.getSquare(this.piece.square.row, this.piece.square.column - 2);
+    targetSquare = board.getSquare(
+      this.piece.square.row,
+      this.piece.square.column - 2,
+    );
     let rookFromSquare = board.getSquare(this.piece.square.row, 0);
-    let rookToSquare = board.getSquare(this.piece.square.row, this.piece.square.column - 1);
-    if (targetSquare != null &&
+    let rookToSquare = board.getSquare(
+      this.piece.square.row,
+      this.piece.square.column - 1,
+    );
+    if (
+      targetSquare != null &&
       rookFromSquare != null &&
-      rookToSquare != null) {
-      this.moves.push(new CastleMove(this.piece.square, targetSquare, rookFromSquare, rookToSquare));
+      rookToSquare != null
+    ) {
+      this.moves.push(
+        new CastleMove(
+          this.piece.square,
+          targetSquare,
+          rookFromSquare,
+          rookToSquare,
+        ),
+      );
     }
     // castle to column 7
-    targetSquare = board.getSquare(this.piece.square.row, this.piece.square.column + 2);
+    targetSquare = board.getSquare(
+      this.piece.square.row,
+      this.piece.square.column + 2,
+    );
     rookFromSquare = board.getSquare(this.piece.square.row, 7);
-    rookToSquare = board.getSquare(this.piece.square.row, this.piece.square.column + 1);
-    if (targetSquare != null &&
+    rookToSquare = board.getSquare(
+      this.piece.square.row,
+      this.piece.square.column + 1,
+    );
+    if (
+      targetSquare != null &&
       rookFromSquare != null &&
-      rookToSquare != null) {
-      this.moves.push(new CastleMove(this.piece.square, targetSquare, rookFromSquare, rookToSquare));
+      rookToSquare != null
+    ) {
+      this.moves.push(
+        new CastleMove(
+          this.piece.square,
+          targetSquare,
+          rookFromSquare,
+          rookToSquare,
+        ),
+      );
     }
   }
 
@@ -76,25 +106,34 @@ export class KingBehavior extends Behavior {
   pruneMoves() {
     var valid = [];
     var board = this.piece.player.board;
-    this.moves.forEach(function (m, i) {
+    this.moves.forEach((m) => {
       switch (m.type) {
-        case MoveType.CASTLE:
-          var result = false;
-          if (m.piece.moveCount != 0) { result = true; }
-          else if (m.target == null) { result = true; }
-          else if (m.target.color != m.piece.color) { result = true; }
-          else if (m.target.type != PieceType.ROOK) { result = true; }
-          else if (m.target.moveCount != 0) { result = true; }
-          else if (m.from.isThreatened(m.piece.color)) { result = true; }
+        case MoveType.CASTLE: {
+          let result = false;
+          if (m.piece.moveCount !== 0) {
+            result = true;
+          } else if (m.target == null) {
+            result = true;
+          } else if (m.target.color !== m.piece.color) {
+            result = true;
+          } else if (m.target.type !== PieceType.ROOK) {
+            result = true;
+          } else if (m.target.moveCount !== 0) {
+            result = true;
+          } else if (m.from.isThreatened(m.piece.color)) {
+            result = true;
+          }
 
-          var checkDirection;
+          let checkDirection;
           if (!result) {
-            if (m.rookFrom.column == 7) {
+            if (m.rookFrom.column === 7) {
               checkDirection = 1;
-            } else if (m.rookFrom.column == 0) {
+            } else if (m.rookFrom.column === 0) {
               checkDirection = -1;
             } else {
-              console.error("column is " + m.rookFrom.column + ", it must be 7 or 0.");
+              console.error(
+                `column is ${m.rookFrom.column}, it must be 7 or 0.`,
+              );
               result = true;
             }
           }
@@ -103,11 +142,11 @@ export class KingBehavior extends Behavior {
             // Check if any of the squares between the rook and the king are:
             // 1. Occupied.
             // 2. Threatened.
-            var checkColumn = m.piece.square.column;
-            var checkRow = m.piece.square.row;
-            var checkSquare;
+            let checkColumn = m.piece.square.column;
+            const checkRow = m.piece.square.row;
+            let checkSquare;
             checkColumn += checkDirection;
-            while (checkColumn != m.rookFrom.column) {
+            while (checkColumn !== m.rookFrom.column) {
               checkSquare = board.getSquare(checkRow, checkColumn);
               // Check occupied.
               if (checkSquare.isOccupied()) {
@@ -127,10 +166,13 @@ export class KingBehavior extends Behavior {
             valid.push(m);
           }
           break;
+        }
 
         default:
-          if (!m.to.isThreatened(m.piece.color)
-            && (m.target == null || m.target.color != m.piece.color)) {
+          if (
+            !m.to.isThreatened(m.piece.color) &&
+            (m.target == null || m.target.color !== m.piece.color)
+          ) {
             valid.push(m);
           }
           break;
@@ -151,7 +193,7 @@ export class KingBehavior extends Behavior {
       return null;
     }
     if (adjacentSquare.isOccupied()) {
-      if (adjacentSquare.piece.color != this.piece.color) {
+      if (adjacentSquare.piece.color !== this.piece.color) {
         return adjacentSquare;
       }
     } else {

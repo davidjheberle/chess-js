@@ -16,10 +16,7 @@ export class Square extends Renderable {
   // Draw.
   draw(renderer) {
     renderer.setColor(this.color);
-    renderer.fillRect(
-      this.pos.x,
-      this.pos.y,
-      this.width, this.height);
+    renderer.fillRect(this.pos.x, this.pos.y, this.width, this.height);
   }
 
   // Update.
@@ -53,9 +50,7 @@ export class Square extends Renderable {
 
   // Return true if the provided color is threatened on this square.
   isThreatened(color) {
-    return this.threats.filter(function (t) {
-      return t.color != color;
-    }).length > 0;
+    return this.threats.filter((t) => t.color !== color).length > 0;
   }
 
   // Equals function.

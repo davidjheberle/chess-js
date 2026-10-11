@@ -4,5 +4,5 @@ import { Application } from "melonjs";
 export const app = new Application(640, 480, {
   parent: "screen",
   scale: "auto",
-  scaleMethod: "flex"
+  scaleMethod: "flex",
 });

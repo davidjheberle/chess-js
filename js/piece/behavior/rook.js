@@ -1,5 +1,5 @@
-import { Behavior } from "../behavior.js";
 import { DefaultMove } from "../../board/move/default.js";
+import { Behavior } from "../behavior.js";
 
 export class RookBehavior extends Behavior {
   // Calculate possible moves.
@@ -31,15 +31,17 @@ export class RookBehavior extends Behavior {
 
   // Return array of horizontal and vertical squares.
   getStraightSquares(horizontal, vertical) {
-    if (!(Math.abs(horizontal) == 1 && vertical == 0) &&
-      !(Math.abs(vertical) == 1 && horizontal == 0)) {
+    if (
+      !(Math.abs(horizontal) === 1 && vertical === 0) &&
+      !(Math.abs(vertical) === 1 && horizontal === 0)
+    ) {
       return [];
     }
     var straightSquares = [];
     var r = this.piece.square.row;
     var c = this.piece.square.column;
     var workSquare;
-    while (1) {
+    while (true) {
       r += vertical;
       c += horizontal;
       workSquare = this.piece.player.board.getSquare(r, c);

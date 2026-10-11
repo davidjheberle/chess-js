@@ -7,9 +7,9 @@ export default defineConfig({
     outDir: "build",
     emptyOutDir: true,
     // melonJS alone is ~850 kB minified; no point warning about it.
-    chunkSizeWarningLimit: 1000
+    chunkSizeWarningLimit: 1000,
   },
   server: {
-    port: 8000
-  }
+    port: 8000,
+  },
 });
