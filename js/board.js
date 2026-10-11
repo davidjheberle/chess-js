@@ -1,8 +1,10 @@
 import { Renderable } from "melonjs";
 import { app } from "./app.js";
+import { Graveyard } from "./board/graveyard.js";
 import { Square } from "./board/square.js";
-import { PieceColor } from "./enums.js";
-import { Player } from "./player.js";
+import { Board as ChessBoard } from "./chess/board.js";
+import { PieceColor } from "./chess/enums.js";
+import { Piece } from "./piece.js";
 
 export class Board extends Renderable {
   // Init.
@@ -10,7 +12,9 @@ export class Board extends Renderable {
     // x, y, width, height
     super(app.viewport.width / 2, app.viewport.height / 2, 320, 320);
 
-    this.turnOwner = PieceColor.BLACK;
+    // The game rules and state.
+    this.game = new ChessBoard();
+
     this.borderPaddingX = 4;
     this.borderPaddingY = 4;
 
@@ -49,11 +53,53 @@ export class Board extends Renderable {
       squareX = originX;
     }
 
-    // Create 2 players and have them set up their pieces.
-    this.player1 = new Player(PieceColor.WHITE, this);
-    this.player2 = new Player(PieceColor.BLACK, this);
+    // A graveyard for each color's captured pieces.
+    this.graveyards = {
+      [PieceColor.WHITE]: this.addGraveyard(app.viewport.width / 2 + 240),
+      [PieceColor.BLACK]: this.addGraveyard(app.viewport.width / 2 - 240),
+    };
 
-    this.switchTurnOwner();
+    // A sprite for each piece.
+    this.pieces = [];
+    for (const color of [PieceColor.WHITE, PieceColor.BLACK]) {
+      for (const piece of this.game.getPieces(color)) {
+        const sprite = new Piece(this, piece);
+        app.world.addChild(sprite);
+        this.pieces.push(sprite);
+      }
+    }
+    this.sync();
+  }
+
+  // Add a graveyard centered at x.
+  addGraveyard(x) {
+    const graveyard = new Graveyard(x, app.viewport.height / 2, 80, 320, 8, 2);
+    app.world.addChild(graveyard, 0);
+    return graveyard;
+  }
+
+  // Move a dropped piece to the given square if that's a legal move.
+  dropPiece(sprite, square) {
+    const from = sprite.piece.square;
+    this.game.move(from, this.game.getSquare(square.row, square.column));
+    this.sync();
+  }
+
+  // Place every sprite where the game says its piece is.
+  sync() {
+    for (const sprite of this.pieces) {
+      const piece = sprite.piece;
+      if (piece.isDead()) {
+        if (sprite.grave == null) {
+          this.graveyards[piece.color].addPiece(sprite);
+        }
+      } else {
+        sprite.positionOnSquare(
+          this.getSquare(piece.square.row, piece.square.column),
+        );
+      }
+    }
+    app.world.sort(true);
   }
 
   // Update.
@@ -113,43 +159,5 @@ export class Board extends Renderable {
       }
     }
     return this.getSquare(closestR, closestC);
-  }
-
-  // Switch the turn owner.
-  switchTurnOwner() {
-    switch (this.turnOwner) {
-      case PieceColor.WHITE:
-        this.turnOwner = PieceColor.BLACK;
-        this.player2.startTurn();
-        this.calculateMoves();
-        break;
-
-      case PieceColor.BLACK:
-        this.turnOwner = PieceColor.WHITE;
-        this.player1.startTurn();
-        this.calculateMoves();
-        break;
-    }
-  }
-
-  // Calculate all possible moves.
-  calculateMoves() {
-    let piece;
-    const pieces = [];
-    for (let r = 0; r < this.squares.length; ++r) {
-      for (let c = 0; c < this.squares[r].length; ++c) {
-        this.squares[r][c].threats = [];
-        piece = this.squares[r][c].piece;
-        if (piece != null) {
-          pieces.push(piece);
-        }
-      }
-    }
-    pieces.forEach((p) => {
-      p.behavior.calculateMoves();
-    });
-    pieces.forEach((p) => {
-      p.behavior.pruneMoves();
-    });
   }
 }

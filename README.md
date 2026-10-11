@@ -27,6 +27,13 @@ Preview the build locally with:
 
     npm run preview
 
+## Checking
+
+    npm test        # rules tests (Vitest)
+    npm run lint    # Biome lint + format check; `npm run fix` applies fixes
+
+CI runs both, plus the build, on every pull request.
+
 ## Deploying
 
 Pushes to `main` are built and published to GitHub Pages by
@@ -35,7 +42,9 @@ Pushes to `main` are built and published to GitHub Pages by
 ## Layout
 
 - `index.html` – page shell; loads `js/game.js` as an ES module.
-- `js/` – game source (ES modules).
+- `js/chess/` – the chess rules and game state, with no melonJS code, and
+  their tests (`npm test`).
+- `js/` – the melonJS view: draws the board and pieces and handles input.
 - `public/` – static assets copied as-is into the build (`data/`, `icons/`, `manifest.json`).
 - `resources/` – source art (not shipped).
 
