@@ -16,7 +16,7 @@ Repository hygiene
 
 Code quality
 [x] 8. Add Biome (lint + format); run it + build in CI on every PR
-[ ] 9. Remove dead code
+[x] 9. Remove dead code
 
 Chess logic
 [ ] 10. Separate chess rules from melonJS rendering; add Vitest tests

@@ -37,11 +37,6 @@ export class Grave extends Renderable {
     return this.piece != null;
   }
 
-  // True if located at column, row.
-  isLocatedAt(c, r) {
-    return this.row === r && this.column === c;
-  }
-
   // Add the specified piece.
   addPiece(piece) {
     if (this.isOccupied() === true) {

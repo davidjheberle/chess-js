@@ -72,9 +72,4 @@ export class Graveyard extends Renderable {
     // Increment grave index.
     this.graveIndex++;
   }
-
-  // True if graveyard is empty.
-  isEmpty() {
-    return this.graveIndex === 0;
-  }
 }

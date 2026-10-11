@@ -1,4 +1,4 @@
-import { audio, loader, plugin, state, utils } from "melonjs";
+import { loader, plugin, state, utils } from "melonjs";
 import { app } from "./app.js";
 import { resources } from "./resources.js";
 import { PlayScreen } from "./screens/play.js";
@@ -18,9 +18,6 @@ async function onload() {
     const { DebugPanelPlugin } = await import("@melonjs/debug-plugin");
     plugin.register(DebugPanelPlugin, "debugPanel");
   }
-
-  // Initialize the audio.
-  audio.init("mp3,ogg");
 
   // Set and load all resources.
   // (this will also automatically switch to the loading screen)

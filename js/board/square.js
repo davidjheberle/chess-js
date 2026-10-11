@@ -29,11 +29,6 @@ export class Square extends Renderable {
     return this.piece != null;
   }
 
-  // Return true if the square is located at the specified column and row.
-  isLocatedAt(c, r) {
-    return this.row === r && this.column === c;
-  }
-
   // Check the square's rank based on color.
   isOnRank(rank, color) {
     switch (color) {

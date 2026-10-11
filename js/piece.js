@@ -123,11 +123,6 @@ export class Piece extends Draggable {
     }
   }
 
-  // True if the piece state is held.
-  isHeld() {
-    return this.state === PieceState.HELD;
-  }
-
   // True if the peice state is dead.
   isDead() {
     return this.state === PieceState.DEAD;
