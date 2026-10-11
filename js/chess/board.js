@@ -141,8 +141,74 @@ export class Board {
     }
   }
 
-  // Calculate all possible moves.
+  // Calculate all legal moves.
   calculateMoves() {
+    this.calculatePossibleMoves();
+
+    // Remove the turn owner's moves that would leave their own king in check.
+    for (const piece of this.getPieces(this.turnOwner)) {
+      piece.behavior.moves = piece.behavior.moves.filter(
+        (m) => !this.leavesKingInCheck(m),
+      );
+    }
+  }
+
+  // True if making the move would leave the moving player's king threatened.
+  leavesKingInCheck(move) {
+    // Try the move on a copy of the board.
+    const board = this.clone();
+    board.calculatePossibleMoves();
+    const piece = board.getSquare(move.from.row, move.from.column).piece;
+    piece.behavior.performMove(
+      piece.behavior.getMove(board.getSquare(move.to.row, move.to.column)),
+    );
+    board.calculatePossibleMoves();
+    return board.isInCheck(piece.color);
+  }
+
+  // True if the given color's king is threatened.
+  isInCheck(color) {
+    const king = this.getPieces(color).find((p) => p.type === PieceType.KING);
+    return king?.square.isThreatened(color) ?? false;
+  }
+
+  // Return all pieces of the given color on the board.
+  getPieces(color) {
+    const pieces = [];
+    for (const row of this.squares) {
+      for (const square of row) {
+        if (square.isOccupied() && square.piece.isColor(color)) {
+          pieces.push(square.piece);
+        }
+      }
+    }
+    return pieces;
+  }
+
+  // Return a copy of this board with the same pieces and turn owner.
+  clone() {
+    const board = new Board({ empty: true });
+    board.turnOwner = this.turnOwner;
+    for (const row of this.squares) {
+      for (const square of row) {
+        const p = square.piece;
+        if (p != null) {
+          const copy = board.addPiece(
+            p.type,
+            p.color,
+            square.row,
+            square.column,
+          );
+          copy.moveCount = p.moveCount;
+          copy.sinceMove = p.sinceMove;
+        }
+      }
+    }
+    return board;
+  }
+
+  // Calculate all possible moves, including ones that leave the king in check.
+  calculatePossibleMoves() {
     let piece;
     const pieces = [];
     for (let r = 0; r < this.squares.length; ++r) {
