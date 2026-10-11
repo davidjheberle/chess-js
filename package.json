@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@melonjs/debug-plugin": "^16.1.1",
-    "melonjs": "^20.7.0"
+    "melonjs": "^20.8.0"
   },
   "devDependencies": {
     "vite": "^8.3.3"
