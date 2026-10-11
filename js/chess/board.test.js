@@ -181,6 +181,23 @@ describe("en passant", () => {
     expect(board.captured).toHaveLength(1);
   });
 
+  it("isn't allowed against a pawn that stepped one square", () => {
+    const board = new Board();
+    play(board, "e2e4", "a7a6", "e4e5", "a6a5", "e5e6", "d7d6");
+    expect(targets(board, "e6")).not.toContain("d7");
+  });
+
+  it("isn't allowed against a piece that isn't a pawn", () => {
+    const board = new Board({ empty: true });
+    board.addPiece(KING, WHITE, 7, 4); // e1
+    board.addPiece(PAWN, WHITE, 3, 4); // e5
+    board.addPiece(KNIGHT, BLACK, 1, 6); // g7
+    board.addPiece(KING, BLACK, 0, 7); // h8
+    board.start(BLACK);
+    play(board, "g7f5");
+    expect(targets(board, "e5")).not.toContain("f6");
+  });
+
   it("is only allowed straight away", () => {
     const board = new Board();
     play(board, "e2e4", "a7a6", "e4e5", "d7d5", "h2h3", "h7h6");

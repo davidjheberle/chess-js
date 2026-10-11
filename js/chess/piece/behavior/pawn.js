@@ -1,7 +1,7 @@
 import { CaptureMove } from "../../board/move/capture.js";
 import { EnpassantMove } from "../../board/move/enpassant.js";
 import { Move } from "../../board/move.js";
-import { MoveType, PieceColor } from "../../enums.js";
+import { MoveType, PieceColor, PieceType } from "../../enums.js";
 import { Behavior } from "../behavior.js";
 
 export class PawnBehavior extends Behavior {
@@ -113,8 +113,12 @@ export class PawnBehavior extends Behavior {
           break;
 
         case MoveType.ENPASSANT:
+          // The target must be a pawn that has just stepped two squares to
+          // land beside this pawn, which is then on its 5th rank.
           if (
             m.target != null &&
+            m.target.type === PieceType.PAWN &&
+            m.from.isOnRank(5, m.piece.color) &&
             m.target.color !== m.piece.color &&
             m.target.moveCount === 1 &&
             m.target.sinceMove === 0 &&
