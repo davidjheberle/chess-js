@@ -141,7 +141,7 @@ export class KingBehavior extends Behavior {
           if (!result) {
             // Check if any of the squares between the rook and the king are:
             // 1. Occupied.
-            // 2. Threatened.
+            // 2. Threatened, for the squares the king crosses.
             let checkColumn = m.piece.square.column;
             const checkRow = m.piece.square.row;
             let checkSquare;
@@ -154,7 +154,10 @@ export class KingBehavior extends Behavior {
                 break;
               }
               // Check threatened.
-              if (checkSquare.isThreatened(m.piece.color)) {
+              if (
+                Math.abs(checkColumn - m.from.column) <= 2 &&
+                checkSquare.isThreatened(m.piece.color)
+              ) {
                 result = true;
                 break;
               }
