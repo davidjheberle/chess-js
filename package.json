@@ -1,6 +1,7 @@
 {
   "name": "chess-js",
   "version": "1.0.0",
+  "private": true,
   "description": "chess-js",
   "homepage": "https://www.rustygrill.com/chess-js/",
   "repository": {
@@ -16,6 +17,9 @@
     "email": "davidjheberle@gmail.com"
   },
   "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -26,6 +30,6 @@
     "melonjs": "^20.7.0"
   },
   "devDependencies": {
-    "vite": "^6.4.4"
+    "vite": "^8.3.3"
   }
 }
