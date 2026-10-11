@@ -41,6 +41,14 @@ describe("moving", () => {
     expect(at(board, "e2").piece.type).toBe(PAWN);
   });
 
+  it("doesn't let a pawn's double step jump over a piece", () => {
+    const board = new Board();
+    play(board, "b1c3");
+    expect(targets(board, "c2")).toEqual([]);
+    play(board, "b8c6");
+    expect(targets(board, "c7")).toEqual([]);
+  });
+
   it("captures by removing the target from the board", () => {
     const board = new Board();
     play(board, "e2e4", "d7d5", "e4d5");

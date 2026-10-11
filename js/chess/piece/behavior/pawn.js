@@ -78,8 +78,12 @@ export class PawnBehavior extends Behavior {
     if (workSquare != null) {
       this.moves.push(new Move(this.piece.square, workSquare, MoveType.MOVE));
     }
-    // up 2
-    if (!this.piece.hasMoved()) {
+    // up 2, only if the square in between (up) is empty
+    if (
+      !this.piece.hasMoved() &&
+      workSquare != null &&
+      !workSquare.isOccupied()
+    ) {
       workSquare = this.piece.board.getSquare(
         this.piece.square.row + vertical * 2,
         this.piece.square.column,
