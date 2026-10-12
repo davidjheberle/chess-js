@@ -1,0 +1,37 @@
+import { ColorLayer, Stage, state } from "melonjs";
+import { PieceColor } from "../chess/enums.js";
+import { boardLeft } from "../layout.js";
+import { Button } from "../ui/button.js";
+import { label } from "../ui/text.js";
+
+// Shown when a game ends, with the finished game passed in.
+export class SummaryScreen extends Stage {
+  /**
+   * action to perform on state change
+   */
+  onResetEvent(app, game) {
+    const x = boardLeft();
+    const y = app.viewport.height / 2;
+
+    let title = "stalemate";
+    let result = "draw";
+    if (game.isCheckmate()) {
+      // The player who can't move has lost.
+      title = "checkmate";
+      result =
+        game.turnOwner === PieceColor.WHITE ? "black wins" : "white wins";
+    }
+
+    app.world.addChild(new ColorLayer("background", "#000000"), -1);
+    app.world.addChild(label(x, y - 100, title, 48), 1);
+    app.world.addChild(label(x, y - 50, result, 24), 1);
+    app.world.addChild(
+      new Button(x, y + 20, "play again", () => state.change(state.PLAY)),
+      1,
+    );
+    app.world.addChild(
+      new Button(x, y + 70, "main menu", () => state.change(state.MENU)),
+      1,
+    );
+  }
+}

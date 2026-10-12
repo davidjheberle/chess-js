@@ -1,7 +1,9 @@
 import { loader, plugin, state, utils } from "melonjs";
 import { app } from "./app.js";
 import { resources } from "./resources.js";
+import { MenuScreen } from "./screens/menu.js";
 import { PlayScreen } from "./screens/play.js";
+import { SummaryScreen } from "./screens/summary.js";
 
 // Run on page load.
 async function onload() {
@@ -23,11 +25,13 @@ async function onload() {
   // (this will also automatically switch to the loading screen)
   await loader.preload(resources);
 
-  // Create the play screen.
+  // Create the screens.
+  state.set(state.MENU, new MenuScreen());
   state.set(state.PLAY, new PlayScreen());
+  state.set(state.GAMEOVER, new SummaryScreen());
 
-  // Start the game.
-  state.change(state.PLAY, true);
+  // Start at the main menu.
+  state.change(state.MENU, true);
 }
 
 onload();

@@ -8,11 +8,13 @@ export class Square extends Renderable {
     this.color = color;
     this.row = row;
     this.column = column;
+    // True while this square holds a king in check.
+    this.inCheck = false;
   }
 
   // Draw.
   draw(renderer) {
-    renderer.setColor(this.color);
+    renderer.setColor(this.inCheck ? "#c33" : this.color);
     renderer.fillRect(this.pos.x, this.pos.y, this.width, this.height);
   }
 

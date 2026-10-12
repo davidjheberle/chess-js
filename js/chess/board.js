@@ -73,7 +73,7 @@ export class Board {
     this.calculateMoves();
   }
 
-  // Get sqaure at row, column.
+  // Get square at row, column.
   getSquare(r, c) {
     if (r < 0 || c < 0) {
       return null;
@@ -164,6 +164,23 @@ export class Board {
   isInCheck(color) {
     const king = this.getPieces(color).find((p) => p.type === PieceType.KING);
     return king?.square.isThreatened(color) ?? false;
+  }
+
+  // True if the turn owner is in check and can't move.
+  isCheckmate() {
+    return this.isGameOver() && this.isInCheck(this.turnOwner);
+  }
+
+  // True if the turn owner isn't in check but can't move.
+  isStalemate() {
+    return this.isGameOver() && !this.isInCheck(this.turnOwner);
+  }
+
+  // True if the turn owner has no legal moves.
+  isGameOver() {
+    return this.getPieces(this.turnOwner).every(
+      (p) => p.behavior.moves.length === 0,
+    );
   }
 
   // Return all pieces of the given color on the board.
