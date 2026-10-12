@@ -20,8 +20,10 @@ Code quality
 
 Chess logic
 [x] 10. Separate chess rules from melonJS rendering; add Vitest tests
-[ ] 11. Detect check, checkmate and stalemate
+[x] 11. Detect check, checkmate and stalemate; add menu and summary screens
 [ ] 12. Show a visible pawn promotion prompt
+[ ] 13. Keep a move history; add the other draws
+[ ] 14. Use a pixel font
 
 
 DETAILS
@@ -86,11 +88,20 @@ DETAILS
     en passant and promotion with Vitest.
 
 11. Check / checkmate / stalemate
-    The king cannot move into check, but other pieces can leave their
-    own king in check, and game end is never detected. Easiest to add
-    after step 10, with tests.
+    Done: the king's square turns red in check, checkmate and stalemate
+    end the game with a banner and a summary screen, and the game starts
+    at a main menu.
 
 12. Pawn promotion prompt
     Promotion currently waits for the player to click one of their own
     pieces with no on-screen hint. Show a chooser (queen, rook,
     bishop, knight).
+
+13. Move history and the other draws
+    Record the moves played, then use them for draws by threefold
+    repetition and the 50-move rule, plus insufficient material. The
+    summary screen could show the number of moves.
+
+14. Pixel font
+    Load a pixel font as a "fontface" resource and set FONT in
+    js/ui/text.js to its name.

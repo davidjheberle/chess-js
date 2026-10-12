@@ -243,3 +243,39 @@ describe("promotion", () => {
     expect(board.isPromotingPawn()).toBe(true);
   });
 });
+
+describe("game end", () => {
+  it("isn't over at the start", () => {
+    const board = new Board();
+    expect(board.isGameOver()).toBe(false);
+  });
+
+  it("detects checkmate (fool's mate)", () => {
+    const board = new Board();
+    play(board, "f2f3", "e7e5", "g2g4", "d8h4");
+    expect(board.isCheckmate()).toBe(true);
+    expect(board.isStalemate()).toBe(false);
+    expect(board.isGameOver()).toBe(true);
+    expect(board.turnOwner).toBe(WHITE);
+    expect(board.move(at(board, "e2"), at(board, "e4"))).toBe(false);
+  });
+
+  it("isn't checkmate when the check can be escaped", () => {
+    const board = new Board();
+    play(board, "e2e4", "f7f5", "d1h5");
+    expect(board.isInCheck(BLACK)).toBe(true);
+    expect(board.isCheckmate()).toBe(false);
+    expect(board.isGameOver()).toBe(false);
+  });
+
+  it("detects stalemate", () => {
+    const board = new Board({ empty: true });
+    board.addPiece(KING, BLACK, 0, 0); // a8
+    board.addPiece(QUEEN, WHITE, 2, 1); // b6
+    board.addPiece(KING, WHITE, 2, 2); // c6
+    board.start(BLACK);
+    expect(board.isStalemate()).toBe(true);
+    expect(board.isCheckmate()).toBe(false);
+    expect(board.isGameOver()).toBe(true);
+  });
+});

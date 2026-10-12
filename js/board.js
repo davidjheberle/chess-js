@@ -1,16 +1,29 @@
-import { Renderable } from "melonjs";
+import { Renderable, state } from "melonjs";
 import { app } from "./app.js";
 import { Graveyard } from "./board/graveyard.js";
 import { Square } from "./board/square.js";
 import { Board as ChessBoard } from "./chess/board.js";
-import { PieceColor } from "./chess/enums.js";
+import { PieceColor, PieceType } from "./chess/enums.js";
+import { BOARD_SIZE, boardLeft } from "./layout.js";
 import { Piece } from "./piece.js";
+import { Banner } from "./ui/banner.js";
+import { label } from "./ui/text.js";
+
+// Name of a color for messages.
+function colorName(color) {
+  return color === PieceColor.WHITE ? "white" : "black";
+}
 
 export class Board extends Renderable {
   // Init.
   constructor() {
     // x, y, width, height
-    super(app.viewport.width / 2, app.viewport.height / 2, 320, 320);
+    super(
+      app.viewport.width / 2,
+      app.viewport.height / 2,
+      BOARD_SIZE,
+      BOARD_SIZE,
+    );
 
     // The game rules and state.
     this.game = new ChessBoard();
@@ -59,6 +72,10 @@ export class Board extends Renderable {
       [PieceColor.BLACK]: this.addGraveyard(app.viewport.width / 2 - 240),
     };
 
+    // Whose turn it is, above the board.
+    this.status = label(boardLeft(), this.pos.y - this.height / 2 - 56, "");
+    app.world.addChild(this.status, 2);
+
     // A sprite for each piece.
     this.pieces = [];
     for (const color of [PieceColor.WHITE, PieceColor.BLACK]) {
@@ -73,7 +90,14 @@ export class Board extends Renderable {
 
   // Add a graveyard centered at x.
   addGraveyard(x) {
-    const graveyard = new Graveyard(x, app.viewport.height / 2, 80, 320, 8, 2);
+    const graveyard = new Graveyard(
+      x,
+      app.viewport.height / 2,
+      80,
+      BOARD_SIZE,
+      8,
+      2,
+    );
     app.world.addChild(graveyard, 0);
     return graveyard;
   }
@@ -100,6 +124,40 @@ export class Board extends Renderable {
       }
     }
     app.world.sort(true);
+    this.showStatus();
+  }
+
+  // Show whose turn it is, mark the king's square if it's in check, and
+  // announce the end of the game.
+  showStatus() {
+    const turnOwner = this.game.turnOwner;
+    const inCheck = this.game.isInCheck(turnOwner);
+    const king = this.game
+      .getPieces(turnOwner)
+      .find((p) => p.type === PieceType.KING);
+    for (const row of this.squares) {
+      for (const square of row) {
+        square.inCheck =
+          inCheck &&
+          square.row === king.square.row &&
+          square.column === king.square.column;
+      }
+    }
+
+    if (this.game.isGameOver()) {
+      // The banner and summary screen announce the result.
+      const message = this.game.isCheckmate() ? "checkmate" : "stalemate";
+      this.status.setText("");
+      app.world.addChild(
+        new Banner(app.viewport.width, app.viewport.height, message, () =>
+          state.change(state.GAMEOVER, false, this.game),
+        ),
+        100,
+      );
+    } else {
+      const name = colorName(turnOwner);
+      this.status.setText(inCheck ? `${name} in check` : `${name} move`);
+    }
   }
 
   // Update.
@@ -119,7 +177,7 @@ export class Board extends Renderable {
     );
   }
 
-  // Get sqaure at row, column.
+  // Get square at row, column.
   getSquare(r, c) {
     if (r < 0 || c < 0) {
       return null;
