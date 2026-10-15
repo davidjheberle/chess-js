@@ -22,8 +22,15 @@ Chess logic
 [x] 10. Separate chess rules from melonJS rendering; add Vitest tests
 [x] 11. Detect check, checkmate and stalemate; add menu and summary screens
 [ ] 12. Show a visible pawn promotion prompt
-[ ] 13. Keep a move history; add the other draws
+[ ] 13a. Draw by insufficient material
+[ ] 13b. Keep a move history; draw by repetition and the 50-move rule
 [ ] 14. Use a pixel font
+
+Stretch goals
+[ ] 15. Test the view (menu, board, screens), not just the rules
+[ ] 16. Make dragging pieces work on phones and touch screens
+[ ] 17. Add keyboard controls
+[ ] 18. Add sound effects
 
 
 DETAILS
@@ -68,11 +75,14 @@ DETAILS
    Open a PR from sandbox to main and merge it. Delete origin/clean if
    it is no longer needed.
 
-8. ESLint + Prettier + CI
-   - ESLint flat config with recommended rules (no-undef would have
-     caught the implicit globals fixed during the melonJS upgrade).
-   - Prettier with settings matching the current style (2 spaces).
-   - .github/workflows/ci.yml: npm ci, lint, build on pull requests.
+8. Biome + CI
+   Planned as ESLint + Prettier; Biome was chosen instead, since one
+   tool lints and formats with a single config.
+   - biome.json with the recommended rules and the existing style
+     (2 spaces, double quotes); `npm run lint` checks, `npm run fix`
+     applies fixes.
+   - .github/workflows/ci.yml: npm ci, biome ci, npm test and the build
+     on pull requests and pushes to main.
 
 9. Dead code
    - Unused key bindings (LEFT/RIGHT/A/D) in js/screens/play.js.
@@ -100,12 +110,39 @@ DETAILS
     pieces with no on-screen hint. Show a chooser (queen, rook,
     bishop, knight); the Button in js/ui/button.js can be reused.
 
-13. Move history and the other draws
-    Record the moves played, then use them for draws by threefold
-    repetition and the 50-move rule, plus insufficient material. The
-    summary screen could show the number of moves.
+13a. Insufficient material
+    End the game as a draw when neither side can checkmate: king vs
+    king, king and bishop vs king, king and knight vs king, and kings
+    with bishops all on squares of the same color. Needs only the
+    current position, so it doesn't depend on 13b. The summary screen
+    needs a reason for the draw ("stalemate", "insufficient material").
+
+13b. Move history, repetition and the 50-move rule
+     Record the moves played in the rules, then draw by threefold
+     repetition and after 50 moves by each side with no capture or pawn
+     move. Discuss the design first: the same history could later drive
+     a move list on screen, undo, or the move count on the summary.
 
 14. Pixel font
     Load a pixel font as a "fontface" resource and set FONT in
     js/ui/text.js to its name. Check SIZE and TITLE_SIZE there too,
     since pixel fonts look sharpest at multiples of their native size.
+
+15. View tests
+    The rules have Vitest tests; the menu, board and screens are only
+    play-tested. Either save the headless-Chrome driver used so far as
+    a project skill (/run-skill-generator), or add a small end-to-end
+    test to CI.
+
+16. Touch and phones
+    The game scales to the window, but dragging pieces on a phone or
+    tablet hasn't been tried. Test it, then fix what doesn't work.
+
+17. Keyboard controls
+    For accessibility: move a cursor over the board, pick up and drop
+    pieces, and use the menu and summary buttons from the keyboard.
+    Input should go through the rules module like mouse moves do.
+
+18. Sound effects
+    Moves, captures, check and game end. Needs sound files and
+    audio.init() back in js/game.js (removed in item 9).
