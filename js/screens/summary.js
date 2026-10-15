@@ -23,14 +23,14 @@ export class SummaryScreen extends Stage {
     }
 
     app.world.addChild(new ColorLayer("background", "#000000"), -1);
-    app.world.addChild(label(x, y - 100, title, 48), 1);
-    app.world.addChild(label(x, y - 50, result, 24), 1);
+    app.world.addChild(label(x, y - 58, title), 1);
+    app.world.addChild(label(x, y - 34, result), 1);
     app.world.addChild(
-      new Button(x, y + 20, "play again", () => state.change(state.PLAY)),
+      new Button(x, y + 6, "play again", () => state.change(state.PLAY)),
       1,
     );
     app.world.addChild(
-      new Button(x, y + 70, "main menu", () => state.change(state.MENU)),
+      new Button(x, y + 52, "main menu", () => state.change(state.MENU)),
       1,
     );
   }
