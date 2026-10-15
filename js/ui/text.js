@@ -4,8 +4,12 @@ import { Text } from "melonjs";
 // (as a "fontface" resource in resources.js).
 export const FONT = "sans-serif";
 
+// Text sizes: everything is SIZE except the game's title.
+export const SIZE = "12pt";
+export const TITLE_SIZE = "20pt";
+
 // White text starting at x, vertically centered on y.
-export function label(x, y, text, size = 20) {
+export function label(x, y, text, size = SIZE) {
   return new Text(x, y, {
     font: FONT,
     size,

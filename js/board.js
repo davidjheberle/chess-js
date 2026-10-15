@@ -6,7 +6,7 @@ import { Board as ChessBoard } from "./chess/board.js";
 import { PieceColor, PieceType } from "./chess/enums.js";
 import { BOARD_SIZE, boardLeft } from "./layout.js";
 import { Piece } from "./piece.js";
-import { Banner } from "./ui/banner.js";
+import { ClickArea } from "./ui/clickarea.js";
 import { label } from "./ui/text.js";
 
 // Name of a color for messages.
@@ -145,11 +145,21 @@ export class Board extends Renderable {
     }
 
     if (this.game.isGameOver()) {
-      // The banner and summary screen announce the result.
-      const message = this.game.isCheckmate() ? "checkmate" : "stalemate";
-      this.status.setText("");
+      this.status.setText(this.game.isCheckmate() ? "checkmate" : "stalemate");
+
+      // Below the board, about as far from it as the status is above it.
       app.world.addChild(
-        new Banner(app.viewport.width, app.viewport.height, message, () =>
+        label(
+          boardLeft(),
+          this.pos.y + this.height / 2 + 36,
+          "click to continue",
+        ),
+        2,
+      );
+
+      // Clicking anywhere opens the summary screen.
+      app.world.addChild(
+        new ClickArea(0, 0, app.viewport.width, app.viewport.height, () =>
           state.change(state.GAMEOVER, false, this.game),
         ),
         100,
