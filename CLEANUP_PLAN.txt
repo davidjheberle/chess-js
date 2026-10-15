@@ -88,14 +88,17 @@ DETAILS
     en passant and promotion with Vitest.
 
 11. Check / checkmate / stalemate
-    Done: the king's square turns red in check, checkmate and stalemate
-    end the game with a banner and a summary screen, and the game starts
-    at a main menu.
+    Done: the king's square turns red in check, and the status line
+    above the board shows whose move it is. Checkmate or stalemate shows
+    in the status line with "click to continue" below the board, then a
+    summary screen (play again / main menu). The game starts at a main
+    menu. All text is lowercase, 12pt (title 20pt), and left-aligned
+    with the board.
 
 12. Pawn promotion prompt
     Promotion currently waits for the player to click one of their own
     pieces with no on-screen hint. Show a chooser (queen, rook,
-    bishop, knight).
+    bishop, knight); the Button in js/ui/button.js can be reused.
 
 13. Move history and the other draws
     Record the moves played, then use them for draws by threefold
@@ -104,4 +107,5 @@ DETAILS
 
 14. Pixel font
     Load a pixel font as a "fontface" resource and set FONT in
-    js/ui/text.js to its name.
+    js/ui/text.js to its name. Check SIZE and TITLE_SIZE there too,
+    since pixel fonts look sharpest at multiples of their native size.
