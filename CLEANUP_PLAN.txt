@@ -124,9 +124,10 @@ DETAILS
      to move, castling rights, and any legal en passant capture) and a
      count of plies since the last capture or pawn move. The game ends as
      a draw automatically at threefold repetition and at 50 moves by each
-     side, unless the last move mates. A list of the moves played (for a
-     move list on screen, undo, or the summary's move count) can come
-     later.
+     side, unless the last move mates. The board also keeps a list of
+     the moves played (history), which en passant reads to see whether
+     the target pawn's double step was the last move; it could later
+     drive a move list on screen, undo, or the summary's move count.
 
 14. Pixel font
     Load a pixel font as a "fontface" resource and set FONT in

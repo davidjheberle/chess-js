@@ -111,19 +111,22 @@ export class PawnBehavior extends Behavior {
           break;
 
         case MoveType.ENPASSANT:
-          // The target must be a pawn that has just stepped two squares to
-          // land beside this pawn, which is then on its 5th rank.
+          // The target must be a pawn whose double step was the last move,
+          // landing beside this pawn.
           if (
             m.target?.type === PieceType.PAWN &&
-            m.from.isOnRank(5, m.piece.color) &&
             m.target.color !== m.piece.color &&
-            m.target.moveCount === 1 &&
-            m.target.sinceMove === 0
+            this.isDoubleStep(this.piece.board.lastMove(), m.target)
           ) {
             valid.push(m);
           }
       }
     });
     this.moves = valid;
+  }
+
+  // True if the move was the given pawn stepping two squares.
+  isDoubleStep(move, pawn) {
+    return move?.piece === pawn && Math.abs(move.to.row - move.from.row) === 2;
   }
 }

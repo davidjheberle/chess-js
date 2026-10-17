@@ -100,9 +100,7 @@ export function fromFen(fen) {
       }
       const color =
         ch === ch.toUpperCase() ? PieceColor.WHITE : PieceColor.BLACK;
-      const piece = board.addPiece(types[ch.toLowerCase()], color, row, column);
-      // Nothing has just moved, so nothing can be captured en passant.
-      piece.sinceMove = 1;
+      board.addPiece(types[ch.toLowerCase()], color, row, column);
       column++;
     }
   });
