@@ -1,14 +1,13 @@
 import { Renderable } from "melonjs";
-import { app } from "../app.js";
+import { drawPiece, FRAME_SIZE, OFFSET_Y } from "../piece.js";
 
 export class Grave extends Renderable {
   // Init.
-  constructor(x, y, width, height, color, row, column) {
+  constructor(x, y, width, height, color) {
     // x, y, width, height
     super(x, y, width, height);
     this.color = color;
-    this.row = row;
-    this.column = column;
+    // The captured piece buried here, if any.
     this.piece = null;
     this.borderPaddingX = 2;
     this.borderPaddingY = 2;
@@ -19,7 +18,8 @@ export class Grave extends Renderable {
     return false;
   }
 
-  // Draw.
+  // Draw the grave, then the piece buried in it, standing on it the way
+  // pieces stand on board squares.
   draw(renderer) {
     renderer.setColor("#444");
     renderer.fillRect(this.pos.x, this.pos.y, this.width, this.height);
@@ -30,23 +30,14 @@ export class Grave extends Renderable {
       this.width - this.borderPaddingX * 2,
       this.height - this.borderPaddingY * 2,
     );
-  }
-
-  // True if occupied.
-  isOccupied() {
-    return this.piece != null;
-  }
-
-  // Add the specified piece.
-  addPiece(piece) {
-    if (this.isOccupied() === true) {
-      return;
+    if (this.piece != null) {
+      drawPiece(
+        renderer,
+        this.piece.type,
+        this.piece.color,
+        this.pos.x + (this.width - FRAME_SIZE) / 2,
+        this.pos.y + (this.height - FRAME_SIZE) / 2 + OFFSET_Y,
+      );
     }
-    piece.pos.x = this.pos.x - piece.width / 2;
-    piece.pos.y = this.pos.y - piece.height / 2 + piece.offsetY;
-    piece.pos.z = this.row + 2;
-    piece.grave = this;
-    this.piece = piece;
-    app.world.sort(true);
   }
 }

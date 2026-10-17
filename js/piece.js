@@ -37,7 +37,6 @@ export class Piece extends Draggable {
 
     this.board = board;
     this.piece = piece;
-    this.grave = null;
     this.offsetY = OFFSET_Y;
   }
 
@@ -101,7 +100,7 @@ export class Piece extends Draggable {
   // Drag start event.
   dragStart(e) {
     // Pieces stay put while the promotion chooser is open.
-    if (!this.piece.isDead() && !this.board.game.isPromotingPawn()) {
+    if (!this.board.game.isPromotingPawn()) {
       // Pick the piece up.
       this.pos.z = 50;
       app.world.sort(true);
@@ -111,7 +110,7 @@ export class Piece extends Draggable {
 
   // Drag end event.
   dragEnd(e) {
-    if (this.piece.isDead() || this.board.game.isPromotingPawn()) {
+    if (this.board.game.isPromotingPawn()) {
       return;
     }
     // Drop the piece on the nearest square.
