@@ -30,8 +30,6 @@ export class Graveyard extends Renderable {
           graveWidth,
           graveHeight,
           "#aaa",
-          r,
-          c,
         );
         app.world.addChild(grave, 1);
         this.graves.push(grave);
@@ -59,17 +57,12 @@ export class Graveyard extends Renderable {
     );
   }
 
-  // Add a piece to the graveyard.
+  // Bury a captured piece in the next open grave.
   addPiece(piece) {
-    // Get the next open space and add this piece there.
     if (this.graveIndex >= this.graves.length) {
       return;
     }
-
-    // Add piece to the grave.
-    this.graves[this.graveIndex].addPiece(piece);
-
-    // Increment grave index.
+    this.graves[this.graveIndex].piece = piece;
     this.graveIndex++;
   }
 }

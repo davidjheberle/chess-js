@@ -1,6 +1,7 @@
 import { Renderable, state } from "melonjs";
 import { app } from "./app.js";
 import { Graveyard } from "./board/graveyard.js";
+import { promotionChooser } from "./board/promotion.js";
 import { Square } from "./board/square.js";
 import { Board as ChessBoard } from "./chess/board.js";
 import { PieceColor, PieceType } from "./chess/enums.js";
@@ -76,6 +77,9 @@ export class Board extends Renderable {
     this.status = label(boardLeft(), this.pos.y - this.height / 2 - 56, "");
     app.world.addChild(this.status, 2);
 
+    // The promotion chooser's parts while it's open.
+    this.promotion = [];
+
     // A sprite for each piece.
     this.pieces = [];
     for (const color of [PieceColor.WHITE, PieceColor.BLACK]) {
@@ -109,22 +113,56 @@ export class Board extends Renderable {
     this.sync();
   }
 
-  // Place every sprite where the game says its piece is.
+  // Place every sprite where the game says its piece is, and bury captured
+  // pieces in their graveyard. A captured piece is drawn by its grave, so its
+  // sprite is removed, which also stops it taking input.
   sync() {
     for (const sprite of this.pieces) {
       const piece = sprite.piece;
       if (piece.isDead()) {
-        if (sprite.grave == null) {
-          this.graveyards[piece.color].addPiece(sprite);
-        }
+        this.graveyards[piece.color].addPiece(piece);
+        app.world.removeChild(sprite);
       } else {
         sprite.positionOnSquare(
           this.getSquare(piece.square.row, piece.square.column),
         );
       }
     }
+    this.pieces = this.pieces.filter((sprite) => !sprite.piece.isDead());
+    this.showPromotion();
     app.world.sort(true);
     this.showStatus();
+  }
+
+  // Below the board, about as far from it as the status is above it.
+  belowBoardY() {
+    return this.pos.y + this.height / 2 + 36;
+  }
+
+  // Open the promotion chooser while a pawn waits to be promoted, and close
+  // it once the pawn has been promoted.
+  showPromotion() {
+    const promoting = this.game.isPromotingPawn();
+    if (promoting && this.promotion.length === 0) {
+      this.promotion = promotionChooser(
+        boardLeft(),
+        this.belowBoardY(),
+        this.width / 8,
+        this.game.turnOwner,
+        (type) => {
+          this.game.finishPawnPromotion(type);
+          this.sync();
+        },
+      );
+      for (const child of this.promotion) {
+        app.world.addChild(child, 2);
+      }
+    } else if (!promoting) {
+      for (const child of this.promotion) {
+        app.world.removeChild(child);
+      }
+      this.promotion = [];
+    }
   }
 
   // Show whose turn it is, mark the king's square if it's in check, and
@@ -147,13 +185,8 @@ export class Board extends Renderable {
     if (this.game.isGameOver()) {
       this.status.setText(this.game.isCheckmate() ? "checkmate" : "stalemate");
 
-      // Below the board, about as far from it as the status is above it.
       app.world.addChild(
-        label(
-          boardLeft(),
-          this.pos.y + this.height / 2 + 36,
-          "click to continue",
-        ),
+        label(boardLeft(), this.belowBoardY(), "click to continue"),
         2,
       );
 

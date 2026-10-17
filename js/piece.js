@@ -2,7 +2,30 @@ import { Draggable, event, input, loader } from "melonjs";
 import { app } from "./app.js";
 
 // Size of a single frame in the pieces sprite sheet.
-const FRAME_SIZE = 64;
+export const FRAME_SIZE = 64;
+
+// How far a piece is drawn above the center of the square it stands on.
+export const OFFSET_Y = -20;
+
+// Draw the sprite of a piece of the given type and color with its top-left
+// corner at x, y.
+export function drawPiece(renderer, type, color, x, y) {
+  const image = loader.getImage("pieces");
+  // Type and color enum int values match sprite sheet frames.
+  const frame = type * 2 + color;
+  const framesPerRow = image.width / FRAME_SIZE;
+  renderer.drawImage(
+    image,
+    (frame % framesPerRow) * FRAME_SIZE,
+    Math.floor(frame / framesPerRow) * FRAME_SIZE,
+    FRAME_SIZE,
+    FRAME_SIZE,
+    x,
+    y,
+    FRAME_SIZE,
+    FRAME_SIZE,
+  );
+}
 
 export class Piece extends Draggable {
   // Init with the board view and the game piece this sprite shows.
@@ -12,11 +35,9 @@ export class Piece extends Draggable {
     // Position from the top-left corner (melonJS defaults to the center).
     this.anchorPoint.set(0, 0);
 
-    this.image = loader.getImage("pieces");
     this.board = board;
     this.piece = piece;
-    this.grave = null;
-    this.offsetY = -20;
+    this.offsetY = OFFSET_Y;
   }
 
   // Update.
@@ -27,19 +48,12 @@ export class Piece extends Draggable {
 
   // Draw.
   draw(renderer) {
-    // Type and color enum int values match sprite sheet frames.
-    const frame = this.piece.type * 2 + this.piece.color;
-    const framesPerRow = this.image.width / FRAME_SIZE;
-    renderer.drawImage(
-      this.image,
-      (frame % framesPerRow) * FRAME_SIZE,
-      Math.floor(frame / framesPerRow) * FRAME_SIZE,
-      FRAME_SIZE,
-      FRAME_SIZE,
+    drawPiece(
+      renderer,
+      this.piece.type,
+      this.piece.color,
       this.pos.x,
       this.pos.y,
-      this.width,
-      this.height,
     );
   }
 
@@ -85,13 +99,8 @@ export class Piece extends Draggable {
 
   // Drag start event.
   dragStart(e) {
-    const game = this.board.game;
-    if (game.isPromotingPawn()) {
-      // Promote the pawn to this piece's type if it's clicked on.
-      if (game.finishPawnPromotion(this.piece.type)) {
-        this.board.sync();
-      }
-    } else if (!this.piece.isDead()) {
+    // Pieces stay put while the promotion chooser is open.
+    if (!this.board.game.isPromotingPawn()) {
       // Pick the piece up.
       this.pos.z = 50;
       app.world.sort(true);
@@ -101,7 +110,7 @@ export class Piece extends Draggable {
 
   // Drag end event.
   dragEnd(e) {
-    if (this.piece.isDead() || this.board.game.isPromotingPawn()) {
+    if (this.board.game.isPromotingPawn()) {
       return;
     }
     // Drop the piece on the nearest square.
