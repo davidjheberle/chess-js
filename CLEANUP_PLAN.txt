@@ -21,7 +21,7 @@ Code quality
 Chess logic
 [x] 10. Separate chess rules from melonJS rendering; add Vitest tests
 [x] 11. Detect check, checkmate and stalemate; add menu and summary screens
-[ ] 12. Show a visible pawn promotion prompt
+[x] 12. Show a visible pawn promotion prompt
 [ ] 13a. Draw by insufficient material
 [ ] 13b. Keep a move history; draw by repetition and the 50-move rule
 [ ] 14. Use a pixel font
@@ -106,9 +106,11 @@ DETAILS
     with the board.
 
 12. Pawn promotion prompt
-    Promotion currently waits for the player to click one of their own
-    pieces with no on-screen hint. Show a chooser (queen, rook,
-    bishop, knight); the Button in js/ui/button.js can be reused.
+    Done: when a pawn reaches the last rank, "promote" and the queen,
+    rook, bishop and knight in the player's color appear below the
+    board, where "click to continue" shows at the end of a game. A
+    choice lights up on hover; clicking it promotes the pawn. Pieces on
+    the board can't be picked up until then.
 
 13a. Insufficient material
     End the game as a draw when neither side can checkmate: king vs
