@@ -1,5 +1,5 @@
 import { Square } from "./board/square.js";
-import { PieceColor, PieceType } from "./enums.js";
+import { MoveType, PieceColor, PieceType } from "./enums.js";
 import { Piece } from "./piece.js";
 
 export class Board {
@@ -9,6 +9,11 @@ export class Board {
     this.turnOwner = PieceColor.WHITE;
     this.pawnToPromote = null;
     this.captured = [];
+
+    // Plies since the last capture or pawn move, for the 50-move rule.
+    this.halfmoveClock = 0;
+    // A key for each position reached since the game started, for repetition.
+    this.positions = [];
 
     // 2d array of squares [row, column].
     this.squares = [];
@@ -71,6 +76,8 @@ export class Board {
   start(color) {
     this.turnOwner = color;
     this.calculateMoves();
+    this.halfmoveClock = 0;
+    this.positions = [this.positionKey()];
   }
 
   // Get square at row, column.
@@ -97,7 +104,17 @@ export class Board {
     if (this.isPromotingPawn()) {
       return false;
     }
-    return piece.behavior.moveToSquare(to);
+    const pawn = piece.type === PieceType.PAWN;
+    const captures = this.captured.length;
+    if (!piece.behavior.moveToSquare(to)) {
+      return false;
+    }
+    if (pawn || this.captured.length > captures) {
+      this.halfmoveClock = 0;
+    } else {
+      this.halfmoveClock++;
+    }
+    return true;
   }
 
   // Remove a captured piece from the board.
@@ -108,9 +125,81 @@ export class Board {
     this.captured.push(piece);
   }
 
-  // End the current turn.
+  // End the current turn and record the position it leaves.
   endTurn() {
     this.switchTurnOwner();
+    this.positions.push(this.positionKey());
+  }
+
+  // A string naming the position: the pieces on each square, the turn owner,
+  // who can still castle and whether a pawn can capture en passant. Positions
+  // with the same key count as the same for repetition.
+  positionKey() {
+    const letters = "prnbqk";
+    let key = "";
+    for (const row of this.squares) {
+      for (const square of row) {
+        const p = square.piece;
+        if (p == null) {
+          key += ".";
+        } else {
+          const letter = letters[p.type];
+          key += p.isColor(PieceColor.WHITE) ? letter.toUpperCase() : letter;
+        }
+      }
+    }
+    key += ` ${this.turnOwner} ${this.castlingRights()}`;
+
+    // The pawns that can capture en passant, which only counts if the
+    // capture is legal.
+    for (const pawn of this.getPieces(this.turnOwner)) {
+      for (const m of pawn.behavior.moves) {
+        if (m.type === MoveType.ENPASSANT) {
+          key += ` ${m.from.column}${m.to.column}`;
+        }
+      }
+    }
+    return key;
+  }
+
+  // Which sides each player could still castle to, as in FEN ("KQkq"): the
+  // king and that rook haven't moved, even if castling isn't possible now.
+  castlingRights() {
+    let rights = "";
+    for (const [color, row, letters] of [
+      [PieceColor.WHITE, 7, "KQ"],
+      [PieceColor.BLACK, 0, "kq"],
+    ]) {
+      const king = this.getSquare(row, 4).piece;
+      if (king?.type !== PieceType.KING || king.color !== color) {
+        continue;
+      }
+      if (king.hasMoved()) {
+        continue;
+      }
+      [7, 0].forEach((column, i) => {
+        const rook = this.getSquare(row, column).piece;
+        if (
+          rook?.type === PieceType.ROOK &&
+          rook.color === color &&
+          !rook.hasMoved()
+        ) {
+          rights += letters[i];
+        }
+      });
+    }
+    return rights || "-";
+  }
+
+  // True if the current position has been reached three times.
+  isThreefoldRepetition() {
+    const key = this.positions.at(-1);
+    return this.positions.filter((k) => k === key).length >= 3;
+  }
+
+  // True if 50 moves by each player have passed with no capture or pawn move.
+  isFiftyMoveRule() {
+    return this.halfmoveClock >= 100;
   }
 
   // Switch the turn owner.
@@ -203,14 +292,24 @@ export class Board {
     return false;
   }
 
-  // Why the game was drawn ("stalemate", "insufficient material"), or null if
-  // it hasn't been.
+  // Why the game was drawn ("stalemate", "insufficient material",
+  // "threefold repetition", "50-move rule"), or null if it hasn't been.
   drawReason() {
     if (this.isStalemate()) {
       return "stalemate";
     }
     if (this.hasInsufficientMaterial()) {
       return "insufficient material";
+    }
+    // Checkmate on the move that repeats or reaches 50 moves still wins.
+    if (this.isCheckmate()) {
+      return null;
+    }
+    if (this.isThreefoldRepetition()) {
+      return "threefold repetition";
+    }
+    if (this.isFiftyMoveRule()) {
+      return "50-move rule";
     }
     return null;
   }
