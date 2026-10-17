@@ -113,14 +113,10 @@ export class Piece extends Draggable {
     if (this.board.game.isPromotingPawn()) {
       return;
     }
-    // Drop the piece on the nearest square.
-    const square = this.board.getSquare(
-      this.piece.square.row,
-      this.piece.square.column,
-    );
+    // Drop the piece on the square nearest to where its base is.
     const closestSquare = this.board.getClosestSquare(
-      this.pos.x - (square.width - this.width) / 2,
-      this.pos.y - ((square.height - this.height) / 2 + this.offsetY),
+      this.pos.x + this.width / 2,
+      this.pos.y + this.height / 2 - this.offsetY,
     );
     super.dragEnd(e);
     this.board.dropPiece(this, closestSquare);
