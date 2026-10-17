@@ -113,20 +113,22 @@ export class Board extends Renderable {
     this.sync();
   }
 
-  // Place every sprite where the game says its piece is.
+  // Place every sprite where the game says its piece is, and bury captured
+  // pieces in their graveyard. A captured piece is drawn by its grave, so its
+  // sprite is removed, which also stops it taking input.
   sync() {
     for (const sprite of this.pieces) {
       const piece = sprite.piece;
       if (piece.isDead()) {
-        if (sprite.grave == null) {
-          this.graveyards[piece.color].addPiece(sprite);
-        }
+        this.graveyards[piece.color].addPiece(piece);
+        app.world.removeChild(sprite);
       } else {
         sprite.positionOnSquare(
           this.getSquare(piece.square.row, piece.square.column),
         );
       }
     }
+    this.pieces = this.pieces.filter((sprite) => !sprite.piece.isDead());
     this.showPromotion();
     app.world.sort(true);
     this.showStatus();
