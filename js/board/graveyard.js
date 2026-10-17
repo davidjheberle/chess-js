@@ -1,60 +1,31 @@
-import { Renderable } from "melonjs";
 import { app } from "../app.js";
 import { Grave } from "./grave.js";
 
-export class Graveyard extends Renderable {
+// A grid of graves centered on x, y, filled with captured pieces in order.
+export class Graveyard {
   // Init.
   constructor(x, y, width, height, rows, columns) {
-    super(x, y, width, height);
-
-    this.numRows = rows;
-    this.numColumns = columns;
-    this.borderPaddingX = 2;
-    this.borderPaddingY = 2;
-
     // Array of graves.
     this.graves = [];
     this.graveIndex = 0;
 
-    let grave;
-    const graveWidth = width / this.numColumns;
-    const graveHeight = height / this.numRows;
-    const originX = -width / 2 + graveWidth / 2;
-    let graveX = originX;
-    let graveY = -this.height / 2 + graveHeight / 2;
-    for (let r = 0; r < this.numRows; ++r) {
-      for (let c = 0; c < this.numColumns; ++c) {
-        grave = new Grave(
-          this.pos.x + graveX,
-          this.pos.y + graveY,
+    const graveWidth = width / columns;
+    const graveHeight = height / rows;
+    const left = x - width / 2 + graveWidth / 2;
+    const top = y - height / 2 + graveHeight / 2;
+    for (let r = 0; r < rows; ++r) {
+      for (let c = 0; c < columns; ++c) {
+        const grave = new Grave(
+          left + c * graveWidth,
+          top + r * graveHeight,
           graveWidth,
           graveHeight,
           "#aaa",
         );
         app.world.addChild(grave, 1);
         this.graves.push(grave);
-        graveX += graveWidth;
       }
-      graveY += graveHeight;
-      graveX = originX;
     }
-  }
-
-  // Update.
-  update(dt) {
-    super.update(dt);
-    return true;
-  }
-
-  // Draw.
-  draw(renderer) {
-    renderer.setColor("#444");
-    renderer.fillRect(
-      this.pos.x + this.borderPaddingX,
-      this.pos.y + this.borderPaddingY,
-      this.width - this.borderPaddingX * 2,
-      this.height - this.borderPaddingY * 2,
-    );
   }
 
   // Bury a captured piece in the next open grave.

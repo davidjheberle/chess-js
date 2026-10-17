@@ -12,13 +12,6 @@ export const PieceColor = {
   WHITE: 1,
 };
 
-// Piece state enum.
-export const PieceState = {
-  IDLE: 0,
-  HELD: 1,
-  DEAD: 2,
-};
-
 export const MoveType = {
   DEFAULT: 0,
   MOVE: 1,

@@ -94,16 +94,7 @@ export class Board extends Renderable {
 
   // Add a graveyard centered at x.
   addGraveyard(x) {
-    const graveyard = new Graveyard(
-      x,
-      app.viewport.height / 2,
-      80,
-      BOARD_SIZE,
-      8,
-      2,
-    );
-    app.world.addChild(graveyard, 0);
-    return graveyard;
+    return new Graveyard(x, app.viewport.height / 2, 80, BOARD_SIZE, 8, 2);
   }
 
   // Move a dropped piece to the given square if that's a legal move.
@@ -234,31 +225,14 @@ export class Board extends Renderable {
     return this.squares[r][c];
   }
 
-  // Get closest square to x, y position.
+  // Get the square whose center is closest to x, y.
   getClosestSquare(x, y) {
-    let closestX = Number.POSITIVE_INFINITY;
-    let closestY = Number.POSITIVE_INFINITY;
-    let closestR = -1;
-    let closestC = -1;
-    let workX;
-    let workY;
-    for (let i = 0; i < this.squares.length; ++i) {
-      workX = Math.abs(
-        x - this.squares[0][i].pos.x + this.squares[0][i].width / 2,
-      );
-      if (workX < closestX) {
-        closestX = workX;
-        closestC = i;
-      }
-
-      workY = Math.abs(
-        y - this.squares[i][0].pos.y + this.squares[i][0].height / 2,
-      );
-      if (workY < closestY) {
-        closestY = workY;
-        closestR = i;
-      }
-    }
-    return this.getSquare(closestR, closestC);
+    const size = this.width / 8;
+    const first = this.squares[0][0].pos;
+    const index = (offset) => Math.min(7, Math.max(0, Math.round(offset)));
+    return this.getSquare(
+      index((y - first.y) / size),
+      index((x - first.x) / size),
+    );
   }
 }
