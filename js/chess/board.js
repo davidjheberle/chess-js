@@ -125,9 +125,16 @@ export class Board {
     this.captured.push(piece);
   }
 
-  // End the current turn and record the position it leaves.
+  // End the current turn: pass the move to the other player, work out their
+  // legal moves and record the position.
   endTurn() {
-    this.switchTurnOwner();
+    this.turnOwner =
+      this.turnOwner === PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
+    // Count the turns since each of the new turn owner's pieces last moved.
+    for (const piece of this.getPieces(this.turnOwner)) {
+      piece.sinceMove++;
+    }
+    this.calculateMoves();
     this.positions.push(this.positionKey());
   }
 
@@ -170,20 +177,17 @@ export class Board {
       [PieceColor.WHITE, 7, "KQ"],
       [PieceColor.BLACK, 0, "kq"],
     ]) {
-      const king = this.getSquare(row, 4).piece;
-      if (king?.type !== PieceType.KING || king.color !== color) {
-        continue;
-      }
-      if (king.hasMoved()) {
+      // True if the piece in the given column is the given type, this color,
+      // and hasn't moved.
+      const unmoved = (column, type) => {
+        const p = this.getSquare(row, column).piece;
+        return p?.type === type && p.isColor(color) && !p.hasMoved();
+      };
+      if (!unmoved(4, PieceType.KING)) {
         continue;
       }
       [7, 0].forEach((column, i) => {
-        const rook = this.getSquare(row, column).piece;
-        if (
-          rook?.type === PieceType.ROOK &&
-          rook.color === color &&
-          !rook.hasMoved()
-        ) {
+        if (unmoved(column, PieceType.ROOK)) {
           rights += letters[i];
         }
       });
@@ -200,28 +204,6 @@ export class Board {
   // True if 50 moves by each player have passed with no capture or pawn move.
   isFiftyMoveRule() {
     return this.halfmoveClock >= 100;
-  }
-
-  // Switch the turn owner.
-  switchTurnOwner() {
-    switch (this.turnOwner) {
-      case PieceColor.WHITE:
-        this.turnOwner = PieceColor.BLACK;
-        break;
-
-      case PieceColor.BLACK:
-        this.turnOwner = PieceColor.WHITE;
-        break;
-    }
-    this.startTurn();
-    this.calculateMoves();
-  }
-
-  // Start the turn owner's turn.
-  startTurn() {
-    for (const piece of this.getPieces(this.turnOwner)) {
-      piece.sinceMove++;
-    }
   }
 
   // Calculate all legal moves.
