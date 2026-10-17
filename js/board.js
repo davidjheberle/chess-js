@@ -131,7 +131,9 @@ export class Board extends Renderable {
       : null;
 
     if (this.game.isGameOver()) {
-      this.status.setText(this.game.isCheckmate() ? "checkmate" : "stalemate");
+      this.status.setText(
+        this.game.isCheckmate() ? "checkmate" : this.game.drawReason(),
+      );
 
       app.world.addChild(
         label(boardLeft(), this.belowBoardY(), "click to continue"),

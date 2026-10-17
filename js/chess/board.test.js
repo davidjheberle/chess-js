@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Board } from "./board.js";
 import { PieceColor, PieceType } from "./enums.js";
-import { at, moveCount, play, targets } from "./testing.js";
+import { at, fromFen, moveCount, play, targets } from "./testing.js";
 
 const { WHITE, BLACK } = PieceColor;
 const { PAWN, ROOK, KNIGHT, BISHOP, QUEEN, KING } = PieceType;
@@ -276,6 +276,66 @@ describe("game end", () => {
     board.start(BLACK);
     expect(board.isStalemate()).toBe(true);
     expect(board.isCheckmate()).toBe(false);
+    expect(board.hasNoLegalMoves()).toBe(true);
+    expect(board.drawReason()).toBe("stalemate");
     expect(board.isGameOver()).toBe(true);
+  });
+});
+
+describe("insufficient material", () => {
+  const drawn = (fen) => {
+    const board = fromFen(fen);
+    expect(board.hasNoLegalMoves()).toBe(false);
+    return board.hasInsufficientMaterial();
+  };
+
+  it("draws king vs king", () => {
+    const board = fromFen("8/8/4k3/8/8/4K3/8/8 w - -");
+    expect(board.hasInsufficientMaterial()).toBe(true);
+    expect(board.drawReason()).toBe("insufficient material");
+    expect(board.isGameOver()).toBe(true);
+    expect(board.isCheckmate()).toBe(false);
+  });
+
+  it("draws king and bishop or knight vs king", () => {
+    expect(drawn("8/8/4k3/8/8/4K3/8/5B2 w - -")).toBe(true);
+    expect(drawn("8/8/4k3/8/8/4K3/8/6n1 w - -")).toBe(true);
+  });
+
+  it("draws when every bishop is on the same color", () => {
+    // f1 and c8 are both light squares.
+    expect(drawn("2b5/8/4k3/8/8/4K3/8/5B2 w - -")).toBe(true);
+    // f1, d3 and h3 are all light squares.
+    expect(drawn("8/8/4k3/8/8/3BK2B/8/5B2 w - -")).toBe(true);
+  });
+
+  it("plays on with bishops on both colors", () => {
+    // f1 is light, f8 is dark.
+    expect(drawn("5b2/8/4k3/8/8/4K3/8/5B2 w - -")).toBe(false);
+    expect(drawn("8/8/4k3/8/8/4K3/8/4BB2 w - -")).toBe(false);
+  });
+
+  it("plays on with any mating material", () => {
+    expect(drawn("8/8/4k3/8/8/4K3/8/5N1N w - -")).toBe(false); // two knights
+    expect(drawn("8/8/4k3/8/8/4K3/8/5Nb1 w - -")).toBe(false); // knight vs bishop
+    expect(drawn("8/8/4k3/8/8/4K3/8/5BN1 w - -")).toBe(false);
+    expect(drawn("8/8/4k3/8/8/4K3/8/7R w - -")).toBe(false);
+    expect(drawn("8/8/4k3/8/8/4K3/8/7Q w - -")).toBe(false);
+    expect(drawn("8/8/4k3/8/8/4K3/P7/8 w - -")).toBe(false);
+  });
+
+  it("isn't drawn at the start", () => {
+    const board = new Board();
+    expect(board.hasInsufficientMaterial()).toBe(false);
+    expect(board.drawReason()).toBe(null);
+  });
+
+  it("ends the game when the last capture leaves too little", () => {
+    // White's king takes black's last rook.
+    const board = fromFen("8/8/4k3/8/8/8/3r4/4K3 w - -");
+    expect(board.isGameOver()).toBe(false);
+    play(board, "e1d2");
+    expect(board.isGameOver()).toBe(true);
+    expect(board.drawReason()).toBe("insufficient material");
   });
 });
