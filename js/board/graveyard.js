@@ -22,7 +22,9 @@ export class Graveyard {
           graveHeight,
           "#aaa",
         );
-        app.world.addChild(grave, 1);
+        // Lower rows draw later, so a piece's top can stand over the grave
+        // above it, as on the board.
+        app.world.addChild(grave, r + 1);
         this.graves.push(grave);
       }
     }
