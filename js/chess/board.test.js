@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Board } from "./board.js";
 import { PieceColor, PieceType } from "./enums.js";
-import { at, fromFen, moveCount, play, targets } from "./testing.js";
+import { at, fromFen, moveCount, nameOf, play, targets } from "./testing.js";
 
 const { WHITE, BLACK } = PieceColor;
 const { PAWN, ROOK, KNIGHT, BISHOP, QUEEN, KING } = PieceType;
@@ -64,6 +64,21 @@ describe("moving", () => {
     board.addPiece(KING, BLACK, 0, 7); // h8
     board.start(WHITE);
     expect(targets(board, "e1")).toEqual(["e2", "f1", "f2"]);
+  });
+});
+
+describe("history", () => {
+  it("records the moves played, oldest first", () => {
+    const board = new Board();
+    play(board, "e2e4", "e7e5", "g1f3");
+    expect(board.history).toHaveLength(3);
+    const last = board.lastMove();
+    expect(last.piece.type).toBe(KNIGHT);
+    expect([nameOf(last.from), nameOf(last.to)]).toEqual(["g1", "f3"]);
+  });
+
+  it("is empty before the first move", () => {
+    expect(new Board().lastMove()).toBeUndefined();
   });
 });
 

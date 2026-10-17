@@ -10,6 +10,9 @@ export class Board {
     this.pawnToPromote = null;
     this.captured = [];
 
+    // The moves played, oldest first: { piece, from, to } with the squares
+    // the piece moved between.
+    this.history = [];
     // Plies since the last capture or pawn move, for the 50-move rule.
     this.halfmoveClock = 0;
     // A key for each position reached since the game started, for repetition.
@@ -104,17 +107,23 @@ export class Board {
     if (this.isPromotingPawn()) {
       return false;
     }
-    const pawn = piece.type === PieceType.PAWN;
-    const captures = this.captured.length;
-    if (!piece.behavior.moveToSquare(to)) {
-      return false;
-    }
-    if (pawn || this.captured.length > captures) {
+    return piece.behavior.moveToSquare(to);
+  }
+
+  // Record a move that has just been made, before the turn ends.
+  recordMove(move) {
+    this.history.push({ piece: move.piece, from: move.from, to: move.to });
+    const captures = move.type !== MoveType.CASTLE && move.target != null;
+    if (move.piece.type === PieceType.PAWN || captures) {
       this.halfmoveClock = 0;
     } else {
       this.halfmoveClock++;
     }
-    return true;
+  }
+
+  // The last move played, or undefined before the first.
+  lastMove() {
+    return this.history.at(-1);
   }
 
   // Remove a captured piece from the board.
@@ -130,10 +139,6 @@ export class Board {
   endTurn() {
     this.turnOwner =
       this.turnOwner === PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
-    // Count the turns since each of the new turn owner's pieces last moved.
-    for (const piece of this.getPieces(this.turnOwner)) {
-      piece.sinceMove++;
-    }
     this.calculateMoves();
     this.positions.push(this.positionKey());
   }
@@ -314,10 +319,12 @@ export class Board {
     return pieces;
   }
 
-  // Return a copy of this board with the same pieces and turn owner.
+  // Return a copy of this board with the same pieces and turn owner, and the
+  // last move (for en passant) as its only history.
   clone() {
     const board = new Board({ empty: true });
     board.turnOwner = this.turnOwner;
+    const last = this.lastMove();
     for (const row of this.squares) {
       for (const square of row) {
         const p = square.piece;
@@ -329,7 +336,13 @@ export class Board {
             square.column,
           );
           copy.moveCount = p.moveCount;
-          copy.sinceMove = p.sinceMove;
+          if (p === last?.piece) {
+            board.history.push({
+              piece: copy,
+              from: board.getSquare(last.from.row, last.from.column),
+              to: board.getSquare(last.to.row, last.to.column),
+            });
+          }
         }
       }
     }

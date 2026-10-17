@@ -14,6 +14,7 @@ export class Behavior {
       return false;
     }
     this.performMove(move);
+    this.piece.board.recordMove(move);
     this.finishMove();
     return true;
   }
@@ -49,7 +50,6 @@ export class Behavior {
   positionOnSquare(square) {
     if (this.piece.square != null && this.piece.square !== square) {
       this.piece.moveCount++;
-      this.piece.sinceMove = 0;
     }
     this.piece.square = square;
     this.piece.square.piece = this.piece;

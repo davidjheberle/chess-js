@@ -12,7 +12,6 @@ export class Piece {
     this.board = board;
     this.square = null;
     this.moveCount = 0;
-    this.sinceMove = 0;
     this.captured = false;
     this.setTypeAndColor(pieceType, pieceColor);
   }
