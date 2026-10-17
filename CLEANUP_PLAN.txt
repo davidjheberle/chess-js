@@ -22,7 +22,7 @@ Chess logic
 [x] 10. Separate chess rules from melonJS rendering; add Vitest tests
 [x] 11. Detect check, checkmate and stalemate; add menu and summary screens
 [x] 12. Show a visible pawn promotion prompt
-[ ] 13a. Draw by insufficient material
+[x] 13a. Draw by insufficient material
 [ ] 13b. Keep a move history; draw by repetition and the 50-move rule
 [ ] 14. Use a pixel font
 
@@ -113,11 +113,11 @@ DETAILS
     the board can't be picked up until then.
 
 13a. Insufficient material
-    End the game as a draw when neither side can checkmate: king vs
-    king, king and bishop vs king, king and knight vs king, and kings
-    with bishops all on squares of the same color. Needs only the
-    current position, so it doesn't depend on 13b. The summary screen
-    needs a reason for the draw ("stalemate", "insufficient material").
+    Done: the game ends as a draw when neither side can checkmate: king
+    vs king, king and bishop vs king, king and knight vs king, and kings
+    with bishops all on squares of the same color. The status line and
+    summary screen name the reason ("stalemate", "insufficient
+    material"); 13b's draws can add theirs to drawReason().
 
 13b. Move history, repetition and the 50-move rule
      Record the moves played in the rules, then draw by threefold

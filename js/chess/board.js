@@ -168,19 +168,56 @@ export class Board {
 
   // True if the turn owner is in check and can't move.
   isCheckmate() {
-    return this.isGameOver() && this.isInCheck(this.turnOwner);
+    return this.hasNoLegalMoves() && this.isInCheck(this.turnOwner);
   }
 
   // True if the turn owner isn't in check but can't move.
   isStalemate() {
-    return this.isGameOver() && !this.isInCheck(this.turnOwner);
+    return this.hasNoLegalMoves() && !this.isInCheck(this.turnOwner);
   }
 
   // True if the turn owner has no legal moves.
-  isGameOver() {
+  hasNoLegalMoves() {
     return this.getPieces(this.turnOwner).every(
       (p) => p.behavior.moves.length === 0,
     );
+  }
+
+  // True if neither player has the pieces to checkmate: king vs king, king
+  // and bishop or knight vs king, or kings with bishops all on squares of the
+  // same color.
+  hasInsufficientMaterial() {
+    const others = this.getPieces(PieceColor.WHITE)
+      .concat(this.getPieces(PieceColor.BLACK))
+      .filter((p) => p.type !== PieceType.KING);
+    if (others.length === 0) {
+      return true;
+    }
+    if (others.length === 1 && others[0].type === PieceType.KNIGHT) {
+      return true;
+    }
+    if (others.every((p) => p.type === PieceType.BISHOP)) {
+      const shade = (p) => (p.square.row + p.square.column) % 2;
+      return others.every((p) => shade(p) === shade(others[0]));
+    }
+    return false;
+  }
+
+  // Why the game was drawn ("stalemate", "insufficient material"), or null if
+  // it hasn't been.
+  drawReason() {
+    if (this.isStalemate()) {
+      return "stalemate";
+    }
+    if (this.hasInsufficientMaterial()) {
+      return "insufficient material";
+    }
+    return null;
+  }
+
+  // True if the game has ended in checkmate or a draw.
+  isGameOver() {
+    return this.isCheckmate() || this.drawReason() != null;
   }
 
   // Return all pieces of the given color on the board.

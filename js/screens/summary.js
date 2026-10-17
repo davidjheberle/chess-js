@@ -13,7 +13,7 @@ export class SummaryScreen extends Stage {
     const x = boardLeft();
     const y = app.viewport.height / 2;
 
-    let title = "stalemate";
+    let title = game.drawReason();
     let result = "draw";
     if (game.isCheckmate()) {
       // The player who can't move has lost.
