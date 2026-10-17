@@ -23,7 +23,7 @@ Chess logic
 [x] 11. Detect check, checkmate and stalemate; add menu and summary screens
 [x] 12. Show a visible pawn promotion prompt
 [x] 13a. Draw by insufficient material
-[ ] 13b. Keep a move history; draw by repetition and the 50-move rule
+[x] 13b. Keep a move history; draw by repetition and the 50-move rule
 [ ] 14. Use a pixel font
 
 Stretch goals
@@ -119,11 +119,14 @@ DETAILS
     summary screen name the reason ("stalemate", "insufficient
     material"); 13b's draws can add theirs to drawReason().
 
-13b. Move history, repetition and the 50-move rule
-     Record the moves played in the rules, then draw by threefold
-     repetition and after 50 moves by each side with no capture or pawn
-     move. Discuss the design first: the same history could later drive
-     a move list on screen, undo, or the move count on the summary.
+13b. Repetition and the 50-move rule
+     Done: the rules keep a key for every position reached (pieces, side
+     to move, castling rights, and any legal en passant capture) and a
+     count of plies since the last capture or pawn move. The game ends as
+     a draw automatically at threefold repetition and at 50 moves by each
+     side, unless the last move mates. A list of the moves played (for a
+     move list on screen, undo, or the summary's move count) can come
+     later.
 
 14. Pixel font
     Load a pixel font as a "fontface" resource and set FONT in

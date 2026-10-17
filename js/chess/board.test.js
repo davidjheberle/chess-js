@@ -339,3 +339,79 @@ describe("insufficient material", () => {
     expect(board.drawReason()).toBe("insufficient material");
   });
 });
+
+describe("threefold repetition", () => {
+  const knightDance = ["g1f3", "g8f6", "f3g1", "f6g8"];
+  const kingDance = ["e1e2", "e8e7", "e2e1", "e7e8"];
+
+  it("draws when the same position comes up a third time", () => {
+    const board = new Board();
+    play(board, ...knightDance);
+    expect(board.isThreefoldRepetition()).toBe(false);
+    play(board, ...knightDance.slice(0, 3));
+    expect(board.isGameOver()).toBe(false);
+    play(board, knightDance[3]);
+    expect(board.isThreefoldRepetition()).toBe(true);
+    expect(board.isGameOver()).toBe(true);
+    expect(board.drawReason()).toBe("threefold repetition");
+  });
+
+  it("counts a position as new once castling rights are lost", () => {
+    const board = new Board();
+    play(board, "e2e4", "e7e5", ...kingDance, ...kingDance);
+    // The pieces stand as they did after 1. e4 e5 for the third time, but
+    // neither king can castle now.
+    expect(board.isGameOver()).toBe(false);
+    play(board, ...kingDance);
+    expect(board.drawReason()).toBe("threefold repetition");
+  });
+
+  it("counts a position as new once en passant can't be played", () => {
+    const board = new Board();
+    // White can take d5 en passant only right after the double step.
+    play(board, "e2e4", "a7a6", "e4e5", "d7d5", ...knightDance, ...knightDance);
+    expect(board.isGameOver()).toBe(false);
+    play(board, ...knightDance);
+    expect(board.drawReason()).toBe("threefold repetition");
+  });
+
+  it("names castling rights like FEN", () => {
+    expect(new Board().castlingRights()).toBe("KQkq");
+    expect(fromFen("r3k3/8/8/8/8/8/8/4K2R w Kq -").castlingRights()).toBe("Kq");
+    expect(fromFen("4k3/8/8/8/8/8/8/4K3 w - -").castlingRights()).toBe("-");
+  });
+});
+
+describe("50-move rule", () => {
+  it("counts plies since the last capture or pawn move", () => {
+    const board = new Board();
+    play(board, "g1f3", "g8f6");
+    expect(board.halfmoveClock).toBe(2);
+    play(board, "e2e4");
+    expect(board.halfmoveClock).toBe(0);
+    play(board, "f6e4");
+    expect(board.halfmoveClock).toBe(0);
+    play(board, "b1c3");
+    expect(board.halfmoveClock).toBe(1);
+  });
+
+  it("draws after 50 moves by each player", () => {
+    const board = fromFen("8/8/4k3/8/8/4K3/8/R7 w - -");
+    board.halfmoveClock = 98;
+    play(board, "a1a2");
+    expect(board.isGameOver()).toBe(false);
+    play(board, "e6e7");
+    expect(board.isFiftyMoveRule()).toBe(true);
+    expect(board.isGameOver()).toBe(true);
+    expect(board.drawReason()).toBe("50-move rule");
+  });
+
+  it("lets checkmate on the last move win", () => {
+    const board = fromFen("6k1/5ppp/8/8/8/8/8/R5K1 w - -");
+    board.halfmoveClock = 99;
+    play(board, "a1a8");
+    expect(board.isFiftyMoveRule()).toBe(true);
+    expect(board.isCheckmate()).toBe(true);
+    expect(board.drawReason()).toBe(null);
+  });
+});
