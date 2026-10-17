@@ -59,8 +59,9 @@ export class Piece extends Draggable {
 
   // Position this piece on the given square.
   positionOnSquare(square) {
-    this.pos.x = square.pos.x - this.width / 2;
-    this.pos.y = square.pos.y - this.height / 2 + this.offsetY;
+    const center = this.board.squareCenter(square);
+    this.pos.x = center.x - this.width / 2;
+    this.pos.y = center.y - this.height / 2 + this.offsetY;
     this.pos.z = square.row + 2;
   }
 

@@ -2,7 +2,6 @@ import { Renderable, state } from "melonjs";
 import { app } from "./app.js";
 import { Graveyard } from "./board/graveyard.js";
 import { promotionChooser } from "./board/promotion.js";
-import { Square } from "./board/square.js";
 import { Board as ChessBoard } from "./chess/board.js";
 import { PieceColor, PieceType } from "./chess/enums.js";
 import { BOARD_SIZE, boardLeft } from "./layout.js";
@@ -32,40 +31,8 @@ export class Board extends Renderable {
     this.borderPaddingX = 4;
     this.borderPaddingY = 4;
 
-    // 2d array of squares [row, column].
-    this.squares = [];
-
-    let square;
-    const squareWidth = this.width / 8;
-    const squareHeight = this.height / 8;
-    const originX = -this.width / 2 + squareWidth / 2;
-    let squareX = originX;
-    let squareY = -this.height / 2 + squareHeight / 2;
-    let squareColor;
-    for (let r = 0; r < 8; ++r) {
-      this.squares.push([]);
-      for (let c = 0; c < 8; ++c) {
-        if ((r + c) % 2 === 0) {
-          squareColor = "#fff";
-        } else {
-          squareColor = "#000";
-        }
-        square = new Square(
-          this.pos.x + squareX,
-          this.pos.y + squareY,
-          squareWidth,
-          squareHeight,
-          squareColor,
-          r,
-          c,
-        );
-        app.world.addChild(square, 1);
-        this.squares[r].push(square);
-        squareX += squareWidth;
-      }
-      squareY += squareHeight;
-      squareX = originX;
-    }
+    // The square of the turn owner's king while it's in check.
+    this.checkSquare = null;
 
     // A graveyard for each color's captured pieces.
     this.graveyards = {
@@ -99,8 +66,7 @@ export class Board extends Renderable {
 
   // Move a dropped piece to the given square if that's a legal move.
   dropPiece(sprite, square) {
-    const from = sprite.piece.square;
-    this.game.move(from, this.game.getSquare(square.row, square.column));
+    this.game.move(sprite.piece.square, square);
     this.sync();
   }
 
@@ -114,9 +80,7 @@ export class Board extends Renderable {
         this.graveyards[piece.color].addPiece(piece);
         app.world.removeChild(sprite);
       } else {
-        sprite.positionOnSquare(
-          this.getSquare(piece.square.row, piece.square.column),
-        );
+        sprite.positionOnSquare(piece.square);
       }
     }
     this.pieces = this.pieces.filter((sprite) => !sprite.piece.isDead());
@@ -138,7 +102,7 @@ export class Board extends Renderable {
       this.promotion = promotionChooser(
         boardLeft(),
         this.belowBoardY(),
-        this.width / 8,
+        this.squareSize(),
         this.game.turnOwner,
         (type) => {
           this.game.finishPawnPromotion(type);
@@ -161,17 +125,10 @@ export class Board extends Renderable {
   showStatus() {
     const turnOwner = this.game.turnOwner;
     const inCheck = this.game.isInCheck(turnOwner);
-    const king = this.game
-      .getPieces(turnOwner)
-      .find((p) => p.type === PieceType.KING);
-    for (const row of this.squares) {
-      for (const square of row) {
-        square.inCheck =
-          inCheck &&
-          square.row === king.square.row &&
-          square.column === king.square.column;
-      }
-    }
+    this.checkSquare = inCheck
+      ? this.game.getPieces(turnOwner).find((p) => p.type === PieceType.KING)
+          .square
+      : null;
 
     if (this.game.isGameOver()) {
       this.status.setText(this.game.isCheckmate() ? "checkmate" : "stalemate");
@@ -200,7 +157,8 @@ export class Board extends Renderable {
     return true;
   }
 
-  // Draw.
+  // Draw the border, then the squares, with the square of a king in check
+  // in red.
   draw(renderer) {
     renderer.setColor("#444");
     renderer.fillRect(
@@ -209,30 +167,46 @@ export class Board extends Renderable {
       this.width + this.borderPaddingX * 2,
       this.height + this.borderPaddingY * 2,
     );
+    const size = this.squareSize();
+    for (let r = 0; r < 8; ++r) {
+      for (let c = 0; c < 8; ++c) {
+        let color = (r + c) % 2 === 0 ? "#fff" : "#000";
+        if (this.checkSquare?.row === r && this.checkSquare?.column === c) {
+          color = "#c33";
+        }
+        renderer.setColor(color);
+        renderer.fillRect(
+          this.pos.x + c * size,
+          this.pos.y + r * size,
+          size,
+          size,
+        );
+      }
+    }
   }
 
-  // Get square at row, column.
-  getSquare(r, c) {
-    if (r < 0 || c < 0) {
-      return null;
-    }
-    if (r >= this.squares.length) {
-      return null;
-    }
-    if (c >= this.squares[r].length) {
-      return null;
-    }
-    return this.squares[r][c];
+  // Width and height of a square, in pixels.
+  squareSize() {
+    return this.width / 8;
   }
 
-  // Get the square whose center is closest to x, y.
+  // The center of the given square, in world coordinates.
+  squareCenter(square) {
+    const size = this.squareSize();
+    return {
+      x: this.pos.x - this.width / 2 + (square.column + 0.5) * size,
+      y: this.pos.y - this.height / 2 + (square.row + 0.5) * size,
+    };
+  }
+
+  // Get the square under x, y, or the nearest edge square if x, y is off
+  // the board.
   getClosestSquare(x, y) {
-    const size = this.width / 8;
-    const first = this.squares[0][0].pos;
-    const index = (offset) => Math.min(7, Math.max(0, Math.round(offset)));
-    return this.getSquare(
-      index((y - first.y) / size),
-      index((x - first.x) / size),
+    const size = this.squareSize();
+    const index = (offset) => Math.min(7, Math.max(0, Math.floor(offset)));
+    return this.game.getSquare(
+      index((y - this.pos.y + this.height / 2) / size),
+      index((x - this.pos.x + this.width / 2) / size),
     );
   }
 }
