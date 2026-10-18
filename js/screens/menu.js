@@ -4,6 +4,7 @@ import { PieceColor } from "../chess/enums.js";
 import { Computer } from "../computer.js";
 import { boardLeft, centerY } from "../layout.js";
 import { Button } from "../ui/button.js";
+import { Settings } from "../ui/settings.js";
 import { label, TITLE_SIZE } from "../ui/text.js";
 
 export class MenuScreen extends Stage {
@@ -32,5 +33,19 @@ export class MenuScreen extends Stage {
         1,
       );
     });
+
+    // Stage already has a "settings" property.
+    this.settingsPanel = new Settings();
+    app.world.addChild(
+      new Button(x, y + 300, "settings", () => this.settingsPanel.open()),
+      1,
+    );
+  }
+
+  /**
+   * action to perform when leaving this screen
+   */
+  onDestroyEvent() {
+    this.settingsPanel.destroy();
   }
 }

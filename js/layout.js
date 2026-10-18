@@ -17,3 +17,8 @@ export function centerY() {
 export function boardLeft() {
   return centerX() - BOARD_SIZE / 2;
 }
+
+// The y position of the line of text above the board.
+export function aboveBoardY() {
+  return centerY() - BOARD_SIZE / 2 - 56;
+}

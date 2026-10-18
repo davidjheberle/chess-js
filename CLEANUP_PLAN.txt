@@ -30,7 +30,7 @@ Stretch goals
 [ ] 15. Test the view (menu, board, screens), not just the rules
 [ ] 16. Make dragging pieces work on phones and touch screens
 [ ] 17. Add keyboard controls
-[ ] 18. Add sound effects
+[x] 18. Add sound effects
 
 
 DETAILS
@@ -156,5 +156,6 @@ DETAILS
     Input should go through the rules module like mouse moves do.
 
 18. Sound effects
-    Moves, captures, check and game end. Needs sound files and
-    audio.init() back in js/game.js (removed in item 9).
+    Moves, captures, check and game end. Done without sound files:
+    js/sound.js makes them with the Web Audio API, and the settings
+    panel (menu button or Esc) sets the volume.
