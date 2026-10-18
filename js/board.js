@@ -4,7 +4,7 @@ import { Graveyard } from "./board/graveyard.js";
 import { promotionChooser } from "./board/promotion.js";
 import { Board as ChessBoard } from "./chess/board.js";
 import { PieceColor, PieceType } from "./chess/enums.js";
-import { BOARD_SIZE, boardLeft } from "./layout.js";
+import { BOARD_SIZE, boardLeft, centerX, centerY } from "./layout.js";
 import { Piece } from "./piece.js";
 import { ClickArea } from "./ui/clickarea.js";
 import { label } from "./ui/text.js";
@@ -18,12 +18,7 @@ export class Board extends Renderable {
   // Init.
   constructor() {
     // x, y, width, height
-    super(
-      app.viewport.width / 2,
-      app.viewport.height / 2,
-      BOARD_SIZE,
-      BOARD_SIZE,
-    );
+    super(centerX(), centerY(), BOARD_SIZE, BOARD_SIZE);
 
     // The game rules and state.
     this.game = new ChessBoard();
@@ -36,8 +31,8 @@ export class Board extends Renderable {
 
     // A graveyard for each color's captured pieces.
     this.graveyards = {
-      [PieceColor.WHITE]: this.addGraveyard(app.viewport.width / 2 + 240),
-      [PieceColor.BLACK]: this.addGraveyard(app.viewport.width / 2 - 240),
+      [PieceColor.WHITE]: this.addGraveyard(centerX() + 240),
+      [PieceColor.BLACK]: this.addGraveyard(centerX() - 240),
     };
 
     // Whose turn it is, above the board.
@@ -61,7 +56,7 @@ export class Board extends Renderable {
 
   // Add a graveyard centered at x.
   addGraveyard(x) {
-    return new Graveyard(x, app.viewport.height / 2, 80, BOARD_SIZE, 8, 2);
+    return new Graveyard(x, centerY(), 80, BOARD_SIZE, 8, 2);
   }
 
   // Move a dropped piece to the given square if that's a legal move.

@@ -24,7 +24,7 @@ Chess logic
 [x] 12. Show a visible pawn promotion prompt
 [x] 13a. Draw by insufficient material
 [x] 13b. Keep a move history; draw by repetition and the 50-move rule
-[ ] 14. Use a pixel font
+[x] 14. Use a pixel font
 
 Stretch goals
 [ ] 15. Test the view (menu, board, screens), not just the rules
@@ -130,9 +130,15 @@ DETAILS
      drive a move list on screen, undo, or the summary's move count.
 
 14. Pixel font
-    Load a pixel font as a "fontface" resource and set FONT in
-    js/ui/text.js to its name. Check SIZE and TITLE_SIZE there too,
-    since pixel fonts look sharpest at multiples of their native size.
+    Done: all text uses Fixedsys Excelsior (the Windows 3.x system font,
+    public domain), loaded as a "fontface" resource from
+    public/data/fnt/. It's drawn on a 16px grid, so SIZE is 16px and
+    TITLE_SIZE 32px; other sizes come out blurry. The layout's center
+    (layout.js) is rounded to a whole pixel so text stays sharp in
+    windows an odd number of pixels across. Compared against IBM
+    VGA, VT323, Press Start 2P, Silkscreen, Pixelify Sans and IBM Plex
+    Mono first; VT323 and Pixelify Sans are never pixel-sharp, and Press
+    Start 2P only fits at 8px.
 
 15. View tests
     The rules have Vitest tests; the menu, board and screens are only

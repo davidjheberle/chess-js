@@ -1,6 +1,6 @@
 import { ColorLayer, Stage, state } from "melonjs";
 import { PieceColor } from "../chess/enums.js";
-import { boardLeft } from "../layout.js";
+import { boardLeft, centerY } from "../layout.js";
 import { Button } from "../ui/button.js";
 import { label } from "../ui/text.js";
 
@@ -11,7 +11,7 @@ export class SummaryScreen extends Stage {
    */
   onResetEvent(app, game) {
     const x = boardLeft();
-    const y = app.viewport.height / 2;
+    const y = centerY();
 
     let title = game.drawReason();
     let result = "draw";
