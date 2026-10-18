@@ -2,6 +2,28 @@ import { Square } from "./board/square.js";
 import { MoveType, PieceColor, PieceType } from "./enums.js";
 import { Piece } from "./piece.js";
 
+// The steps a knight can make, and a king (one square in every direction).
+const KNIGHT_STEPS = [
+  [-2, -1],
+  [-2, 1],
+  [-1, -2],
+  [-1, 2],
+  [1, -2],
+  [1, 2],
+  [2, -1],
+  [2, 1],
+];
+const KING_STEPS = [
+  [-1, -1],
+  [-1, 0],
+  [-1, 1],
+  [0, -1],
+  [0, 1],
+  [1, -1],
+  [1, 0],
+  [1, 1],
+];
+
 export class Board {
   // Init. Pass { empty: true } for a board with no pieces (pieces can then be
   // added with addPiece and the game started with start).
@@ -225,15 +247,92 @@ export class Board {
 
   // True if making the move would leave the moving player's king threatened.
   leavesKingInCheck(move) {
-    // Try the move on a copy of the board.
-    const board = this.clone();
-    board.calculatePossibleMoves();
-    const piece = board.getSquare(move.from.row, move.from.column).piece;
-    piece.behavior.performMove(
-      piece.behavior.getMove(board.getSquare(move.to.row, move.to.column)),
-    );
-    board.calculatePossibleMoves();
-    return board.isInCheck(piece.color);
+    // Make the move on the squares alone, look for attacks on the king, then
+    // put the pieces back.
+    const { piece, from, to } = move;
+    const castle = move.type === MoveType.CASTLE;
+    const taken = castle ? null : move.target;
+    const takenSquare = taken?.square;
+    if (takenSquare != null) {
+      takenSquare.piece = null;
+    }
+    from.piece = null;
+    to.piece = piece;
+    if (castle) {
+      move.rookFrom.piece = null;
+      move.rookTo.piece = move.target;
+    }
+
+    const kingSquare =
+      piece.type === PieceType.KING
+        ? to
+        : this.getPieces(piece.color).find((p) => p.type === PieceType.KING)
+            ?.square;
+    const inCheck =
+      kingSquare != null && this.isAttacked(kingSquare, piece.color);
+
+    if (castle) {
+      move.rookTo.piece = null;
+      move.rookFrom.piece = move.target;
+    }
+    to.piece = null;
+    from.piece = piece;
+    if (takenSquare != null) {
+      takenSquare.piece = taken;
+    }
+    return inCheck;
+  }
+
+  // True if a piece of the other color than the given one attacks the
+  // square, going only by which pieces stand on which squares.
+  isAttacked(square, color) {
+    const { row, column } = square;
+    // True if the square at row + dr, column + dc holds an enemy piece of
+    // one of the given types.
+    const enemyAt = (dr, dc, types) => {
+      const p = this.getSquare(row + dr, column + dc)?.piece;
+      return p != null && p.color !== color && types.includes(p.type);
+    };
+
+    // Enemy pawns attack diagonally towards this color's side.
+    const pawnRow = color === PieceColor.WHITE ? -1 : 1;
+    if (
+      enemyAt(pawnRow, -1, [PieceType.PAWN]) ||
+      enemyAt(pawnRow, 1, [PieceType.PAWN])
+    ) {
+      return true;
+    }
+    for (const [dr, dc] of KNIGHT_STEPS) {
+      if (enemyAt(dr, dc, [PieceType.KNIGHT])) {
+        return true;
+      }
+    }
+    for (const [dr, dc] of KING_STEPS) {
+      if (enemyAt(dr, dc, [PieceType.KING])) {
+        return true;
+      }
+    }
+
+    // Look along each line for the first piece in the way.
+    for (const [dr, dc] of KING_STEPS) {
+      const straight = dr === 0 || dc === 0;
+      const types = straight
+        ? [PieceType.ROOK, PieceType.QUEEN]
+        : [PieceType.BISHOP, PieceType.QUEEN];
+      for (let i = 1; ; ++i) {
+        const s = this.getSquare(row + dr * i, column + dc * i);
+        if (s == null) {
+          break;
+        }
+        if (s.piece != null) {
+          if (s.piece.color !== color && types.includes(s.piece.type)) {
+            return true;
+          }
+          break;
+        }
+      }
+    }
+    return false;
   }
 
   // True if the given color's king is threatened.
@@ -322,29 +421,53 @@ export class Board {
   // Return a copy of this board with the same pieces and turn owner, and the
   // last move (for en passant) as its only history.
   clone() {
-    const board = new Board({ empty: true });
-    board.turnOwner = this.turnOwner;
-    const last = this.lastMove();
+    return Board.fromSnapshot(this.snapshot());
+  }
+
+  // A plain copy of the position that can be sent to a worker: the turn
+  // owner, each piece with its square and move count, and the squares of the
+  // last move.
+  snapshot() {
+    const pieces = [];
     for (const row of this.squares) {
       for (const square of row) {
         const p = square.piece;
         if (p != null) {
-          const copy = board.addPiece(
-            p.type,
-            p.color,
-            square.row,
-            square.column,
-          );
-          copy.moveCount = p.moveCount;
-          if (p === last?.piece) {
-            board.history.push({
-              piece: copy,
-              from: board.getSquare(last.from.row, last.from.column),
-              to: board.getSquare(last.to.row, last.to.column),
-            });
-          }
+          pieces.push({
+            type: p.type,
+            color: p.color,
+            row: square.row,
+            column: square.column,
+            moveCount: p.moveCount,
+          });
         }
       }
+    }
+    const last = this.lastMove();
+    return {
+      turnOwner: this.turnOwner,
+      pieces,
+      lastMove: last && {
+        from: { row: last.from.row, column: last.from.column },
+        to: { row: last.to.row, column: last.to.column },
+      },
+    };
+  }
+
+  // Make a board from a snapshot. Its moves aren't calculated.
+  static fromSnapshot({ turnOwner, pieces, lastMove }) {
+    const board = new Board({ empty: true });
+    board.turnOwner = turnOwner;
+    for (const p of pieces) {
+      board.addPiece(p.type, p.color, p.row, p.column).moveCount = p.moveCount;
+    }
+    if (lastMove) {
+      const to = board.getSquare(lastMove.to.row, lastMove.to.column);
+      board.history.push({
+        piece: to.piece,
+        from: board.getSquare(lastMove.from.row, lastMove.from.column),
+        to,
+      });
     }
     return board;
   }
