@@ -1,12 +1,12 @@
 import { Text } from "melonjs";
 
-// The font used for all text. Swap in a pixel font here once one is loaded
-// (as a "fontface" resource in resources.js).
-export const FONT = "sans-serif";
+// The font used for all text, loaded in resources.js. It's a bitmap font
+// drawn on a 16px grid, so it's only sharp at multiples of 16px.
+export const FONT = "Fixedsys Excelsior";
 
 // Text sizes: everything is SIZE except the game's title.
-export const SIZE = "12pt";
-export const TITLE_SIZE = "20pt";
+export const SIZE = "16px";
+export const TITLE_SIZE = "32px";
 
 // White text starting at x, vertically centered on y.
 export function label(x, y, text, size = SIZE) {

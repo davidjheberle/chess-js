@@ -1,5 +1,5 @@
 import { ColorLayer, Stage, state } from "melonjs";
-import { boardLeft } from "../layout.js";
+import { boardLeft, centerY } from "../layout.js";
 import { Button } from "../ui/button.js";
 import { label, TITLE_SIZE } from "../ui/text.js";
 
@@ -9,7 +9,7 @@ export class MenuScreen extends Stage {
    */
   onResetEvent(app) {
     const x = boardLeft();
-    const y = app.viewport.height / 2;
+    const y = centerY();
 
     app.world.addChild(new ColorLayer("background", "#000000"), -1);
     app.world.addChild(label(x, y - 30, "chess-js", TITLE_SIZE), 1);
