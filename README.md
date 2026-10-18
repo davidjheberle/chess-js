@@ -1,8 +1,9 @@
 chess-js
 -------------------------------------------------------------------------------
 
-A two-player chess game built with [melonJS](https://melonjs.org) 20.x and
-bundled with [Vite](https://vite.dev).
+A chess game for two players, or one against the computer (easy, medium or
+hard), built with [melonJS](https://melonjs.org) 20.x and bundled with
+[Vite](https://vite.dev).
 
 ## Running
 
@@ -43,7 +44,9 @@ Pushes to `main` are built and published to GitHub Pages by
 
 - `index.html` – page shell; loads `js/game.js` as an ES module.
 - `js/chess/` – the chess rules and game state, with no melonJS code, and
-  their tests (`npm test`).
+  their tests (`npm test`). `ai.js` is the computer opponent, an alpha-beta
+  search run in a Web Worker (`ai.worker.js`) so the game keeps drawing
+  while it thinks.
 - `js/` – the melonJS view: draws the board and pieces and handles input.
 - `public/` – static assets copied as-is into the build (`data/`, `icons/`, `manifest.json`).
 - `resources/` – source art (not shipped).

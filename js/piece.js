@@ -65,9 +65,13 @@ export class Piece extends Draggable {
     this.pos.z = square.row + 2;
   }
 
-  // True if it's this piece's player's turn.
-  isTurnOwner() {
-    return this.piece.isColor(this.board.game.turnOwner);
+  // True if it's this piece's player's turn, and that player isn't the
+  // computer.
+  canMove() {
+    return (
+      this.piece.isColor(this.board.game.turnOwner) &&
+      !this.board.isComputerTurn()
+    );
   }
 
   // Init events including input events.
@@ -82,7 +86,7 @@ export class Piece extends Draggable {
     // Add new events that return false (don't fall through to overlapping pieces).
     input.registerPointerEvent("pointerdown", this, (e) => {
       // Only the turn owner may pick up pieces.
-      if (!this.isTurnOwner()) {
+      if (!this.canMove()) {
         return false;
       }
       event.emit(event.DRAGSTART, e, this);
@@ -90,7 +94,7 @@ export class Piece extends Draggable {
     });
     input.registerPointerEvent("pointerup", this, (e) => {
       // Only the turn owner may drop pieces.
-      if (!this.isTurnOwner()) {
+      if (!this.canMove()) {
         return false;
       }
       event.emit(event.DRAGEND, e, this);

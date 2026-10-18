@@ -15,13 +15,14 @@ function colorName(color) {
 }
 
 export class Board extends Renderable {
-  // Init.
-  constructor() {
+  // Init with the computer player, or null for two players.
+  constructor(computer = null) {
     // x, y, width, height
     super(centerX(), centerY(), BOARD_SIZE, BOARD_SIZE);
 
     // The game rules and state.
     this.game = new ChessBoard();
+    this.computer = computer;
 
     this.borderPaddingX = 4;
     this.borderPaddingY = 4;
@@ -82,6 +83,36 @@ export class Board extends Renderable {
     this.showPromotion();
     app.world.sort(true);
     this.showStatus();
+    this.playComputer();
+  }
+
+  // True if it's the computer's turn.
+  isComputerTurn() {
+    return this.computer?.color === this.game.turnOwner;
+  }
+
+  // Have the computer move if it's its turn. It always promotes to a queen.
+  playComputer() {
+    if (
+      !this.isComputerTurn() ||
+      this.computer.thinking ||
+      this.game.isGameOver()
+    ) {
+      return;
+    }
+    this.status.setText(`${colorName(this.game.turnOwner)} thinking`);
+    this.computer.think(this.game, ({ from, to }) => {
+      this.game.move(from, to);
+      if (this.game.isPromotingPawn()) {
+        this.game.finishPawnPromotion(PieceType.QUEEN);
+      }
+      this.sync();
+    });
+  }
+
+  // Stop the computer thinking, when leaving the game.
+  stop() {
+    this.computer?.stop();
   }
 
   // Below the board, about as far from it as the status is above it.
@@ -138,7 +169,7 @@ export class Board extends Renderable {
       // Clicking anywhere opens the summary screen.
       app.world.addChild(
         new ClickArea(0, 0, app.viewport.width, app.viewport.height, () =>
-          state.change(state.GAMEOVER, false, this.game),
+          state.change(state.GAMEOVER, false, this.game, this.computer),
         ),
         100,
       );
