@@ -4,8 +4,15 @@ import { Graveyard } from "./board/graveyard.js";
 import { promotionChooser } from "./board/promotion.js";
 import { Board as ChessBoard } from "./chess/board.js";
 import { PieceColor, PieceType } from "./chess/enums.js";
-import { BOARD_SIZE, boardLeft, centerX, centerY } from "./layout.js";
+import {
+  aboveBoardY,
+  BOARD_SIZE,
+  boardLeft,
+  centerX,
+  centerY,
+} from "./layout.js";
 import { Piece } from "./piece.js";
+import { playSound, Sound } from "./sound.js";
 import { ClickArea } from "./ui/clickarea.js";
 import { label } from "./ui/text.js";
 
@@ -37,11 +44,15 @@ export class Board extends Renderable {
     };
 
     // Whose turn it is, above the board.
-    this.status = label(boardLeft(), this.pos.y - this.height / 2 - 56, "");
+    this.status = label(boardLeft(), aboveBoardY(), "");
     app.world.addChild(this.status, 2);
 
     // The promotion chooser's parts while it's open.
     this.promotion = [];
+
+    // How many moves, finished turns and captures have had their sound
+    // played, so sync knows what just happened.
+    this.heard = this.counts();
 
     // A sprite for each piece.
     this.pieces = [];
@@ -83,7 +94,37 @@ export class Board extends Renderable {
     this.showPromotion();
     app.world.sort(true);
     this.showStatus();
+    this.playMoveSound();
     this.playComputer();
+  }
+
+  // The number of moves, finished turns and captures so far.
+  counts() {
+    return {
+      moves: this.game.history.length,
+      turns: this.game.positions.length,
+      captures: this.game.captured.length,
+    };
+  }
+
+  // Play a sound for whatever happened since the last sync: the end of the
+  // game, check, a capture or a plain move, whichever matters most. A
+  // promoting pawn's turn ends when its new piece is chosen, so that gets a
+  // sound too.
+  playMoveSound() {
+    const now = this.counts();
+    const moved = now.moves > this.heard.moves;
+    const turned = now.turns > this.heard.turns;
+    if (turned && this.game.isGameOver()) {
+      playSound(this.game.isCheckmate() ? Sound.CHECKMATE : Sound.DRAW);
+    } else if (turned && this.checkSquare != null) {
+      playSound(Sound.CHECK);
+    } else if (now.captures > this.heard.captures) {
+      playSound(Sound.CAPTURE);
+    } else if (moved || turned) {
+      playSound(Sound.MOVE);
+    }
+    this.heard = now;
   }
 
   // True if it's the computer's turn.
