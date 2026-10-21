@@ -2,6 +2,8 @@ import { ColorLayer, Stage, state } from "melonjs";
 import { PieceColor } from "../chess/enums.js";
 import { boardLeft, centerY } from "../layout.js";
 import { Button } from "../ui/button.js";
+import { FocusGroup } from "../ui/focus.js";
+import { releaseKeys, takeKeys } from "../ui/keys.js";
 import { label } from "../ui/text.js";
 
 // Shown when a game ends, with the finished game and the computer player
@@ -34,20 +36,30 @@ export class SummaryScreen extends Stage {
     app.world.addChild(new ColorLayer("background", "#000000"), -1);
     app.world.addChild(label(x, y - 58, title), 1);
     app.world.addChild(label(x, y - 34, result), 1);
-    app.world.addChild(
+    const buttons = [
       new Button(x, y + 6, "play again", () =>
         state.change(state.PLAY, false, computer),
       ),
-      1,
-    );
-    app.world.addChild(
       new Button(x, y + 52, "main menu", () => state.change(state.MENU)),
-      1,
-    );
+    ];
+    for (const button of buttons) {
+      app.world.addChild(button, 1);
+    }
+
+    // The arrow keys move between the buttons.
+    this.keys = new FocusGroup(buttons);
+    takeKeys(this.keys);
   }
 
   // What onResetEvent needs to lay the screen out again.
   relayoutArgs() {
     return this.args;
+  }
+
+  /**
+   * action to perform when leaving this screen
+   */
+  onDestroyEvent() {
+    releaseKeys(this.keys);
   }
 }

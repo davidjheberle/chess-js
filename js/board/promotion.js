@@ -14,7 +14,8 @@ const CHOICES = [
 // Space between the "promote" label and the first choice.
 const LABEL_WIDTH = 80;
 
-// A piece to promote to, centered in a slot that lights up while hovered.
+// A piece to promote to, centered in a slot that lights up while hovered or
+// focused from the keyboard.
 // The slot's left edge is at x and it is vertically centered on y.
 class PromotionChoice extends UIBaseElement {
   constructor(x, y, width, type, color, onChoose) {
@@ -25,7 +26,7 @@ class PromotionChoice extends UIBaseElement {
   }
 
   draw(renderer) {
-    if (this.hover) {
+    if (this.hover || this.focused) {
       renderer.setColor("#666");
       renderer.fillRect(this.pos.x, this.pos.y, this.width, this.height);
     }
@@ -46,7 +47,8 @@ class PromotionChoice extends UIBaseElement {
 
 // A "promote" label and the pieces a pawn of the given color can become,
 // starting at x and vertically centered on y, each in a slot slotWidth wide.
-// Calls onChoose with the chosen piece type.
+// Calls onChoose with the chosen piece type. Returns the label, then the
+// choices.
 export function promotionChooser(x, y, slotWidth, color, onChoose) {
   const children = [label(x, y, "promote")];
   CHOICES.forEach((type, i) => {

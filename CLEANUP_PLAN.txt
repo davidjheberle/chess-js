@@ -29,7 +29,7 @@ Chess logic
 Stretch goals
 [ ] 15. Test the view (menu, board, screens), not just the rules
 [x] 16. Make dragging pieces work on phones and touch screens
-[ ] 17. Add keyboard controls
+[x] 17. Add keyboard controls
 [x] 18. Add sound effects
 
 

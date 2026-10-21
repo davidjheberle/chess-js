@@ -4,6 +4,7 @@ import { resources } from "./resources.js";
 import { MenuScreen } from "./screens/menu.js";
 import { PlayScreen } from "./screens/play.js";
 import { SummaryScreen } from "./screens/summary.js";
+import { initKeys } from "./ui/keys.js";
 
 // How long the window must keep its size before the screen is laid out
 // again, in milliseconds. Turning a phone sends several resizes.
@@ -49,6 +50,9 @@ async function onload() {
   // Set and load all resources.
   // (this will also automatically switch to the loading screen)
   await loader.preload(resources);
+
+  // Send the arrow keys, Enter and Space to the screens.
+  initKeys();
 
   // Create the screens.
   state.set(state.MENU, new MenuScreen());
