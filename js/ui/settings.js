@@ -3,6 +3,8 @@ import { app } from "../app.js";
 import { boardLeft, centerY } from "../layout.js";
 import { getVolume, setVolume } from "../sound.js";
 import { Button } from "./button.js";
+import { FocusGroup } from "./focus.js";
+import { releaseKeys, takeKeys } from "./keys.js";
 import { label } from "./text.js";
 
 // Drawn above everything else on the screen, including the click-anywhere
@@ -57,7 +59,8 @@ class Backdrop extends UIBaseElement {
 }
 
 // The settings panel: volume, and in a game, buttons to resume or quit to
-// the main menu. Esc opens and closes it. Call destroy when leaving the
+// the main menu. Esc opens and closes it, and while it's open the arrow keys
+// move between its buttons rather than doing anything underneath. Call destroy when leaving the
 // screen it belongs to.
 export class Settings {
   // Pass onQuit to offer quitting the current game.
@@ -137,9 +140,14 @@ export class Settings {
     this.children.forEach((child, i) => {
       app.world.addChild(child, Z + (i === 0 ? 0 : 1));
     });
+    this.keys = new FocusGroup(
+      this.children.filter((child) => child instanceof Button),
+    );
+    takeKeys(this.keys);
   }
 
   close() {
+    releaseKeys(this.keys);
     for (const child of this.children) {
       app.world.removeChild(child);
     }
@@ -157,8 +165,9 @@ export class Settings {
     this.level.setText(volume === 0 ? "off" : String(volume));
   }
 
-  // Stop listening for Esc.
+  // Stop listening for Esc, and for the arrow keys if open.
   destroy() {
+    releaseKeys(this.keys);
     event.off(event.KEYUP, this.onKey);
     input.unbindKey(input.KEY.ESC);
   }

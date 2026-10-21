@@ -11,6 +11,13 @@ click or tap a piece, then the square it goes to. During a game, the menu
 button or Esc opens the settings, where you can set the volume or quit to the
 main menu.
 
+Everything also works from the keyboard. The arrow keys move between buttons,
+and Enter or Space presses one. On the board, the arrow keys move a blue
+cursor (it appears on your king at the first key press); press Enter on a
+piece to pick it up, then on the square it goes to. Pressing Enter on the
+picked-up piece puts it back. When a pawn promotes, the queen is chosen
+unless you move to another piece first.
+
 ## Running
 
 Install [node](http://nodejs.org) 24 LTS or newer (the version is pinned in

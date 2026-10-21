@@ -16,9 +16,10 @@ export class Button extends UIBaseElement {
     this.addChild(label(padding, HEIGHT / 2, text));
   }
 
-  // Draw the background, lighter while hovered, then the label.
+  // Draw the background, lighter while hovered or focused from the
+  // keyboard, then the label.
   draw(renderer, viewport) {
-    renderer.setColor(this.hover ? "#666" : "#444");
+    renderer.setColor(this.hover || this.focused ? "#666" : "#444");
     renderer.fillRect(this.pos.x, this.pos.y, this.width, this.height);
     super.draw(renderer, viewport);
   }

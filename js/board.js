@@ -14,11 +14,24 @@ import {
 import { Piece } from "./piece.js";
 import { playSound, Sound } from "./sound.js";
 import { ClickArea } from "./ui/clickarea.js";
+import { FocusGroup, Key } from "./ui/focus.js";
+import { releaseKeys, takeKeys } from "./ui/keys.js";
 import { label } from "./ui/text.js";
 
 // Width of the outline around the square a held piece would drop on, or
 // the square of the selected piece.
 const OUTLINE = 4;
+
+// Color of the keyboard cursor, drawn just inside its square.
+const CURSOR_COLOR = "#69f";
+
+// How the arrow keys move the cursor, in rows and columns.
+const CURSOR_STEPS = {
+  [Key.LEFT]: [0, -1],
+  [Key.RIGHT]: [0, 1],
+  [Key.UP]: [-1, 0],
+  [Key.DOWN]: [1, 0],
+};
 
 // Name of a color for messages.
 function colorName(color) {
@@ -64,8 +77,17 @@ export class Board extends Renderable {
     // or null.
     this.selected = null;
 
-    // The promotion chooser's parts while it's open.
+    // The promotion chooser's parts while it's open, and the keyboard
+    // focus among its choices.
     this.promotion = [];
+    this.promotionKeys = null;
+
+    // The square of the keyboard cursor, or null until a key is pressed.
+    this.cursor = null;
+
+    // Opens the summary screen once the game is over.
+    this.continue = () =>
+      state.change(state.GAMEOVER, false, this.game, this.computer);
 
     // How many moves, finished turns and captures have had their sound
     // played, so sync knows what just happened.
@@ -88,15 +110,60 @@ export class Board extends Renderable {
     return new Graveyard(x, centerY(), 80, BOARD_SIZE, 8, 2);
   }
 
-  // Listen for pieces being picked up while the board is on screen.
+  // Listen for pieces being picked up, and for the keyboard, while the
+  // board is on screen.
   onActivateEvent() {
     super.onActivateEvent();
     input.registerPointerEvent("pointerdown", this, (e) => this.pickUp(e));
+    takeKeys(this);
   }
 
   onDeactivateEvent() {
     input.releasePointerEvent("pointerdown", this);
+    releaseKeys(this);
     super.onDeactivateEvent();
+  }
+
+  // The arrow keys move a cursor over the board, and Enter or Space presses
+  // the square under it, as a tap would: select a piece, then press the
+  // square it goes to. While the promotion chooser is open they choose a
+  // piece instead, and once the game is over a press continues.
+  onKey(key) {
+    if (this.game.isGameOver()) {
+      if (key === Key.PRESS) {
+        this.continue();
+      }
+    } else if (this.promotionKeys) {
+      this.promotionKeys.onKey(key);
+    } else if (this.cursor == null) {
+      // The first key shows the cursor, on the selected piece or the king.
+      this.cursor =
+        this.selected?.piece.square ??
+        this.game
+          .getPieces(this.game.turnOwner)
+          .find((p) => p.type === PieceType.KING).square;
+    } else if (key === Key.PRESS) {
+      this.pressSquare(this.cursor);
+    } else {
+      const [rows, columns] = CURSOR_STEPS[key];
+      const clamp = (index) => Math.min(7, Math.max(0, index));
+      this.cursor = this.game.getSquare(
+        clamp(this.cursor.row + rows),
+        clamp(this.cursor.column + columns),
+      );
+    }
+  }
+
+  // Press a square from the keyboard: select the turn owner's piece on it
+  // (or unselect it, if it's selected), or move the selected piece there if
+  // that's a legal move.
+  pressSquare(square) {
+    const sprite = this.spriteOn(square);
+    if (sprite?.canMove()) {
+      this.tapPiece(sprite);
+    } else if (this.selected) {
+      this.dropPiece(this.selected, square);
+    }
   }
 
   // Pick up the piece under the pointer if it's that player's turn, or
@@ -232,7 +299,8 @@ export class Board extends Renderable {
   }
 
   // Open the promotion chooser while a pawn waits to be promoted, and close
-  // it once the pawn has been promoted.
+  // it once the pawn has been promoted. If the keyboard is in use, the
+  // queen is focused, so Enter promotes to one.
   showPromotion() {
     const promoting = this.game.isPromotingPawn();
     if (promoting && this.promotion.length === 0) {
@@ -249,11 +317,17 @@ export class Board extends Renderable {
       for (const child of this.promotion) {
         app.world.addChild(child, 2);
       }
+      // After the label come the choices.
+      this.promotionKeys = new FocusGroup(
+        this.promotion.slice(1),
+        this.cursor ? 0 : -1,
+      );
     } else if (!promoting) {
       for (const child of this.promotion) {
         app.world.removeChild(child);
       }
       this.promotion = [];
+      this.promotionKeys = null;
     }
   }
 
@@ -273,14 +347,23 @@ export class Board extends Renderable {
       );
 
       app.world.addChild(
-        label(boardLeft(), this.belowBoardY(), "click to continue"),
+        label(
+          boardLeft(),
+          this.belowBoardY(),
+          "click or press enter to continue",
+        ),
         2,
       );
 
-      // Clicking anywhere opens the summary screen.
+      // Clicking anywhere, or pressing Enter or Space, opens the summary
+      // screen.
       app.world.addChild(
-        new ClickArea(0, 0, app.viewport.width, app.viewport.height, () =>
-          state.change(state.GAMEOVER, false, this.game, this.computer),
+        new ClickArea(
+          0,
+          0,
+          app.viewport.width,
+          app.viewport.height,
+          this.continue,
         ),
         100,
       );
@@ -298,7 +381,8 @@ export class Board extends Renderable {
 
   // Draw the border, then the squares, with the square of a king in check
   // in red. Then outline the square a held piece would drop on, or the
-  // selected piece's square.
+  // selected piece's square, and draw the keyboard cursor just inside its
+  // square, so both show when they're on the same one.
   draw(renderer) {
     renderer.setColor("#444");
     renderer.fillRect(
@@ -334,6 +418,17 @@ export class Board extends Renderable {
         this.pos.y + square.row * size - OUTLINE / 2,
         size + OUTLINE,
         size + OUTLINE,
+      );
+      renderer.lineWidth = 1;
+    }
+    if (this.cursor && !this.game.isGameOver()) {
+      renderer.setColor(CURSOR_COLOR);
+      renderer.lineWidth = OUTLINE;
+      renderer.strokeRect(
+        this.pos.x + this.cursor.column * size + OUTLINE / 2,
+        this.pos.y + this.cursor.row * size + OUTLINE / 2,
+        size - OUTLINE,
+        size - OUTLINE,
       );
       renderer.lineWidth = 1;
     }
