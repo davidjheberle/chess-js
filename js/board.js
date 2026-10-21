@@ -1,4 +1,4 @@
-import { Renderable, state } from "melonjs";
+import { event, input, Renderable, state } from "melonjs";
 import { app } from "./app.js";
 import { Graveyard } from "./board/graveyard.js";
 import { promotionChooser } from "./board/promotion.js";
@@ -16,6 +16,9 @@ import { playSound, Sound } from "./sound.js";
 import { ClickArea } from "./ui/clickarea.js";
 import { label } from "./ui/text.js";
 
+// Width of the outline on the square a held piece would drop on.
+const DROP_OUTLINE = 4;
+
 // Name of a color for messages.
 function colorName(color) {
   return color === PieceColor.WHITE ? "white" : "black";
@@ -30,6 +33,9 @@ export class Board extends Renderable {
     // The game rules and state.
     this.game = new ChessBoard();
     this.computer = computer;
+
+    // Take pointer events, to pick pieces up.
+    this.isKinematic = false;
 
     this.borderPaddingX = 4;
     this.borderPaddingY = 4;
@@ -69,6 +75,44 @@ export class Board extends Renderable {
   // Add a graveyard centered at x.
   addGraveyard(x) {
     return new Graveyard(x, centerY(), 80, BOARD_SIZE, 8, 2);
+  }
+
+  // Listen for pieces being picked up while the board is on screen.
+  onActivateEvent() {
+    super.onActivateEvent();
+    input.registerPointerEvent("pointerdown", this, (e) => this.pickUp(e));
+  }
+
+  onDeactivateEvent() {
+    input.releasePointerEvent("pointerdown", this);
+    super.onDeactivateEvent();
+  }
+
+  // Pick up the piece under the pointer if it's that player's turn. The
+  // board decides which piece that is, rather than each piece, because a
+  // piece is drawn reaching up into the square above, over the piece
+  // standing there; touching the bottom of a square should pick up its
+  // piece, not the one below. Touching an empty square picks up the piece
+  // whose top shows in it.
+  pickUp(e) {
+    const square = this.getSquareAt(e.gameX, e.gameY);
+    if (square == null) {
+      return false;
+    }
+    const below =
+      square.row < 7
+        ? this.game.getSquare(square.row + 1, square.column)
+        : null;
+    const sprite = this.spriteOn(square) ?? (below && this.spriteOn(below));
+    if (sprite?.canMove()) {
+      event.emit(event.DRAGSTART, e, sprite);
+    }
+    return false;
+  }
+
+  // The sprite of the piece standing on the given square, if any.
+  spriteOn(square) {
+    return this.pieces.find((sprite) => sprite.piece.square === square);
   }
 
   // Move a dropped piece to the given square if that's a legal move.
@@ -227,7 +271,7 @@ export class Board extends Renderable {
   }
 
   // Draw the border, then the squares, with the square of a king in check
-  // in red.
+  // in red, and an outline on the square a held piece would drop on.
   draw(renderer) {
     renderer.setColor("#444");
     renderer.fillRect(
@@ -252,6 +296,19 @@ export class Board extends Renderable {
         );
       }
     }
+    const held = this.pieces.find((sprite) => sprite.dragging);
+    if (held) {
+      const square = held.dropSquare();
+      renderer.setColor("#888");
+      renderer.lineWidth = DROP_OUTLINE;
+      renderer.strokeRect(
+        this.pos.x + square.column * size + DROP_OUTLINE / 2,
+        this.pos.y + square.row * size + DROP_OUTLINE / 2,
+        size - DROP_OUTLINE,
+        size - DROP_OUTLINE,
+      );
+      renderer.lineWidth = 1;
+    }
   }
 
   // Width and height of a square, in pixels.
@@ -266,6 +323,21 @@ export class Board extends Renderable {
       x: this.pos.x - this.width / 2 + (square.column + 0.5) * size,
       y: this.pos.y - this.height / 2 + (square.row + 0.5) * size,
     };
+  }
+
+  // Get the square under x, y, or null if x, y is off the board.
+  getSquareAt(x, y) {
+    const left = this.pos.x - this.width / 2;
+    const top = this.pos.y - this.height / 2;
+    if (
+      x < left ||
+      x >= left + this.width ||
+      y < top ||
+      y >= top + this.height
+    ) {
+      return null;
+    }
+    return this.getClosestSquare(x, y);
   }
 
   // Get the square under x, y, or the nearest edge square if x, y is off
