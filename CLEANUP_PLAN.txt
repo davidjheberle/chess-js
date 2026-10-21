@@ -162,6 +162,9 @@ DETAILS
     - A finger hid the piece being dragged. On touch the piece is held a
       square above the finger and drops where it's drawn, and the square
       it would drop on is outlined (with a mouse too).
+    Pieces can also be moved by tapping or clicking: a press that moves
+    less than 8px is a tap, which selects the piece (outlined; tap it
+    again to unselect), and the next tap on a square moves it there.
     Also, a drag ends wherever the pointer is let go, even outside the
     canvas, and a second finger doesn't move the held piece. Buttons,
     the promotion chooser and the settings panel already worked by

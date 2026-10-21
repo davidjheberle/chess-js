@@ -16,8 +16,9 @@ import { playSound, Sound } from "./sound.js";
 import { ClickArea } from "./ui/clickarea.js";
 import { label } from "./ui/text.js";
 
-// Width of the outline on the square a held piece would drop on.
-const DROP_OUTLINE = 4;
+// Width of the outline around the square a held piece would drop on, or
+// the square of the selected piece.
+const OUTLINE = 4;
 
 // Name of a color for messages.
 function colorName(color) {
@@ -52,6 +53,10 @@ export class Board extends Renderable {
     // Whose turn it is, above the board.
     this.status = label(boardLeft(), aboveBoardY(), "");
     app.world.addChild(this.status, 2);
+
+    // The sprite of the piece tapped to be moved by tapping where it goes,
+    // or null.
+    this.selected = null;
 
     // The promotion chooser's parts while it's open.
     this.promotion = [];
@@ -88,26 +93,40 @@ export class Board extends Renderable {
     super.onDeactivateEvent();
   }
 
-  // Pick up the piece under the pointer if it's that player's turn. The
-  // board decides which piece that is, rather than each piece, because a
-  // piece is drawn reaching up into the square above, over the piece
-  // standing there; touching the bottom of a square should pick up its
-  // piece, not the one below. Touching an empty square picks up the piece
-  // whose top shows in it.
+  // Pick up the piece under the pointer if it's that player's turn, or
+  // with a piece selected, move it to the square under the pointer.
+  //
+  // The board decides which piece is under the pointer, rather than each
+  // piece, because a piece is drawn reaching up into the square above, over
+  // the piece standing there; touching the bottom of a square should pick
+  // up its piece, not the one below. Touching an empty square picks up the
+  // piece whose top shows in it, unless a piece is selected, when it's
+  // where the selected piece goes.
   pickUp(e) {
     const square = this.getSquareAt(e.gameX, e.gameY);
     if (square == null) {
       return false;
     }
-    const below =
-      square.row < 7
-        ? this.game.getSquare(square.row + 1, square.column)
-        : null;
-    const sprite = this.spriteOn(square) ?? (below && this.spriteOn(below));
+    let sprite = this.spriteOn(square);
+    if (this.selected && !sprite?.canMove()) {
+      this.dropPiece(this.selected, square);
+      return false;
+    }
+    if (sprite == null && square.row < 7) {
+      sprite = this.spriteOn(
+        this.game.getSquare(square.row + 1, square.column),
+      );
+    }
     if (sprite?.canMove()) {
       event.emit(event.DRAGSTART, e, sprite);
     }
     return false;
+  }
+
+  // A piece was tapped without being dragged: select it, or unselect it if
+  // it was already selected.
+  tapPiece(sprite) {
+    this.selected = this.selected === sprite ? null : sprite;
   }
 
   // The sprite of the piece standing on the given square, if any.
@@ -117,6 +136,7 @@ export class Board extends Renderable {
 
   // Move a dropped piece to the given square if that's a legal move.
   dropPiece(sprite, square) {
+    this.selected = null;
     this.game.move(sprite.piece.square, square);
     this.sync();
   }
@@ -271,7 +291,8 @@ export class Board extends Renderable {
   }
 
   // Draw the border, then the squares, with the square of a king in check
-  // in red, and an outline on the square a held piece would drop on.
+  // in red. Then outline the square a held piece would drop on, or the
+  // selected piece's square.
   draw(renderer) {
     renderer.setColor("#444");
     renderer.fillRect(
@@ -296,16 +317,17 @@ export class Board extends Renderable {
         );
       }
     }
-    const held = this.pieces.find((sprite) => sprite.dragging);
-    if (held) {
-      const square = held.dropSquare();
+    const held = this.pieces.find((sprite) => sprite.isHeld());
+    const square = held ? held.dropSquare() : this.selected?.piece.square;
+    if (square) {
+      // Around the square, over the edges of its neighbors.
       renderer.setColor("#888");
-      renderer.lineWidth = DROP_OUTLINE;
+      renderer.lineWidth = OUTLINE;
       renderer.strokeRect(
-        this.pos.x + square.column * size + DROP_OUTLINE / 2,
-        this.pos.y + square.row * size + DROP_OUTLINE / 2,
-        size - DROP_OUTLINE,
-        size - DROP_OUTLINE,
+        this.pos.x + square.column * size - OUTLINE / 2,
+        this.pos.y + square.row * size - OUTLINE / 2,
+        size + OUTLINE,
+        size + OUTLINE,
       );
       renderer.lineWidth = 1;
     }

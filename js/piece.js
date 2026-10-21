@@ -7,6 +7,10 @@ export const FRAME_SIZE = 64;
 // How far a piece is drawn above the center of the square it stands on.
 export const OFFSET_Y = -20;
 
+// How far, in pixels, the pointer must move before a press on a piece is a
+// drag rather than a tap.
+const DRAG_DISTANCE = 8;
+
 // Draw the sprite of a piece of the given type and color with its top-left
 // corner at x, y.
 export function drawPiece(renderer, type, color, x, y) {
@@ -101,20 +105,16 @@ export class Piece extends Draggable {
     if (this.board.game.isPromotingPawn() || this.dragging) {
       return;
     }
-    // Pick the piece up.
+    // Pick the piece up. It stays where it is until the pointer has moved
+    // far enough to make this a drag rather than a tap.
     this.pos.z = 50;
     app.world.sort(true);
     super.dragStart(e);
     this.dragId = e.pointerId;
-    // A finger would hide the piece, so it's held above the finger, its
-    // base a square higher. It drops where it's drawn, as with a mouse.
-    if (e.event.pointerType === "touch") {
-      this.grabOffset.set(
-        this.width / 2,
-        this.board.squareSize() + this.height / 2 - this.offsetY,
-      );
-      this.dragMove(e);
-    }
+    this.moved = false;
+    this.pressX = e.gameX;
+    this.pressY = e.gameY;
+    this.touch = e.event.pointerType === "touch";
     window.addEventListener("pointerup", this.handleRelease);
     window.addEventListener("pointercancel", this.handleRelease);
   }
@@ -122,9 +122,31 @@ export class Piece extends Draggable {
   // Drag move event. Only the pointer that picked the piece up moves it, so
   // a second finger on the screen doesn't.
   dragMove(e) {
-    if (e.pointerId === this.dragId) {
-      super.dragMove(e);
+    if (!this.dragging || e.pointerId !== this.dragId) {
+      return;
     }
+    if (!this.moved) {
+      if (
+        Math.hypot(e.gameX - this.pressX, e.gameY - this.pressY) < DRAG_DISTANCE
+      ) {
+        return;
+      }
+      this.moved = true;
+      // A finger would hide the piece, so it's held above the finger, its
+      // base a square higher. It drops where it's drawn, as with a mouse.
+      if (this.touch) {
+        this.grabOffset.set(
+          this.width / 2,
+          this.board.squareSize() + this.height / 2 - this.offsetY,
+        );
+      }
+    }
+    super.dragMove(e);
+  }
+
+  // True while the piece is being dragged around.
+  isHeld() {
+    return this.dragging && this.moved;
   }
 
   // Drag end event.
@@ -133,9 +155,17 @@ export class Piece extends Draggable {
       return;
     }
     this.stopListening();
+    const moved = this.moved;
     const square = this.dropSquare();
     super.dragEnd(e);
-    this.board.dropPiece(this, square);
+    if (moved) {
+      this.board.dropPiece(this, square);
+    } else {
+      // A tap: put the piece back down and select it.
+      this.positionOnSquare(this.piece.square);
+      app.world.sort(true);
+      this.board.tapPiece(this);
+    }
   }
 
   // The square nearest to where the piece's base is, which is where it
