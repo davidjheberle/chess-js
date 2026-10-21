@@ -11,6 +11,11 @@ export const OFFSET_Y = -20;
 // drag rather than a tap.
 const DRAG_DISTANCE = 8;
 
+// How far above a finger a dragged piece's base is held, in CSS pixels (or
+// a square, if that's further), so the finger doesn't hide it. It's in CSS
+// pixels because fingers stay the same size when the game is scaled down.
+const FINGER_LIFT = 64;
+
 // Draw the sprite of a piece of the given type and color with its top-left
 // corner at x, y.
 export function drawPiece(renderer, type, color, x, y) {
@@ -132,16 +137,23 @@ export class Piece extends Draggable {
         return;
       }
       this.moved = true;
-      // A finger would hide the piece, so it's held above the finger, its
-      // base a square higher. It drops where it's drawn, as with a mouse.
+      // A finger would hide the piece, so it's held above the finger. It
+      // drops where it's drawn, as with a mouse.
       if (this.touch) {
         this.grabOffset.set(
           this.width / 2,
-          this.board.squareSize() + this.height / 2 - this.offsetY,
+          this.fingerLift() + this.height / 2 - this.offsetY,
         );
       }
     }
     super.dragMove(e);
+  }
+
+  // How far above a finger to hold the piece's base, in game pixels.
+  fingerLift() {
+    const canvas = app.renderer.getCanvas();
+    const scale = canvas.width / canvas.getBoundingClientRect().width;
+    return Math.max(this.board.squareSize(), FINGER_LIFT * scale);
   }
 
   // True while the piece is being dragged around.

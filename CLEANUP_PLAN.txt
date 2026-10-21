@@ -159,9 +159,15 @@ DETAILS
       the bottom half of a pawn's square picked up the piece behind it.
       The board now picks the piece on the touched square, or if it's
       empty, the piece whose top shows in it (Board.pickUp).
-    - A finger hid the piece being dragged. On touch the piece is held a
-      square above the finger and drops where it's drawn, and the square
-      it would drop on is outlined (with a mouse too).
+    - A finger hid the piece being dragged. On touch the piece is held
+      64 CSS pixels above the finger (or a square, if that's further)
+      and drops where it's drawn, and the square it would drop on is
+      outlined (with a mouse too). A square, about 24 CSS pixels on a
+      phone, wasn't enough to clear a thumb.
+    - Turning the phone resized the canvas but left everything where
+      it was. Screens now lay themselves out again when the window
+      settles at a new size (game.js), keeping the game in progress;
+      each screen's relayoutArgs() says what to keep.
     Pieces can also be moved by tapping or clicking: a press that moves
     less than 8px is a tap, which selects the piece (outlined; tap it
     again to unselect), and the next tap on a square moves it there.

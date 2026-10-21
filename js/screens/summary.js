@@ -11,6 +11,7 @@ export class SummaryScreen extends Stage {
    * action to perform on state change
    */
   onResetEvent(app, game, computer = null) {
+    this.args = [game, computer];
     const x = boardLeft();
     const y = centerY();
 
@@ -43,5 +44,10 @@ export class SummaryScreen extends Stage {
       new Button(x, y + 52, "main menu", () => state.change(state.MENU)),
       1,
     );
+  }
+
+  // What onResetEvent needs to lay the screen out again.
+  relayoutArgs() {
+    return this.args;
   }
 }

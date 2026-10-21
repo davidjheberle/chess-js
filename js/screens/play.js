@@ -10,14 +10,15 @@ const MENU_BUTTON_WIDTH = 80;
 export class PlayScreen extends Stage {
   /**
    * action to perform on state change, with the computer player, or none
-   * for two players
+   * for two players, and the game in progress when laying the screen out
+   * again
    */
-  onResetEvent(app, computer = null) {
+  onResetEvent(app, computer, game) {
     // Add a background color.
     app.world.addChild(new ColorLayer("background", "#000000"), -1);
 
     // Create the board.
-    this.board = new Board(computer);
+    this.board = new Board(computer, game);
     app.world.addChild(this.board, 0);
 
     // Quitting abandons the game and goes back to the main menu. (Stage
@@ -38,6 +39,11 @@ export class PlayScreen extends Stage {
       ),
       150,
     );
+  }
+
+  // What onResetEvent needs to lay the screen out again, keeping the game.
+  relayoutArgs() {
+    return [this.board.computer, this.board.game];
   }
 
   /**
