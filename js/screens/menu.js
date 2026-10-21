@@ -42,6 +42,11 @@ export class MenuScreen extends Stage {
     );
   }
 
+  // What onResetEvent needs to lay the screen out again: nothing.
+  relayoutArgs() {
+    return [];
+  }
+
   /**
    * action to perform when leaving this screen
    */

@@ -1,9 +1,34 @@
-import { loader, plugin, state, utils } from "melonjs";
+import { event, loader, plugin, state, utils } from "melonjs";
 import { app } from "./app.js";
 import { resources } from "./resources.js";
 import { MenuScreen } from "./screens/menu.js";
 import { PlayScreen } from "./screens/play.js";
 import { SummaryScreen } from "./screens/summary.js";
+
+// How long the window must keep its size before the screen is laid out
+// again, in milliseconds. Turning a phone sends several resizes.
+const RELAYOUT_DELAY = 200;
+
+// Lay the current screen out again for the window's new size, keeping its
+// state (such as the game in progress). Screens place everything when they
+// start, from the size of the window then.
+function relayout() {
+  const stage = state.current();
+  if (typeof stage?.relayoutArgs !== "function") {
+    return;
+  }
+  const args = stage.relayoutArgs();
+  stage.destroy(app);
+  stage.reset(app, ...args);
+}
+
+let relayoutTimer;
+function relayoutSoon() {
+  clearTimeout(relayoutTimer);
+  relayoutTimer = setTimeout(relayout, RELAYOUT_DELAY);
+}
+event.on(event.WINDOW_ONRESIZE, relayoutSoon);
+event.on(event.WINDOW_ONORIENTATION_CHANGE, relayoutSoon);
 
 // Run on page load.
 async function onload() {

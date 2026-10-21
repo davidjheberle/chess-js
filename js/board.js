@@ -26,13 +26,14 @@ function colorName(color) {
 }
 
 export class Board extends Renderable {
-  // Init with the computer player, or null for two players.
-  constructor(computer = null) {
+  // Init with the computer player, or null for two players, and the game
+  // to show, which is a new one unless the screen is being laid out again.
+  constructor(computer = null, game = new ChessBoard()) {
     // x, y, width, height
     super(centerX(), centerY(), BOARD_SIZE, BOARD_SIZE);
 
     // The game rules and state.
-    this.game = new ChessBoard();
+    this.game = game;
     this.computer = computer;
 
     // Take pointer events, to pick pieces up.
@@ -49,6 +50,11 @@ export class Board extends Renderable {
       [PieceColor.WHITE]: this.addGraveyard(centerX() + 240),
       [PieceColor.BLACK]: this.addGraveyard(centerX() - 240),
     };
+
+    // Pieces already captured, when laying out a game in progress.
+    for (const piece of this.game.captured) {
+      this.graveyards[piece.color].addPiece(piece);
+    }
 
     // Whose turn it is, above the board.
     this.status = label(boardLeft(), aboveBoardY(), "");
