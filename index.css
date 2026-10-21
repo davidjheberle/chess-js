@@ -9,6 +9,10 @@ body {
   -webkit-user-select: none;
   user-select: none;
 
+  /* No long-press menu or tap flash on touch screens. */
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+
   /* disable touch panning/zooming */
   -ms-touch-action: none;
   touch-action: none;

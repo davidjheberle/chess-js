@@ -5,7 +5,9 @@ A chess game for two players, or one against the computer (easy, medium or
 hard), built with [melonJS](https://melonjs.org) 20.x and bundled with
 [Vite](https://vite.dev).
 
-During a game, the menu button or Esc opens the settings, where you can set
+Drag pieces with the mouse or a finger; on a touch screen the piece is held
+a square above your finger so you can see it, and drops on the outlined
+square. During a game, the menu button or Esc opens the settings, where you can set
 the volume or quit to the main menu.
 
 ## Running

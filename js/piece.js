@@ -79,51 +79,84 @@ export class Piece extends Draggable {
   initEvents() {
     super.initEvents();
 
-    // Remove the default pointerdown and pointerup events.
+    // The board picks pieces up (see Board.pickUp), and the drag ends
+    // wherever the pointer is let go (see dragStart), so pieces take no
+    // pointer events of their own.
     input.releasePointerEvent("pointerdown", this);
     input.releasePointerEvent("pointerup", this);
+    input.releasePointerEvent("pointercancel", this);
 
-    // Add new events that return false (don't fall through to overlapping pieces).
-    input.registerPointerEvent("pointerdown", this, (e) => {
-      // Only the turn owner may pick up pieces.
-      if (!this.canMove()) {
-        return false;
+    // Let go of the piece when the pointer that picked it up is lifted,
+    // even outside the canvas.
+    this.handleRelease = (e) => {
+      if (e.pointerId === this.dragId) {
+        event.emit(event.DRAGEND, e, this);
       }
-      event.emit(event.DRAGSTART, e, this);
-      return false;
-    });
-    input.registerPointerEvent("pointerup", this, (e) => {
-      // Only the turn owner may drop pieces.
-      if (!this.canMove()) {
-        return false;
-      }
-      event.emit(event.DRAGEND, e, this);
-      return false;
-    });
+    };
   }
 
   // Drag start event.
   dragStart(e) {
     // Pieces stay put while the promotion chooser is open.
-    if (!this.board.game.isPromotingPawn()) {
-      // Pick the piece up.
-      this.pos.z = 50;
-      app.world.sort(true);
-      super.dragStart(e);
+    if (this.board.game.isPromotingPawn() || this.dragging) {
+      return;
+    }
+    // Pick the piece up.
+    this.pos.z = 50;
+    app.world.sort(true);
+    super.dragStart(e);
+    this.dragId = e.pointerId;
+    // A finger would hide the piece, so it's held above the finger, its
+    // base a square higher. It drops where it's drawn, as with a mouse.
+    if (e.event.pointerType === "touch") {
+      this.grabOffset.set(
+        this.width / 2,
+        this.board.squareSize() + this.height / 2 - this.offsetY,
+      );
+      this.dragMove(e);
+    }
+    window.addEventListener("pointerup", this.handleRelease);
+    window.addEventListener("pointercancel", this.handleRelease);
+  }
+
+  // Drag move event. Only the pointer that picked the piece up moves it, so
+  // a second finger on the screen doesn't.
+  dragMove(e) {
+    if (e.pointerId === this.dragId) {
+      super.dragMove(e);
     }
   }
 
   // Drag end event.
   dragEnd(e) {
-    if (this.board.game.isPromotingPawn()) {
+    if (!this.dragging) {
       return;
     }
-    // Drop the piece on the square nearest to where its base is.
-    const closestSquare = this.board.getClosestSquare(
+    this.stopListening();
+    const square = this.dropSquare();
+    super.dragEnd(e);
+    this.board.dropPiece(this, square);
+  }
+
+  // The square nearest to where the piece's base is, which is where it
+  // would land if dropped now.
+  dropSquare() {
+    return this.board.getClosestSquare(
       this.pos.x + this.width / 2,
       this.pos.y + this.height / 2 - this.offsetY,
     );
-    super.dragEnd(e);
-    this.board.dropPiece(this, closestSquare);
+  }
+
+  // Stop waiting for the pointer to be lifted.
+  stopListening() {
+    window.removeEventListener("pointerup", this.handleRelease);
+    window.removeEventListener("pointercancel", this.handleRelease);
+    this.dragId = null;
+  }
+
+  // Remove listeners when the piece is captured or the screen changes,
+  // even mid-drag.
+  onDestroyEvent() {
+    this.stopListening();
   }
 }

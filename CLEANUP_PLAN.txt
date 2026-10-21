@@ -28,7 +28,7 @@ Chess logic
 
 Stretch goals
 [ ] 15. Test the view (menu, board, screens), not just the rules
-[ ] 16. Make dragging pieces work on phones and touch screens
+[x] 16. Make dragging pieces work on phones and touch screens
 [ ] 17. Add keyboard controls
 [x] 18. Add sound effects
 
@@ -147,8 +147,28 @@ DETAILS
     test to CI.
 
 16. Touch and phones
-    The game scales to the window, but dragging pieces on a phone or
-    tablet hasn't been tried. Test it, then fix what doesn't work.
+    Done, tested by touch in headless Chrome as an iPhone 13 (portrait
+    and landscape), Pixel 7 and iPad Mini, and with a mouse. Three things
+    were wrong:
+    - A window smaller than 640x480, like any phone, showed the game at
+      full size, cut off: the graveyards were off screen in portrait and
+      the bottom of the menu in landscape. Such windows now scale the
+      game down to fit ("fill-min"); bigger ones stay at one pixel per
+      game pixel ("flex") so the font stays sharp (app.js).
+    - Pieces are drawn reaching up into the square above, so touching
+      the bottom half of a pawn's square picked up the piece behind it.
+      The board now picks the piece on the touched square, or if it's
+      empty, the piece whose top shows in it (Board.pickUp).
+    - A finger hid the piece being dragged. On touch the piece is held a
+      square above the finger and drops where it's drawn, and the square
+      it would drop on is outlined (with a mouse too).
+    Also, a drag ends wherever the pointer is let go, even outside the
+    canvas, and a second finger doesn't move the held piece. Buttons,
+    the promotion chooser and the settings panel already worked by
+    touch. Squares are small on a phone in portrait (about 24 CSS
+    pixels on an iPhone); a portrait layout with the graveyards above
+    and below the board would make them bigger. Not tried on a real
+    device.
 
 17. Keyboard controls
     For accessibility: move a cursor over the board, pick up and drop
