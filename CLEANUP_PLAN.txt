@@ -27,7 +27,7 @@ Chess logic
 [x] 14. Use a pixel font
 
 Stretch goals
-[ ] 15. Test the view (menu, board, screens), not just the rules
+[x] 15. Test the view (menu, board, screens), not just the rules
 [x] 16. Make dragging pieces work on phones and touch screens
 [x] 17. Add keyboard controls
 [x] 18. Add sound effects
@@ -145,6 +145,13 @@ DETAILS
     play-tested. Either save the headless-Chrome driver used so far as
     a project skill (/run-skill-generator), or add a small end-to-end
     test to CI.
+    Done, as Playwright tests in e2e/ (npm run e2e), run by CI against
+    the build in headless Chromium: two players play fool's mate by
+    clicking and dragging and reach the summary and back to the menu,
+    play again starts a fresh game, the easy computer answers a move,
+    and the keyboard alone starts a game and moves a pawn. The game is
+    drawn on a canvas, so the tests click by coordinates and read the
+    game's state through hooks that "#test" in the URL turns on.
 
 16. Touch and phones
     Done, tested by touch in headless Chrome as an iPhone 13 (portrait

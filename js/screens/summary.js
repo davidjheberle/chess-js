@@ -33,6 +33,9 @@ export class SummaryScreen extends Stage {
       }
     }
 
+    // Kept for the end-to-end tests, which can't read the canvas.
+    this.lines = [title, result];
+
     app.world.addChild(new ColorLayer("background", "#000000"), -1);
     app.world.addChild(label(x, y - 58, title), 1);
     app.world.addChild(label(x, y - 34, result), 1);

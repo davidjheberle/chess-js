@@ -44,9 +44,19 @@ Preview the build locally with:
 ## Checking
 
     npm test        # rules tests (Vitest)
+    npm run e2e     # end-to-end tests of the built game (Playwright)
     npm run lint    # Biome lint + format check; `npm run fix` applies fixes
 
-CI runs both, plus the build, on every pull request.
+The end-to-end tests in `e2e/` build the game, serve it and play it in
+headless Chromium: they click through the menu, play moves by clicking,
+dragging and from the keyboard, and reach the summary. Run
+`npx playwright install chromium` once first. Since the game is drawn on a
+canvas, the tests open it with `#test` in the URL, which lets them ask the
+game which screen is showing and where the pieces are.
+
+CI runs all three, plus the build, on every pull request. When the
+end-to-end tests fail there, the Playwright report (with screenshots and
+traces) is attached to the run.
 
 ## Deploying
 
