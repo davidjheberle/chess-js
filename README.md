@@ -20,7 +20,7 @@ unless you move to another piece first.
 
 ## Running
 
-Install [node](http://nodejs.org) 24 LTS or newer (the version is pinned in
+Install [node](https://nodejs.org) 24 LTS or newer (the version is pinned in
 `.nvmrc`; `fnm use` or `nvm use` picks it up), then in the project directory:
 
     npm install
@@ -75,4 +75,4 @@ Pushes to `main` are built and published to GitHub Pages by
 - `resources/` – source art (not shipped).
 
 -------------------------------------------------------------------------------
-melonJS is licensed under the [MIT License](http://www.opensource.org/licenses/mit-license.php)
+melonJS is licensed under the [MIT License](https://opensource.org/license/mit)
