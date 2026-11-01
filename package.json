@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@melonjs/debug-plugin": "^16.2.0",
-    "melonjs": "^20.8.0"
+    "melonjs": "^20.11.0"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
