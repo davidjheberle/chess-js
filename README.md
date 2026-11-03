@@ -1,5 +1,4 @@
-chess-js
--------------------------------------------------------------------------------
+## chess-js
 
 A chess game for two players, or one against the computer (easy, medium or
 hard), built with [melonJS](https://melonjs.org) 20.x and bundled with
@@ -74,5 +73,6 @@ Pushes to `main` are built and published to GitHub Pages by
 - `public/` – static assets copied as-is into the build (`data/`, `icons/`, `manifest.json`).
 - `resources/` – source art (not shipped).
 
--------------------------------------------------------------------------------
+---
+
 melonJS is licensed under the [MIT License](https://opensource.org/license/mit)
